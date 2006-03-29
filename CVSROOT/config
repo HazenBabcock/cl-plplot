@@ -2,7 +2,7 @@
 #SystemAuth=no
 
 # Put CVS lock files in this directory rather than directly in the repository.
-#LockDir=/var/lock/cvs
+LockDir=/var/lock/cl-plplot
 
 # Set `TopLevelAdmin' to `yes' to create a CVS directory at the top
 # level of the new working directory when using the `cvs checkout'
@@ -11,7 +11,7 @@
 
 # Set `LogHistory' to `all' or `TOEFWUPCGMAR' to log all transactions to the
 # history file, or a subset as needed (ie `TMAR' logs all write operations)
-#LogHistory=TOEFWUPCGMAR
+LogHistory=TMAR
 
 # Set `RereadLogAfterVerify' to `always' (the default) to allow the verifymsg
 # script to change the log message.  Set it to `stat' to force CVS to verify
