@@ -129,10 +129,11 @@
      ((and (vectorp ,color) (= 3 (length ,color))) (setf ,slot ,color))
      (t (format t "Malformed color option: ~A~%" ,color))))
 
-(defun set-color (which vec)
+(defun set-color (which vec &optional (change-pen t))
   "Sets the color..."
   (plscol0 which (aref vec 0) (aref vec 1) (aref vec 2))
-  (plcol0 which))
+  (when change-pen
+    (plcol0 which)))
 
 (defun len-check (x y x-error y-error)
   (let ((good-dims t)
@@ -276,7 +277,7 @@
       (setf initialized-plot t)
       (check-min-max xmin xmax x)
       (check-min-max ymin ymax y)
-      (set-color 0 (options-background-color *options*))
+      (set-color 0 (options-background-color *options*) nil)
       (plinit)
       (set-color 1 (options-foreground-color *options*))
       (pladv 0)
