@@ -240,19 +240,19 @@
 
 (pl-defcfun ("c_plfamadv" plfamadv) :void)
 
-(defcallback plfill :void ((n plint) (x *plflt) (y *plflt))
-  (plfill n x y))
+(defcallback plfill-fn :void ((n plint) (x *plflt) (y *plflt))
+  (c-plfill n x y))
 
-(defcfun ("c_plfill" plfill) :void 
-  (n plint)
-  (x *plflt)
-  (y *plflt))
+(pl-defcfun ("c_plfill" plfill) :void 
+	    (n plint)
+	    (x *plflt n)
+	    (y *plflt n))
 
 (pl-defcfun ("c_plfill3" plfill3) :void 
-	(n plint)
-	(x *plflt n)
-	(y *plflt n)
-	(z *plflt n))
+	    (n plint)
+	    (x *plflt n)
+	    (y *plflt n)
+	    (z *plflt n))
 
 (pl-defcfun ("c_plflush" plflush) :void)
 
@@ -723,7 +723,7 @@
 	    (min-width plint)
 	    (max-color plint)
 	    (max-width plint)
-	    (plfill plfunc)
+	    (plfill-fn plfunc)
 	    (rectangular plbool)
 	    (pltr-fn plfunc)
 	    (pltr-data plpointer))
@@ -748,7 +748,7 @@
 	    (fill-width plint)
 	    (cont-color plint)
 	    (cont-width plint)
-	    (plfill plfunc)
+	    (plfill-fn plfunc)
 	    (rectangular plbool)
 	    (pltr-fn plfunc)
 	    (pltr-data plpointer))
@@ -775,7 +775,7 @@
   (min-width plint)
   (max-color plint)
   (max-width plint)
-  (fill-fn plfunc)
+  (plfill-fn plfunc)
   (rectangular plbool)
   (pltr-fn plfunc)
   (pltr-data plpointer))
