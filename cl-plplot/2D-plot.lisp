@@ -445,8 +445,8 @@
 	  (let ((start-x (+ (aref x-data i) (* 0.125 bar-width) (- half-width)))
 		(cur-y 0.0))
 	    (dotimes (j (array-dimension data 1))
-	      (let ((x (vector start-x start-x (+ start-x bar-width) (+ start-x bar-width)))
-		    (y (vector cur-y (+ cur-y (aref data i j)) (+ cur-y (aref data i j)) cur-y)))
+	      (let ((x (vector start-x start-x (+ start-x bar-width) (+ start-x bar-width) start-x))
+		    (y (vector cur-y (+ cur-y (aref data i j)) (+ cur-y (aref data i j)) cur-y cur-y)))
 		(when filled
 		  (set-user-specd-color (elt colors (mod j (length colors))))
 		  (plfill x y))
