@@ -37,6 +37,12 @@
       (setf (aref vec i) (funcall init-fn i)))
     vec))
 
+(defun my-make-bar-graph-data (rows cols)
+  (let ((data (make-array (list rows cols) :initial-element 0.0 :element-type 'float)))
+    (dotimes (i rows)
+      (dotimes (j cols)
+	(setf (aref data i j) (+ i j))))
+    data))
 
 ;; You may need to change these to reflect the plplot drivers available on your system
 ;; If the Slime REPL hangs when you run one of these examples, it may be because the device
@@ -127,3 +133,39 @@
 	(y (my-make-vector 40 #'(lambda(x) (* (* 0.1 x) (* 0.1 x))))))
     (with-2D-graph (f-dev :file-name "test.pbm")
       (x-y-plot x y))))
+
+
+;; Here we make a simple bar graph
+
+(defun bar-graph-1 ()
+  (let ((data (my-make-bar-graph-data 10 5)))
+    (with-2D-graph (g-dev)
+      (bar-graph data :line 2))))
+
+
+;; The same graph with the bars side-by-side
+
+(defun bar-graph-2 ()
+  (let ((data (my-make-bar-graph-data 10 5)))
+    (with-2D-graph (g-dev)
+      (bar-graph data :filled nil :side-by-side t))))
+
+
+;; Specify our own scaling for the x and y axises
+
+(defun bar-graph-3 ()
+  (let ((x (my-make-vector 10 #'(lambda(x) (* 0.1 x))))
+	(data (my-make-bar-graph-data 10 3)))
+    (with-2D-graph (g-dev)
+      (bar-graph data :x-data x :ymin -0.1 :ymax 20.0 :side-by-side t))))
+
+
+;; Combining a bar graph and a x-y plot, fill the bars with the color grey
+
+(defun combo-graph-1 ()
+  (let ((x (my-make-vector 20 #'(lambda(x) (* 0.1 x))))
+	(y (my-make-vector 20 #'(lambda(x) (- (* 0.1 (- x 5.0) (- x 5.0)) 3.0))))
+	(e (my-make-vector 20 #'(lambda(x) (declare (ignore x)) 0.5))))
+    (with-2D-graph (g-dev)
+      (bar-graph y :x-data x :colors '(:grey))
+      (x-y-plot x y :line 0 :y-error e))))
