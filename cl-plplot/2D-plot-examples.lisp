@@ -160,6 +160,23 @@
       (bar-graph data :x-data x :ymin -0.1 :ymax 20.0 :side-by-side t))))
 
 
+;; Labeling an axis with the text of your choice, add a some text labels into the graph
+
+(defun bar-graph-4 ()
+  (let ((x (my-make-vector 50 #'(lambda(x) (* 0.1 x))))
+	(hype (my-make-vector 50 #'(lambda(x) (* 0.01 x x))))
+	(reality (my-make-vector 4 #'(lambda(x) (+ (sqrt x) 1.0)))))
+    (with-2D-graph (g-dev :x-label "year" :y-label "profits" :title "Company X")
+      (set-axis-format :x :draw-bottom/left :draw-top/right :major-ticks :minor-ticks)
+      (bar-graph reality :ymin 0.0 :ymax 10.0 :colors '(:blue))
+      (x-y-plot x hype :line 2 :color :red)
+      (add-text-label "hype" 2.1 4.9 :delta-x 0.1 :delta-y 0.5)
+      (add-text-label "reality" 3.0 3.0)
+      (text-label-axis (vector "2001" "2002" "2003" "2004") (vector 0.125 0.375 0.625 0.875)
+		       :orientation :perpendicular :offset 2.0))
+    (reset-*options*)))
+
+
 ;; Combining a bar graph and a x-y plot, fill the bars with the color grey
 
 (defun combo-graph-1 ()
@@ -169,3 +186,7 @@
     (with-2D-graph (g-dev)
       (bar-graph y :x-data x :colors '(:grey))
       (x-y-plot x y :line 0 :y-error e))))
+
+
+
+
