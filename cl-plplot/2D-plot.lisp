@@ -115,8 +115,8 @@
 (defun bar-graph-min-max (data side-by-side)
   "Figures out what the maximum value is in the data that the
    user supplied for making a bar-graph"
-  (let ((min (aref data 0 0))
-	(max (aref data 0 0)))
+  (let ((min 0)
+	(max 0))
     (if side-by-side
 	(dotimes (i (array-dimension data 0))
 	  (dotimes (j (array-dimension data 1))
