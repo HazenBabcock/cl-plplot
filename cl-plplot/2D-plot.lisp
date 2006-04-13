@@ -28,7 +28,7 @@
 ;;;; window at a time with no way to switch between graphing windows. This is reflected
 ;;;; here where you have to finish your current plot before you can start the next one.
 ;;;;
-;;;; hazen 3/06
+;;;; hazen 4/06
 ;;;;
 
 (in-package #:cl-user)
@@ -43,6 +43,8 @@
 	   #:set-foreground-color
 	   #:set-axis-ticks
 	   #:set-axis-format
+	   #:add-text-label
+	   #:text-label-axis
 	   #:x-y-plot
 	   #:bar-graph
 	   #:get-cursor
@@ -285,6 +287,52 @@
       (if (equal axis :x)
 	  (setf (options-xopt *options*) opt-string)
 	  (setf (options-yopt *options*) opt-string)))))
+
+(defun add-text-label (text x-pos y-pos &key (delta-x 1.0) (delta-y 0.0) (just 0.5) (fontsize 1.0))
+  "Draws text onto the graph.
+   This shouldn't be called until at least one plot has been created.
+   Arguments:
+     text is the string to draw.
+     x-pos is the x location of the text in graph coordinates.
+     y-pos is the y location of the text in graph coordinates.
+     delta-x & delta-y specify the slope of the text (the text will be drawn along a line
+        between (x-pos, y-pos) and (x-pos + delta-x & y-pos + delta-y).
+     fontsize specifies the size of the text."
+  (set-color 1 (options-foreground-color *options*))
+  (plschr 0 fontsize)
+  (plptex x-pos y-pos delta-x delta-y just text))
+
+(defun text-label-axis (axis-labels positions &key (side :bottom) (orientation :parallel) (fontsize 1.0) (offset 1.0))
+  "Labels an axis with a user supplied array of strings & string locations.
+   This shouldn't be called until at least one plot has been created.
+   Arguments:
+     axis-labels is a array of strings.
+     positions in a array of positions. These should range from 0.0 to 1.0.
+     side specifies which side of the graph to put the text on, legal values are
+        :left :right :top :bottom.
+    orientation specifies the orientation of the text relative to the axis.
+    fontsize specifies the size of the text.
+    offset specifies the distance from the axis at which to draw the text."
+  (set-color 1 (options-foreground-color *options*))
+  (plschr 0 fontsize)
+  (let ((opt-string (cond
+		      ((equal side :left) "l")
+		      ((equal side :right) "r")
+		      ((equal side :top) "t")
+		      ((equal side :bottom) "b"))))
+    (when (equal orientation :perpendicular)
+      (setf opt-string (concatenate 'string opt-string "v")))
+    (dotimes (i (length axis-labels))
+      (plmtex opt-string offset (aref positions i) 0.5 (aref axis-labels i)))))
+
+;  (let* ((len-labels (length axis-labels))
+;	 (delta (/ 1.0 (1+ len-labels)))
+;	 (start delta))
+
+;    (incf start delta)))
+
+;    (plmtex "b" (/ 3.0 x-fontsize) 0.5 0.5 x-label)
+;  (plmtex 
 
 (let ((currently-plotting nil)
       (initialized-plot nil))
