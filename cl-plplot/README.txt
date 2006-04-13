@@ -2,7 +2,7 @@
 ; The Common Lisp / CFFI based interface to the PLplot Scientific Plotting 
 ; Library.
 ;
-; hazen 3/06
+; hazen 4/06
 ;
 
 This is in fact two packages, one is a "low-level" package (cl-plplot-system) 
@@ -43,10 +43,10 @@ running any really long processes whose results you want to plot.
 cl-plot:
 This is currently 1 file.
 1) 2D-plot.lisp is the high level interface to plplot. In its current form
-	it only makes it easy to make 2D plots. The long term goal is to
-	expand this is to cover other types of plots that people might
-	typically make. This will probably done on a as requested / needed by
-	me basis, so let me know what you are interested in.
+	it only makes it easy to make 2D plots and bar graphs. The long term 
+	goal is to expand this is to cover other types of plots that people 
+	might typically make. This will probably done on a as requested / 
+	needed by me basis, so let me know what you are interested in.
 
 The file 2D-plot-examples.lisp contains some examples of how to use the
 functions and macros in 2D-plot.lisp.
