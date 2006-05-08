@@ -8,9 +8,10 @@
 This is in fact two packages, one is a "low-level" package (cl-plplot-system) 
 that contains the interface to the large and hairy plplot API, and the other is
 a (hopefully) easy to use front end (cl-plplot). It was written and tested
-with CFFI-0.9.0 and SBCL-0.9.9. It should all be Common Lisp & ASDF installable
-but I'm a little new to these things so mistakes may have been made.
-
+with CFFI-0.9.0 and SBCL-0.9.9 on OS-X 10.4. I have also verified that it works
+on debian (2.6.15) with CFFI-0.9.1 and SBCL-0.9.12. It should all be Common
+Lisp & ASDF installable, but I'm a little new to these things so mistakes may 
+have been made.
 
 cl-plplot-system: 
 This is currently 4 files.
