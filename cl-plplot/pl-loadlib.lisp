@@ -36,9 +36,11 @@
 
 (defun load-libraries ()
   (define-foreign-library libplplot
+    (:unix "/usr/local/lib/libplplotd.so")
     (t (:default "libplplotd")))
   (use-foreign-library libplplot)
   (define-foreign-library libc
+    (:unix "libc.so.6")
     (t (:default "libc")))
   (use-foreign-library libc)
   (format t "libplplotd & libc libraries loaded~%"))
