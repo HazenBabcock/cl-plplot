@@ -23,7 +23,7 @@
 ;;;;
 ;;;; cl-plplot system declaration
 ;;;;
-;;;; hazen 3/06
+;;;; hazen 6/06
 ;;;;
 
 (in-package #:cl-user)
@@ -37,12 +37,27 @@
 (defsystem #:cl-plplot
   :name "cl-plplot"
   :author "Hazen Babcock <hbabcockos1@mac.com>"
-  :version "0.1.0"
+  :version "0.2.0"
   :licence "MIT"
   :description "Interface to the PLplot Scientific Plotting Library"
-  :components ((:file "pl-loadlib")
-               (:file "pl-defcfun" :depends-on ("pl-loadlib"))
-               (:file "pl-misc" :depends-on ("pl-defcfun"))
-               (:file "pl-api" :depends-on ("pl-misc"))
-               (:file "2D-plot" :depends-on ("pl-api")))
+  :components 
+  ((:module
+    :src/system
+    :components ((:file "loadlib")
+                 (:file "defcfun" :depends-on ("loadlib"))
+                 (:file "misc" :depends-on ("defcfun"))
+                 (:file "api" :depends-on ("misc"))))
+   (:module
+    :src/window 
+    :components ((:file "package")
+                 (:file "utility-functions" :depends-on ("package"))
+    		 (:file "macros" :depends-on ("package"))
+		 (:file "classes" :depends-on ("macros"))
+		 (:file "text-item" :depends-on ("classes"))
+		 (:file "text-label" :depends-on ("text-item"))
+		 (:file "axis-label" :depends-on ("text-item"))
+		 (:file "axis" :depends-on ("axis-label"))
+		 (:file "x-y-plot" :depends-on ("classes"))
+		 (:file "window" :depends-on ("x-y-plot" "axis")))
+    :depends-on (:src/system)))
   :depends-on (:cffi))
