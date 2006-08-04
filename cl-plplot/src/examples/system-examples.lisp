@@ -65,13 +65,6 @@
       (setf (aref clevels i) (+ min (/ (* (- max min) (+ 0.5 i)) levels))))
     clevels))
 
-(defun codes-to-string (&rest codes)
-  (let ((string (make-array (length codes) :element-type 'character)))
-    (dotimes (i (length codes))
-      (setf (char string i) (code-char (elt codes i))))
-    string))
-
-
 ;;; Examples
 
 ;; A 2D plot
@@ -160,7 +153,13 @@
   (plsurf3d (make-levels 40 -1.5 1.5) (make-levels 40 -1.5 1.5) (example-matrix 40 40 #'example-func-2) 0 (make-levels 2 -1 1))
   (plend))
 
-;; Unicode labels, a nice feature of plplot (strings are utf8 encoded).
+;; Unicode labels, a nice feature of plplot.
+;;
+;; The escape sequence #[..] tells plplot to expect a unicode character
+;; code point. You can also pass in a utf-8 encoded string, but depending
+;; on how your lisp deals with the arrays of type 'character this may
+;; or may not work.
+;;
 ;; YMMV depending on the capabilities of the driver itself and of the 
 ;; fonts that are available to the driver.
 
@@ -171,5 +170,5 @@
   (plvpor 0 1 0 1)
   (plwind 0 1 0 1)
   (plschr 0 4)
-  (plptex 0.5 0.5 1.0 0.0 0.5 (codes-to-string 72 97 115 195 174 116 195 174))
+  (plptex 0.5 0.5 1.0 0.0 0.5 "Has#[238]t#[238]")
   (plend))
