@@ -139,7 +139,7 @@
 	(unless y-max (setf y-max temp-y-max))))
     (values x-min x-max y-min y-max)))
 
-(defun render-window (a-window device filename size-x size-y)
+(defun render-window (a-window device filename size-x size-y &optional want-mouse?)
   "This handles drawing the window & optionally returns the coordinates of a mouse click."
   ;; setup window
   (plsdev device)
@@ -148,30 +148,36 @@
   (plspage 0 0 size-x size-y 0 0)
   (plscmap0n 16)
   (plinit)
-  (set-background-color (background-color a-window))
-  (set-foreground-color (foreground-color a-window))
-  (pladv 0)
-  (plvpor (viewport-x-min a-window) (viewport-x-max a-window) (viewport-y-min a-window) (viewport-y-max a-window))
-  (multiple-value-bind (x-min x-max y-min y-max) (get-axis-ranges a-window)
-    (plwind x-min x-max y-min y-max))
-  (plwid (window-line-width a-window))
-  (plschr 0 (window-font-size a-window))
-  (plbox (get-axis-properties (x-axis a-window)) (major-tick-interval (x-axis a-window)) (minor-tick-number (x-axis a-window))
-	 (get-axis-properties (y-axis a-window)) (major-tick-interval (y-axis a-window)) (minor-tick-number (y-axis a-window)))
-  ;; title & axis labels
-  (render-axis-label (title a-window))
-  (render-axis-labels (x-axis a-window))
-  (render-axis-labels (y-axis a-window))
-  ;; render plots
-  (when (plots a-window)
-    (let ((default-symbol 0))
-      (dolist (a-plot (plots a-window))
-	(render-plot a-plot default-symbol)
-	(incf default-symbol))))
-  ;; text labels
-  (when (text-labels a-window)
-    (dolist (a-text-label (text-labels a-window))
-      (render-text-label a-text-label))))
+  (unwind-protect
+       (progn
+	 (set-background-color (background-color a-window))
+	 (set-foreground-color (foreground-color a-window))
+	 (pladv 0)
+	 (plvpor (viewport-x-min a-window) (viewport-x-max a-window) (viewport-y-min a-window) (viewport-y-max a-window))
+	 (multiple-value-bind (x-min x-max y-min y-max) (get-axis-ranges a-window)
+	   (plwind x-min x-max y-min y-max))
+	 (plwid (window-line-width a-window))
+	 (plschr 0 (window-font-size a-window))
+	 (plbox (get-axis-properties (x-axis a-window)) (major-tick-interval (x-axis a-window)) (minor-tick-number (x-axis a-window))
+		(get-axis-properties (y-axis a-window)) (major-tick-interval (y-axis a-window)) (minor-tick-number (y-axis a-window)))
+	 ;; title & axis labels
+	 (render-axis-label (title a-window))
+	 (render-axis-labels (x-axis a-window))
+	 (render-axis-labels (y-axis a-window))
+	 ;; render plots
+	 (when (plots a-window)
+	   (let ((default-symbol 0))
+	     (dolist (a-plot (plots a-window))
+	       (render-plot a-plot default-symbol)
+	       (incf default-symbol))))
+	 ;; text labels
+	 (when (text-labels a-window)
+	   (dolist (a-text-label (text-labels a-window))
+	     (render-text-label a-text-label)))
+	 ;; get mouse if requested
+	 (when want-mouse?
+	   (plgetcursor)))
+    (plend)))
 
 (defgeneric get-cursor (window device &key size-x size-y))
 
@@ -179,10 +185,9 @@
   "Get the location (in window coordinates) of the next mouse click. In
    order to do this the window must first be rendered so that the user has
    something to click on."
-  (render-window a-window device nil size-x size-y)
-  (let ((mouse (plgetcursor)))
-    (plend)
-    (values (elt mouse 8) (elt mouse 9))))
+  (let ((mouse (render-window a-window device nil size-x size-y t)))
+    (when mouse
+      (values (elt mouse 8) (elt mouse 9)))))
 
 (defgeneric render (window device &key filename size-x size-y))
 
@@ -192,5 +197,4 @@
     filename: where to save the graph for file based devices.
     size-x: the size of the window in x (pixels).
     size-y: the size of the window in y (pixels)."
-  (render-window a-window device filename size-x size-y)
-  (plend))
+  (render-window a-window device filename size-x size-y))
