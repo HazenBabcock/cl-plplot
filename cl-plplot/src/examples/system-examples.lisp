@@ -27,11 +27,11 @@
 ;;;;
 
 
-(defpackage :pl-examples
+(defpackage :system-examples
   (:use :common-lisp
 	:cl-plplot-system))
 
-(in-package :pl-examples)
+(in-package :system-examples)
 
 (defparameter gdev "aqt")  ; set this to the appropriate plplot device for your system
 
