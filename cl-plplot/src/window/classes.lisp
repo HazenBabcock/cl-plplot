@@ -27,6 +27,9 @@
 
 (in-package #:cl-plplot)
 
+(def-plplot-class color-table ()
+  (color-map))
+
 (def-plplot-class text-item ()
   (the-text
    (text-color *foreground-color*)
@@ -83,6 +86,7 @@
    (viewport-y-min 0.1)
    (viewport-y-max 0.9)
    plots
-   text-labels))
+   text-labels
+   color-table))
 
 

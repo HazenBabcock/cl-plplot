@@ -28,9 +28,8 @@
 (in-package #:cl-plplot)
 
 (new-object-defun window (&key x-axis y-axis title (window-line-width 1.0) (window-font-size *font-size*) 
-			       (foreground-color *foreground-color*) (background-color *background-color*)
 			       (viewport-x-min 0.1) (viewport-x-max 0.9) (viewport-y-min 0.1) (viewport-y-max 0.9) 
-			       plots text-labels)
+			       plots text-labels color-table)
   "new-window, creates and returns a new window object
     x-axis is a object of type axis.
     y-axis is a object of type axis.
@@ -38,8 +37,6 @@
     window-line-width is a floating point number specifying the pen width to use
       when drawing the border & the tick marks.
     window-font-size is the font size to use for the tick mark labels.
-    foreground-color is the color to use when drawing the border & etc.
-    background-color is the background color of the window.
     viewport-x-min (0.0 - 1.0) is the location of the left side of the border in the device window.
     viewport-x-max (0.0 - 1.0) is the location of the right side of the border.
     viewport-y-min (0.0 - 1.0) is the location of the bottom side of the border.
@@ -47,22 +44,21 @@
     plots is a list of plot objects.
     text-labels is a list of text-label objects.")
 
-(def-edit-method window (x-axis y-axis title window-line-width window-font-size foreground-color background-color
-				viewport-x-min viewport-x-max viewport-y-min viewport-y-max plots text-labels)
+(def-edit-method window (x-axis y-axis title window-line-width window-font-size viewport-x-min 
+				viewport-x-max viewport-y-min viewport-y-max plots text-labels color-table)
   "edit-window, edits a window object.
     Set x-axis to a new object of type axis with :x-axis.
     Set y-axis to a new object of type axis with :y-axis.
     Set title to a new object of type axis-label with :title.
     Set the pen width for drawing the border with :window-line-width.
     Set the font size for the tick labels with :window-font-size.
-    Set the color of the border & etc. with :foreground-color.
-    Set the color of the background with :background-color.
     Set the location of the left border with :viewport-x-min.
     Set the location of the right border with :viewport-x-max.
     Set the location of the bottom border with :viewport-y-min.
     Set the location of the top border with :viewport-y-max.
     Set :plots to a list of plot objects to change the plots associated with a window.
-    Set :text-labels to a list of text-label objects to change the text-labels associated with a window.")
+    Set :text-labels to a list of text-label objects to change the text-labels associated with a window.
+    Set :color-table to a new color table object to change the colors of a plot.")
 
 (def-add-remove-methods window plots plot)
   ;Creates methods add-plot-to-window & remove-plot-from-window.
@@ -73,18 +69,24 @@
 (defun basic-window (&key (x-label "x-axis") (y-label "y-axis") (title "cl-plplot") 
 		   (background-color *background-color*) (foreground-color *foreground-color*))
   "Creates a basic window object with ready-to-go axises."
-  (let ((title (new-axis-label (new-text-item title :font-size 1.5 :text-color foreground-color) :top 1.5))
+  (let ((a-color-table (default-color-table))
+	(title (new-axis-label (new-text-item title :font-size 1.5 :text-color foreground-color) :top 1.5))
 	(x-axis (new-axis :axis-labels (list
 					(new-axis-label
 					 (new-text-item x-label :font-size 1.3 :text-color foreground-color) :bottom 2.5))))
 	(y-axis (new-axis :axis-labels (list
 					(new-axis-label
 					 (new-text-item y-label :font-size 1.3 :text-color foreground-color) :left 3.0)))))
+    (labels ((handle-color (a-color index)
+	       (if (vectorp a-color)
+		   (update-color a-color-table index a-color)
+		   (swap-colors a-color-table a-color index))))
+      (handle-color background-color 0)
+      (handle-color foreground-color 1))
     (new-window :x-axis x-axis
 		:y-axis y-axis
 		:title title
-		:background-color background-color
-		:foreground-color foreground-color)))
+		:color-table a-color-table)))
 
 (defgeneric edit-window-axis (window which-axis &key axis-min axis-max major-tick-interval minor-tick-number properties))
 
@@ -146,12 +148,16 @@
   (when filename
     (plsfile filename))
   (plspage 0 0 size-x size-y 0 0)
-  (plscmap0n 16)
+  ;; color table initialization
+  (let ((a-color-table (color-table a-window)))
+    (if a-color-table
+	(setf *current-color-table* a-color-table)
+	(setf *current-color-table* (default-color-table))))
+  (initialize-color-table *current-color-table*)
+  ;; start plotting
   (plinit)
   (unwind-protect
        (progn
-	 (set-background-color (background-color a-window))
-	 (set-foreground-color (foreground-color a-window))
 	 (pladv 0)
 	 (plvpor (viewport-x-min a-window) (viewport-x-max a-window) (viewport-y-min a-window) (viewport-y-max a-window))
 	 (multiple-value-bind (x-min x-max y-min y-max) (get-axis-ranges a-window)

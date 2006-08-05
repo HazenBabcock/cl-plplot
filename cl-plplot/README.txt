@@ -25,7 +25,8 @@ This is currently 10 files (src/window).
 8) utility-functions.lisp is a collection of low-level functions.
 9) window.lisp handles the window object.
 10) x-y-plot.lisp handles the x-y-plot object.
-
+11) color-table.lisp handles color.
+ 
 This is still a work in progress so some things may be changed, particularly
 regarding the interface that has been provided to manipulate objects of 
 these various classes.

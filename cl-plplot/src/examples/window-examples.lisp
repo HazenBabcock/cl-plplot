@@ -79,13 +79,16 @@
 
 
 ;; Here we change the background and foreground colors & the x axis ticks & the 
-;; y axis format and the x axis font size.
+;; y axis format and the x axis font size. Note that we attach a symbol to
+;; foreground color so that we can refer to it later if we want to and that
+;; this color replaces the color at position 1 in the default color table,
+;; which is :white in this example. (see color-table.lisp & window.lisp).
 
 (defun basic-plot-3 ()
   (let* ((x (my-make-vector 40 #'(lambda(x) (* 0.1 x))))
 	 (y (my-make-vector 40 #'(lambda(x) (* (* 0.1 x) (* 0.1 x)))))
-	 (p1 (new-x-y-plot x y :color (vector 0 255 0)))
-	 (w (basic-window :title "" :foreground-color (vector 255 0 0) :background-color :black)))
+	 (p1 (new-x-y-plot x y :color :my-color))
+	 (w (basic-window :title "" :foreground-color (vector 255 100 50 :my-color) :background-color :black)))
     (edit-window-axis w :x :major-tick-interval 0.5 :minor-tick-number 10
 		      :properties '(:draw-bottom/left :major-tick-grid :invert-ticks :major-tick-labels-above/right :major-ticks :minor-ticks))
     (add-plot-to-window w p1)

@@ -55,12 +55,6 @@
 	(setf (aref max-err i) (coerce (+ (aref vec i) err) 'double-float))))
     (values min-err max-err)))
 
-; Am I using this?
-;
-;(defun find-last-type (a-list a-type)
-;  "Findes the last object of a particular type in a list."
-;  (find-if #'(lambda (x) (equal (type-of x) a-type)) a-list :from-end t))
-
 (defun make-index-vector (vector-length)
   "Creates a vector of numbers 1,2,..,vector-length."
   (let ((index-vector (make-array vector-length :initial-element 0.0 :element-type 'float)))
@@ -74,48 +68,4 @@
   (and (>= val min)
        (<= val max)))
 
-(defun set-background-color (color)
-  "Sets the background color."
-  (set-color 0 color))
-
-(defun set-color (which color)
-  "Sets the current drawing color."
-  (labels ((do-set-color (color-vec)
-	     (plscol0 which (aref color-vec 0) (aref color-vec 1) (aref color-vec 2))
-	     (plcol0 which)))
-    (cond
-      ((and color (symbolp color)) 
-       (do-set-color (symbol-to-color color)))
-      ((and color (vectorp color) (= 3 (length color))) 
-       (do-set-color color))
-      (t (set-color (if (= which 0)
-			*background-color*
-			*foreground-color*))))))
-
-(defun set-foreground-color (color)
-  "Sets the foreground color."
-  (set-color 1 color))
-
-(defun symbol-to-color (symbol)
-  "Translates symbol into a color."
-  (cond
-    ((equal symbol :black) (vector 0 0 0))
-    ((equal symbol :red) (vector 240 50 50))
-    ((equal symbol :yellow) (vector 255 255 0))
-    ((equal symbol :green) (vector 0 255 0))
-    ((equal symbol :aquamarine) (vector 127 255 212))
-    ((equal symbol :pink) (vector 255 192 203))
-    ((equal symbol :wheat) (vector 245 222 179))
-    ((equal symbol :grey) (vector 190 190 190))
-    ((equal symbol :brown) (vector 165 42 42))
-    ((equal symbol :blue) (vector 0 0 255))
-    ((equal symbol :blue-violet) (vector 138 43 226))
-    ((equal symbol :cyan) (vector 0 255 255))
-    ((equal symbol :turquoise) (vector 64 224 208))
-    ((equal symbol :magenta) (vector 255 0 255))
-    ((equal symbol :salmon) (vector 250 128 114))
-    ((equal symbol :white) (vector 255 255 255))
-    (t (progn
-	 (format t "Unrecognized color: ~A~%" symbol)
-	 (vector 0 0 0)))))
 

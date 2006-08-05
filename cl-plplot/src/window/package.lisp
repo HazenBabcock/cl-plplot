@@ -35,6 +35,7 @@
 	   #:add-text-label-to-window
 	   #:backspace
 	   #:basic-window
+	   #:default-color-table
 	   #:edit-axis
 	   #:edit-axis-label
 	   #:edit-text-item
@@ -48,6 +49,7 @@
 	   #:italic-font
 	   #:new-axis
 	   #:new-axis-label
+	   #:new-color-table
 	   #:new-text-item
 	   #:new-text-label
 	   #:new-window
@@ -61,10 +63,12 @@
 	   #:render
 	   #:roman-font
 	   #:script-font
+	   #:set-color-table
 	   #:subscript
 	   #:superscript
 	   #:underline
-	   #:unicode-char))
+	   #:unicode-char
+	   #:update-color))
 	   
 
 (in-package #:cl-plplot)
