@@ -146,7 +146,7 @@
   ;; setup window
   (plsdev device)
   (when filename
-    (plsfile filename))
+    (plsfnam filename))
   (plspage 0 0 size-x size-y 0 0)
   ;; color table initialization
   (let ((a-color-table (color-table a-window)))
