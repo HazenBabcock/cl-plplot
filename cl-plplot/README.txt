@@ -14,7 +14,7 @@ Lisp & ASDF installable, but I'm a little new to these things so mistakes may
 have been made.
 
 cl-plplot:
-This is currently 10 files (src/window).
+This is currently 11 files (src/window).
 1) axis-label.lisp handles the axis-label object.
 2) axis.lisp handles the axis object.
 3) classes.lisp specifies all the cl-plplot classes.
