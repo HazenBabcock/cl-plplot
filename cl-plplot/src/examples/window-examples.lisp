@@ -79,16 +79,13 @@
 
 
 ;; Here we change the background and foreground colors & the x axis ticks & the 
-;; y axis format and the x axis font size. Note that we attach a symbol to
-;; foreground color so that we can refer to it later if we want to and that
-;; this color replaces the color at position 1 in the default color table,
-;; which is :white in this example. (see color-table.lisp & window.lisp).
+;; y axis format and the x axis font size.
 
 (defun basic-plot-3 ()
   (let* ((x (my-make-vector 40 #'(lambda(x) (* 0.1 x))))
 	 (y (my-make-vector 40 #'(lambda(x) (* (* 0.1 x) (* 0.1 x)))))
-	 (p1 (new-x-y-plot x y :color :my-color))
-	 (w (basic-window :title "" :foreground-color (vector 255 100 50 :my-color) :background-color :black)))
+	 (p1 (new-x-y-plot x y :color :blue))
+	 (w (basic-window :title "" :foreground-color :red :background-color :black)))
     (edit-window-axis w :x :major-tick-interval 0.5 :minor-tick-number 10
 		      :properties '(:draw-bottom/left :major-tick-grid :invert-ticks :major-tick-labels-above/right :major-ticks :minor-ticks))
     (add-plot-to-window w p1)
@@ -154,3 +151,27 @@
 	 (w (basic-window)))
     (add-plot-to-window w p)
     (render w g-dev)))
+
+
+;; Here we make our own color table with 2-3 colors, set window to use our new 
+;; color table instead of the default & then change the foreground color in 
+;; the color table.
+;;
+;; See also: src/window/color-table.lisp for a brief introduction of color handling.
+
+(defun basic-plot-8 ()
+  (let* ((c (new-color-table (vector 0 0 0 :color1)))
+	 (x (my-make-vector 40 #'(lambda(x) (* 0.1 x))))
+	 (y (my-make-vector 40 #'(lambda(x) (* (* 0.1 x) (* 0.1 x)))))
+	 (p (new-x-y-plot x y))
+	 (w (basic-window)))
+    (add-plot-to-window w p)
+    (add-color-to-color-table c (vector 255 0 0 :color2))
+    (set-color-table w c)
+    (render w g-dev)
+    (add-color-to-color-table c (vector 255 255 255 :color3))
+    (edit-x-y-plot p :color :color2)
+    (change-foreground-color c :color1)
+    (change-background-color c :color3)
+    (render w g-dev)
+    (remove-color-from-color-table c :color2)))

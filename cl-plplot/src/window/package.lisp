@@ -31,10 +31,13 @@
   (:use #:common-lisp
 	#:cl-plplot-system)
   (:export #:add-axis-label-to-axis
+	   #:add-color-to-color-table
 	   #:add-plot-to-window
 	   #:add-text-label-to-window
 	   #:backspace
 	   #:basic-window
+	   #:change-background-color
+	   #:change-foreground-color
 	   #:default-color-table
 	   #:edit-axis
 	   #:edit-axis-label
@@ -58,6 +61,7 @@
 	   #:number-symbol
 	   #:overline
 	   #:remove-axis-label-from-axis
+	   #:remove-color-from-color-table
 	   #:remove-plot-from-window
 	   #:remove-text-label-from-window
 	   #:render

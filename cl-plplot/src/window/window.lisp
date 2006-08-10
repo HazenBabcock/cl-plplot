@@ -42,7 +42,8 @@
     viewport-y-min (0.0 - 1.0) is the location of the bottom side of the border.
     viewport-y-max (0.0 - 1.0) is the location of the top side of the border.
     plots is a list of plot objects.
-    text-labels is a list of text-label objects.")
+    text-labels is a list of text-label objects.
+    color-table specifies what color table to use.")
 
 (def-edit-method window (x-axis y-axis title window-line-width window-font-size viewport-x-min 
 				viewport-x-max viewport-y-min viewport-y-max plots text-labels color-table)
@@ -68,7 +69,8 @@
 
 (defun basic-window (&key (x-label "x-axis") (y-label "y-axis") (title "cl-plplot") 
 		   (background-color *background-color*) (foreground-color *foreground-color*))
-  "Creates a basic window object with ready-to-go axises."
+  "Creates a basic window object with ready-to-go axises. background-color and
+   foreground-color must be symbols in the default color table."
   (let ((a-color-table (default-color-table))
 	(title (new-axis-label (new-text-item title :font-size 1.5 :text-color foreground-color) :top 1.5))
 	(x-axis (new-axis :axis-labels (list
@@ -77,12 +79,8 @@
 	(y-axis (new-axis :axis-labels (list
 					(new-axis-label
 					 (new-text-item y-label :font-size 1.3 :text-color foreground-color) :left 3.0)))))
-    (labels ((handle-color (a-color index)
-	       (if (vectorp a-color)
-		   (update-color a-color-table index a-color)
-		   (swap-colors a-color-table a-color index))))
-      (handle-color background-color 0)
-      (handle-color foreground-color 1))
+    (change-background-color a-color-table background-color)
+    (change-foreground-color a-color-table foreground-color)
     (new-window :x-axis x-axis
 		:y-axis y-axis
 		:title title

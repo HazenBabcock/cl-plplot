@@ -1,21 +1,37 @@
 ;;;;
 ;;;; Functions that are most closely related to the color class.
 ;;;;
-;;;; To be compatible with most of the plplot device drivers we limit
-;;;; ourselves to a user defined 16 color color-map. Note that color
+;;;; To be compatible with most of the plplot device drivers you
+;;;; should probably limit yourself to 16 colors. Note that color
 ;;;; index 0 is always the background color and that the default
 ;;;; foreground color has index 1.
 ;;;;
-;;;; hazen 6/06
+;;;; Each entry in the color map is a vector of #(r g b :symbol),
+;;;; where :symbol is your handle to the color for later use
+;;;; during actual plotting. Referring tp the default color table 
+;;;; as an example, the first color, designated :white, will be
+;;;; the background color and the second color, designated
+;;;; :black, will be the color that the plot rectangle, ticks
+;;;; marks & etc are drawn in (ambiguously referred to as
+;;;; the foreground color.)
+;;;;
+;;;; hazen 8/06
 ;;;;
 
 (in-package #:cl-plplot)
 
-(defun new-color-table (rgb-colors)
+
+;; external
+
+(defun new-color-table (&optional rgb-colors)
   "Creates a new color table instance from a vector of rgb triples,
-   which also possibly includes a symbol to refer to the color by.
+   which also includes a symbol to refer to the color by.
    For example: #((0 0 0 :black) (128 128 128 :grey) (255 255 255 :white))."
-  (make-instance 'color-table :color-map rgb-colors))
+  (make-instance 'color-table 
+		 :color-map (when (vectorp rgb-colors)
+			      (if (vectorp (aref rgb-colors 0))
+				  rgb-colors
+				  (vector rgb-colors)))))
 
 (defun default-color-table ()
   "Returns the default color table."
@@ -36,44 +52,75 @@
 			   #(255 0 255 :magenta)
 			   #(250 128 114 :salmon))))
 
-(defgeneric update-color (a-color-table color-specifier new-color))
+(defgeneric update-color (a-color-table color-symbol new-color))
 
-(defmethod update-color ((a-color-table color-table) color-specifier new-color)
-  "Changes the color specified by color-specified to new-color, which
-   should be one of: (r g b) or (r g b symbol). If you specify the color
-   to change using a symbol then the symbol associated with the color
-   will not be changed."
-  (if (numberp color-specifier)
-      (setf (aref (color-map a-color-table) color-specifier) new-color)
-      (let ((color-index (find-a-color a-color-table color-specifier)))
-	(if color-index
-	    (let ((color-to-change (aref (color-map a-color-table) color-index)))
-	      (setf (aref color-to-change 0) (aref new-color 0))
-	      (setf (aref color-to-change 1) (aref new-color 1))
-	      (setf (aref color-to-change 2) (aref new-color 2)))
-	    (format t "Color ~A was not found!" new-color)))))
+(defmethod update-color ((a-color-table color-table) color-symbol new-color)
+  "Changes the color specified by color-symbol to new-color, which
+   should be a rgb triple in the form  #(r g b)."
+  (let ((color-index (find-a-color a-color-table color-symbol)))
+    (when color-index
+      (let ((color-to-change (aref (color-map a-color-table) color-index)))
+	(setf (aref color-to-change 0) (aref new-color 0))
+	(setf (aref color-to-change 1) (aref new-color 1))
+	(setf (aref color-to-change 2) (aref new-color 2))))))
 
 (defgeneric set-color-table (a-window a-color-table))
 
 (defmethod set-color-table ((a-window window) (a-color-table color-table))
-  "Sets the color table associated with a-windoe to a-color-table.
+  "Sets the color table associated with a-window to a-color-table.
    Returns the old color table."
   (let ((old-color-table (color-table a-window)))
     (setf (color-table a-window) a-color-table)
     old-color-table))
 
-(defgeneric swap-colors (a-color-table color new-index))
+(defgeneric add-color-to-color-table (a-color-table new-color))
 
-(defmethod swap-colors ((a-color-table color-table) color new-index)
-  "Swaps the positions of color and the color at new-index in the color table. 
-   This is useful when the user wants to change the default foreground
-   and background colors to some other color in the color table."
+(defmethod add-color-to-color-table ((a-color-table color-table) new-color)
+  "Adds a new color #(r g b :smybol) to the end of a color table."
   (let* ((a-color-map (color-map a-color-table))
-	 (old-index (find-a-color a-color-table color))
-	 (color-vec1 (copy-seq (aref a-color-map old-index)))
-	 (color-vec2 (copy-seq (aref a-color-map new-index))))
-    (setf (aref a-color-map old-index) color-vec2)
-    (setf (aref a-color-map new-index) color-vec1)))
+	 (color-map-length (length a-color-map))
+	 (new-color-map (make-array (1+ color-map-length))))
+    (dotimes (i color-map-length)
+      (setf (aref new-color-map i) (aref a-color-map i)))
+    (setf (aref new-color-map color-map-length) new-color)
+    (setf (color-map a-color-table) new-color-map)))
+
+(defgeneric remove-color-from-color-table (a-color-table &optional new-color))
+
+(defmethod remove-color-from-color-table ((a-color-table color-table) &optional color-to-remove)
+  "Removes color-to-remove, if specified, or the last color if not."
+  (let ((a-color-map (color-map a-color-table)))
+    (setf a-color-map
+	  (if color-to-remove
+	      (remove-if #'(lambda (x) (equal color-to-remove (aref x 3))) a-color-map)
+	      (butlast a-color-map)))))
+      
+(defgeneric change-background-color (a-color-table color-symbol))
+
+(defmethod change-background-color ((a-color-table color-table) color-symbol)
+  "Changes the current background color to that specified by color-symbol."
+  (swap-colors a-color-table color-symbol (aref (aref (color-map a-color-table) 0) 3)))
+  
+(defgeneric change-foreground-color (a-color-table color-symbol))
+
+(defmethod change-foreground-color ((a-color-table color-table) color-symbol)
+  "Changes the current foreground color to that specified by color-symbol."
+  (swap-colors a-color-table color-symbol (aref (aref (color-map a-color-table) 1) 3)))
+
+;; internal
+
+(defgeneric swap-colors (a-color-table color1 color2))
+
+(defmethod swap-colors ((a-color-table color-table) color1 color2)
+  "Swaps the position of color1 and color2 in the color table.
+   If one of the colors does not exist then nothing happens."
+  (let* ((a-color-map (color-map a-color-table))
+	 (index1 (find-a-color a-color-table color1))
+	 (index2 (find-a-color a-color-table color2))
+	 (color-vec1 (copy-seq (aref a-color-map index1)))
+	 (color-vec2 (copy-seq (aref a-color-map index2))))
+    (setf (aref a-color-map index1) color-vec2)
+    (setf (aref a-color-map index2) color-vec1)))
 
 (defun find-a-color (a-color-table color-specifier)
   "Returns the index of the specified color in the color table or
@@ -91,11 +138,21 @@
 (defmethod initialize-color-table ((a-color-table color-table))
   "Initializes the color table in plot and sets it to match
    our local version of the color table."
-  (plscmap0n 16)
   (let ((a-color-map (color-map a-color-table)))
+    (plscmap0n (length a-color-map))
     (dotimes (i (length a-color-map))
       (let ((a-color (aref a-color-map i)))
 	(plscol0 i (aref a-color 0) (aref a-color 1) (aref a-color 2))))))
+
+(defgeneric get-background-color (a-color-table))
+
+(defmethod get-background-color ((a-color-table color-table))
+  (aref (aref (color-map a-color-table) 0) 3))
+
+(defgeneric get-foreground-color (a-color-table))
+
+(defmethod get-foreground-color ((a-color-table color-table))
+  (aref (aref (color-map a-color-table) 1) 3))
 
 (defun set-background-color ()
   "Switches the pen to the background color."
@@ -110,12 +167,10 @@
 
 (defun set-foreground-color (color)
   "Switches the pen to the desired foreground color."
-  (if (numberp color)
-      (plcol0 0)
-      (let ((color-index (find-a-color *current-color-table* color)))
-	(if color-index
-	    (plcol0 color-index)
-	    (plcol0 1)))))
+  (let ((color-index (find-a-color *current-color-table* color)))
+    (if color-index
+	(plcol0 color-index)
+	(plcol0 1))))
 
 ;;;;
 ;;;; Copyright (c) 2006 Hazen P. Babcock
