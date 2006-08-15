@@ -10,7 +10,7 @@
 (new-object-defun text-item (the-text &key (text-color *foreground-color*) (text-justification 0.5) (font-size *font-size*))
   "new-text-item, Creates and returns a new text item.
     text is a string specifying the text.
-    text-color is a symbol or RGB triple specifying the text color.
+    text-color is a symbol specifying the text color.
     text-justification specifies how to center the string relative to its reference
        point. 0.0 - 1.0, where 0.5 means the string is centered.
     font-size sets the fontsize relative to the default font size.")
@@ -18,7 +18,7 @@
 (def-edit-method text-item (the-text text-color text-justification font-size)
   "edit-text-item, Edits a text-item object.
     Set the text with :text.
-    Set the color of the text with :text-color (symbol or RGB triple).
+    Set the color of the text with :text-color symbol.
     Set the justification with :text-justification (0.0 = left justified, 1.0 = right justified).
     Set the font-size with :font-size (relative to the default size).")
 

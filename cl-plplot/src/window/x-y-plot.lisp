@@ -40,8 +40,8 @@
     symbol-type should be set to a number (that specifies a symbol) if you want specific
        types of symbols, otherwise default symbol types are used.
     color is the color to use when plotting the lines and symbols, it should be a symbol
-       that specifies a default color (see symbol-to-color) or a RGB triple (0-255). If it
-       is not specified the current foreground color will be used.
+       that specifies a color in the current color table. If it is not specified then the 
+       current foreground color will be used.
     x-error should be a vector of the same length as x that contains the size of the error
        bars in x.
     y-error is for error bars in y."
@@ -67,7 +67,7 @@
     Set the line style with :line-style (integer between 1 and 8).
     Set the symbol size with :symbol-size (1.0 is the defaul size, 0.0 means no symbols).
     Set the symbol type with :symbol-type (integer or nil to use the default types).
-    Set the color with :color (symbol or RGB triple).")
+    Set the color with :color symbol.")
 
 (defgeneric plot-min-max (plot))
 
