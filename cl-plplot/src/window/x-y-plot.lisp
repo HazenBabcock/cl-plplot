@@ -27,6 +27,34 @@
 
 (in-package #:cl-plplot)
 
+(defun x-y-plot-check-lengths (x y x-error y-error)
+  "Checks that the arrays we have been given are appropriately defined."
+  (let ((y-length (length y)))
+    (when (and x (not (= y-length (length x))))
+      (format t "y & x do not have the same number of elements! (~A /= ~A)~%"
+	      y-length (length x))
+      (return-from x-y-plot-check-lengths nil))
+    (when (and x-error (not (= y-length (length x-error))))
+      (format t "y & x-error do not have the same number of elements! (~A /= ~A)~%"
+	      y-length (length x-error))
+      (return-from x-y-plot-check-lengths nil))
+    (when (and y-error (not (= y-length (length y-error))))
+      (format t "y & y-error do not have the same number of elements! (~A /= ~A)~%"
+	      y-length (length y-error))
+      (return-from x-y-plot-check-lengths nil))
+    t))
+
+(defun error-bar (vec error)
+  "Creates error bar vectors from vec to pass to plplot"
+  (let* ((len (length vec))
+	 (min-err (make-array len :element-type 'double-float))
+	 (max-err (make-array len :element-type 'double-float)))
+    (dotimes (i (length vec))
+      (let ((err (* 0.5 (aref error i))))
+	(setf (aref min-err i) (coerce (- (aref vec i) err) 'double-float))
+	(setf (aref max-err i) (coerce (+ (aref vec i) err) 'double-float))))
+    (values min-err max-err)))
+
 (defun new-x-y-plot (x y &key (copy t) (line-width 1) (line-style 1) (symbol-size 0.0) symbol-type (color *foreground-color*) x-error y-error)
    "Creates a new x-y plot.
     If x is nil then y will be plotted against its index.
@@ -45,21 +73,17 @@
     x-error should be a vector of the same length as x that contains the size of the error
        bars in x.
     y-error is for error bars in y."
-   (when (check-lengths x y x-error y-error)
-     (labels ((copy-if-copy (vector)
-		(if copy
-		    (copy-seq vector)
-		    vector)))
-       (make-instance 'x-y-plot
-		      :data-x (copy-if-copy (if x x (make-index-vector y)))
-		      :data-y (copy-if-copy y)
-		      :line-width line-width
-		      :line-style line-style
-		      :symbol-size symbol-size
-		      :symbol-type symbol-type
-		      :color color
-		      :x-error (copy-if-copy x-error)
-		      :y-error (copy-if-copy y-error)))))
+   (when (x-y-plot-check-lengths x y x-error y-error)
+     (make-instance 'x-y-plot
+		    :data-x (copy-vector (if x x (make-index-vector (length y))) copy)
+		    :data-y (copy-vector y copy)
+		    :line-width line-width
+		    :line-style line-style
+		    :symbol-size symbol-size
+		    :symbol-type symbol-type
+		    :color color
+		    :x-error (copy-vector x-error copy)
+		    :y-error (copy-vector y-error copy))))
 
 (def-edit-method x-y-plot (line-width line-style symbol-size symbol-type color)
   "edit-x-y-plot, Edits the visual properties of a plot

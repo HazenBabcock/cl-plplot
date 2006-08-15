@@ -28,33 +28,6 @@
 
 (in-package #:cl-plplot)
 
-; should this throw an error?
-
-(defun check-lengths (x y x-error y-error)
-  "Checks that the arrays we have been given are appropriately defined."
-  (let ((y-length (length y)))
-    (when (and x (not (= y-length (length x))))
-      (format t "y & x do not have the same number of elements!~%")
-      (return-from check-lengths nil))
-    (when (and x-error (not (= y-length (length x-error))))
-      (format t "y & x-error do not have the same number of elements!~%")
-      (return-from check-lengths nil))
-    (when (and y-error (not (= y-length (length y-error))))
-      (format t "y & y-error do not have the same number of elements!~%")
-      (return-from check-lengths nil))
-    t))
-
-(defun error-bar (vec error)
-  "Creates error bar vectors from vec to pass to plplot"
-  (let* ((len (length vec))
-	 (min-err (make-array len :element-type 'double-float))
-	 (max-err (make-array len :element-type 'double-float)))
-    (dotimes (i (length vec))
-      (let ((err (* 0.5 (aref error i))))
-	(setf (aref min-err i) (coerce (- (aref vec i) err) 'double-float))
-	(setf (aref max-err i) (coerce (+ (aref vec i) err) 'double-float))))
-    (values min-err max-err)))
-
 (defun make-index-vector (vector-length)
   "Creates a vector of numbers 1,2,..,vector-length."
   (let ((index-vector (make-array vector-length :initial-element 0.0 :element-type 'float)))
@@ -68,4 +41,9 @@
   (and (>= val min)
        (<= val max)))
 
+(defun copy-vector (vector copy?)
+  "If desired, makes a copy of a vector."
+  (if copy?
+      (copy-seq vector)
+      vector))
 
