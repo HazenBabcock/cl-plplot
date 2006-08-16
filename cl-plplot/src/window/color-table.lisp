@@ -128,8 +128,7 @@
   (let ((a-color-map (color-map a-color-table)))
     (dotimes (i (length a-color-map))
       (let ((a-color (aref a-color-map i)))
-	(when (and (> (length a-color) 3)
-		   (equal color-specifier (aref a-color 3)))
+	(when (equal color-specifier (aref a-color 3))
 	  (return-from find-a-color i))))
     nil))
 
@@ -171,6 +170,14 @@
     (if color-index
 	(plcol0 color-index)
 	(plcol0 1))))
+
+(defun set-color-by-index (index)
+  "Switches the pen to color currently at index. The background color
+   is ignored & colors wrap when the index is off the end of the color table."
+  (let ((color-table-length (- (length (color-map *current-color-table*)) 2)))
+    (if (> index color-table-length)
+	(set-color-by-index (- index color-table-length))
+	(plcol0 (1+ index)))))
 
 ;;;;
 ;;;; Copyright (c) 2006 Hazen P. Babcock
