@@ -71,7 +71,13 @@
    x-error
    y-error))
 
-(def-plplot-class bar-graph (plot))
+(def-plplot-class bar-graph (plot)
+  (data-x
+   data-array
+   bar-widths
+   side-by-side
+   colors
+   filled))
 
 (def-plplot-class window ()
   (x-axis
