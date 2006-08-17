@@ -31,7 +31,7 @@
   "Returns the number of dimesions in an array."
   (length (array-dimensions array)))
 
-(defun bar-graph-check-dims (x data bar-widths colors)
+(defun bar-graph-check-dims (x data bar-widths line-colors fill-colors)
   (labels ((check-len (arr arr-name)
 	     (when (and arr
 			(not (= (length arr) (array-dimension data 0))))
@@ -42,10 +42,11 @@
 	       (return-from bar-graph-check-dims nil))))
     (check-len x "x")
     (check-len bar-widths "bar-widths")
-    (check-len colors "colors"))
+    (check-len line-colors "line-colors")
+    (check-len fill-colors "fill-colors"))
   t)
 
-(defun new-bar-graph (x data &key bar-widths side-by-side colors (filled t) (copy t))
+(defun new-bar-graph (x data &key bar-widths side-by-side line-colors fill-colors line-width (filled t) (copy t))
   "Creates a new bar-graph plot object.
    X is an array of size (n) specifying the centers of the bars with x[i] < x[i+1]. 
       If x is nil then data will be plotted against its index.
@@ -54,21 +55,27 @@
       of each bar. Defaults are chosen if this is not specified.
    Side-by-side is t or nil. It specifies whether to draw the bars on
       top of each other or next to each other.
-   Colors should be an array of symbols of size (m) specifying colors
+   Line-colors should be an array of symbols of size (m) specifying colors
       in the current color table.
+   Fill-colors should be an array of symbols of size (m) specifying what
+      color to use when filling in the bars.
+   Line-width is a number specifying how wide of a line to draw around
+      the bar.
    Filled specifies whether or not the bars are filled.
    If copy is true, then copies are made of x, data and widths, otherwise
       references are kept to the original vectors."
-  (when (bar-graph-check-dims x data bar-widths colors)
+  (when (bar-graph-check-dims x data bar-widths line-colors fill-colors)
     (make-instance 'bar-graph
 		   :data-x (copy-vector (if x x (make-index-vector (array-dimension data 0))) copy)
 		   :data (copy-vector data copy)
 		   :bar-widths (copy-vector bar-widths copy)
 		   :side-by-side side-by-side
-		   :colors colors
+		   :line-colors line-colors
+		   :fill-colors fill-colors
+		   :line-width line-width
 		   :filled filled)))
 
-(def-edit-method bar-graph (side-by-side colors filled)
+(def-edit-method bar-graph (side-by-side line-colors fill-colors line-width filled)
   "edit-bar-graph, Edits the visual properties of a bar-graph.
     Set whether the bars are plotted side-by-side or on top of each other with side-by-side.
     Set the colors of the bars with colors.
@@ -82,7 +89,7 @@
 	(x-max)
 	(y-min 0)
 	(y-max 0))
-    (if (data-widths a-bar-graph)
+    (if (bar-widths a-bar-graph)
 	(progn
 	  (setf x-min (- (aref (data-x a-bar-graph) 0) (* 0.6 (aref (bar-widths a-bar-graph) 0))))
 	  (setf x-max (+ (aref (data-x a-bar-graph) x-len) (* 0.6 (aref (bar-widths a-bar-graph) x-len)))))
@@ -147,16 +154,52 @@
 	(data (data-array a-bar-graph))
 	(bar-widths (if (bar-widths a-bar-graph)
 			(bar-widths a-bar-graph)
-			(default-bar-widths a-bar-graph))))
-    (if (= (number-of-dimensions (data-array a-bar-graph)) 1)
-	(progn
-	  (if (colors a-bar-graph)
-	      (set-foreground-color (aref (colors a-bar-graph) 0))
-	      (set-foregronnd-color nil))
-	  (dotimes (i (length-data-x))
-	    (let ((half-width (* 0.5 (aref bar-widths i))))
-	      (
-
-	(let ((
-	(if (side-by-side a-bar-graph)
-	    (let ((
+			(default-bar-widths a-bar-graph)))
+	(line-colors (line-colors a-bar-graph))
+	(fill-colors (fill-colors a-bar-graph)))
+    (labels ((color-handler (colors color-index)
+	       (if colors
+		   (set-foreground-color (aref (colors a-bar-graph) color-index))
+		   (set-color-by-index color-index)))
+	     (coords-to-vectors (center width top bottom)
+	       (let* ((half-width (* 0.5 width))
+		      (left (- center half-width))
+		      (right (+ center half-width)))
+		 (values (vector left left right right left)
+			 (vector bottom top top bottom bottom))))
+	     (draw-box (center width top bottom color-index)
+	       (multiple-value-bind (x y) (coords-to-vectors center width top bottom)
+		 (color-handler fill-colors color-index)
+		 (plfill x y)
+		 (color-handler line-colors color-index)
+		 (plwid (line-width a-bar-graph))
+		 (plline x y))))
+      (if (= (number-of-dimensions (data-array a-bar-graph)) 1)
+	  (dotimes (i (length data-x))
+	    (draw-box (aref data-x i)
+		      (aref bar-widths i)
+		      0.0
+		      (aref data i)
+		      0))
+	  (if (side-by-side a-bar-graph)
+	      (let ((number-bars (array-dimension data 1)))
+		(dotimes (i (length data-x))
+		  (let* ((bar-width (aref bar-widths i))
+			 (real-width (* 1.11 bar-width))
+			 (start-x (- (aref data-x i) (* 0.5 real-width number-bars))))
+		    (dotimes (j number-bars)
+		      (draw-box start-x
+				bar-width
+				0.0
+				(aref data i j)
+				j)
+		      (incf start-x real-width)))))
+	      (dotimes (i (length data-x))
+		(let ((start-y 0.0))
+		  (dotimes (j (array-dimension data 1))
+		    (draw-box (aref data-x i)
+			      (aref bar-widths i)
+			      start-y
+			      (+ start-y (aref data i j))
+			      j)
+		    (incf start-y (aref data i j))))))))))

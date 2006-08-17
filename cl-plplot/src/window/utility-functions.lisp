@@ -28,9 +28,13 @@
 
 (in-package #:cl-plplot)
 
+(defun make-float-vector (vector-length)
+  "Returns an array of floating point numbers."
+  (make-array vector-length :initial-element 0.0 :element-type 'float))
+
 (defun make-index-vector (vector-length)
   "Creates a vector of numbers 1,2,..,vector-length."
-  (let ((index-vector (make-array vector-length :initial-element 0.0 :element-type 'float)))
+  (let ((index-vector (make-float-vector vector-length)))
     (dotimes (i vector-length)
       (setf (aref index-vector i) (1+ i)))
     index-vector))

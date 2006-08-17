@@ -76,7 +76,9 @@
    data-array
    bar-widths
    side-by-side
-   colors
+   line-colors
+   fill-colors
+   line-width
    filled))
 
 (def-plplot-class window ()
