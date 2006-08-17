@@ -59,6 +59,7 @@
 		 (:file "axis-label" :depends-on ("text-item"))
 		 (:file "axis" :depends-on ("axis-label"))
 		 (:file "x-y-plot" :depends-on ("classes"))
+		 (:file "bar-graph" :depends-on ("classes"))
 		 (:file "window" :depends-on ("x-y-plot" "axis" "color-table")))
     :depends-on (:src/system)))
   :depends-on (:cffi))

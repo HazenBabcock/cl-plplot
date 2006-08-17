@@ -175,3 +175,45 @@
     (change-background-color c :color3)
     (render w g-dev)
     (remove-color-from-color-table c :color2)))
+
+
+;; Here we make a simple bar graph
+
+(defun bar-graph-1 ()
+  (let* ((y (my-make-vector 10 #'(lambda(x) (* (* 0.2 x) (* 0.2 x)))))
+	 (b (new-bar-graph nil y :fill-colors (vector :grey)))
+	 (w (basic-window)))
+    (add-plot-to-window w b)
+    (render w g-dev)))
+
+
+;; Stacked bar graph
+
+(defun bar-graph-2 ()
+  (let* ((y (my-make-bar-graph-data 10 3))
+	 (b (new-bar-graph nil y :line-colors (vector :black :black :black)))
+	 (w (basic-window)))
+    (add-plot-to-window w b)
+    (render w g-dev)))
+
+
+;; A Side by side bar graph
+
+(defun bar-graph-3 ()
+  (let* ((y (my-make-bar-graph-data 10 3))
+	 (b (new-bar-graph nil y :side-by-side t :line-colors (vector :black :black :black)))
+	 (w (basic-window)))
+    (add-plot-to-window w b)
+    (render w g-dev)))
+
+
+;; Bar graph with custom spacing & widths
+
+(defun bar-graph-4 ()
+  (let* ((x (my-make-vector 10 #'(lambda(x) (* 0.1 x))))
+	 (y (my-make-vector 10 #'(lambda(x) (- (* (* 0.2 x) (* 0.2 x)) 1))))
+	 (s (my-make-vector 10 #'(lambda(x) (+ 0.05 (* 0.005 x)))))
+	 (b (new-bar-graph x y :bar-widths s :fill-colors (vector :grey)))
+	 (w (basic-window)))
+    (add-plot-to-window w b)
+    (render w g-dev)))

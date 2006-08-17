@@ -27,26 +27,26 @@
 
 (in-package #:cl-plplot)
 
-(defun number-of-dimensions (array)
-  "Returns the number of dimesions in an array."
-  (length (array-dimensions array)))
-
 (defun bar-graph-check-dims (x data bar-widths line-colors fill-colors)
-  (labels ((check-len (arr arr-name)
-	     (when (and arr
-			(not (= (length arr) (array-dimension data 0))))
+  (labels ((check-len (data-len array1 array1-name)
+	     (when (and array1
+			(not (= (length array1) data-len)))
 	       (format t "~A and data are not the same size! (~A != ~A)~%"
-		       arr-name
-		       (length arr)
-		       (array-dimension data 0))
+		       array1-name
+		       (length array1)
+		       data-len)
 	       (return-from bar-graph-check-dims nil))))
-    (check-len x "x")
-    (check-len bar-widths "bar-widths")
-    (check-len line-colors "line-colors")
-    (check-len fill-colors "fill-colors"))
+    (let ((data-len (array-dimension data 0))
+	  (data-width (if (= (number-of-dimensions data) 2)
+			  (array-dimension data 1)
+			  1)))
+      (check-len data-len x "x")
+      (check-len data-len bar-widths "bar-widths")
+      (check-len data-width line-colors "line-colors")
+      (check-len data-width fill-colors "fill-colors")))
   t)
 
-(defun new-bar-graph (x data &key bar-widths side-by-side line-colors fill-colors line-width (filled t) (copy t))
+(defun new-bar-graph (x data &key bar-widths side-by-side line-colors fill-colors (line-width 1.0) (filled t) (copy t))
   "Creates a new bar-graph plot object.
    X is an array of size (n) specifying the centers of the bars with x[i] < x[i+1]. 
       If x is nil then data will be plotted against its index.
@@ -67,7 +67,7 @@
   (when (bar-graph-check-dims x data bar-widths line-colors fill-colors)
     (make-instance 'bar-graph
 		   :data-x (copy-vector (if x x (make-index-vector (array-dimension data 0))) copy)
-		   :data (copy-vector data copy)
+		   :data-array (copy-matrix data copy)
 		   :bar-widths (copy-vector bar-widths copy)
 		   :side-by-side side-by-side
 		   :line-colors line-colors
@@ -126,7 +126,7 @@
 	(t
 	 (progn (decf y-min diff)
 		(incf y-max diff)))))
-    (values x-min x-max y-min y-max)))
+    (vector x-min x-max y-min y-max)))
 
 (defmethod default-bar-widths ((a-bar-graph bar-graph))
   "Calculates default bar widths when these are not specified by the user."
@@ -159,7 +159,7 @@
 	(fill-colors (fill-colors a-bar-graph)))
     (labels ((color-handler (colors color-index)
 	       (if colors
-		   (set-foreground-color (aref (colors a-bar-graph) color-index))
+		   (set-foreground-color (aref colors color-index))
 		   (set-color-by-index color-index)))
 	     (coords-to-vectors (center width top bottom)
 	       (let* ((half-width (* 0.5 width))

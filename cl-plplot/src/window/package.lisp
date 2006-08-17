@@ -41,6 +41,7 @@
 	   #:default-color-table
 	   #:edit-axis
 	   #:edit-axis-label
+	   #:edit-bar-graph
 	   #:edit-text-item
 	   #:edit-text-label
 	   #:edit-window
@@ -52,6 +53,7 @@
 	   #:italic-font
 	   #:new-axis
 	   #:new-axis-label
+	   #:new-bar-graph
 	   #:new-color-table
 	   #:new-text-item
 	   #:new-text-label

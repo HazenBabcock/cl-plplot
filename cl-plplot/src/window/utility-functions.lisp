@@ -39,6 +39,10 @@
       (setf (aref index-vector i) (1+ i)))
     index-vector))
 
+(defun number-of-dimensions (array)
+  "Returns the number of dimesions in an array."
+  (length (array-dimensions array)))
+
 ; warning re. out of range value?
 (defun range-check (val min max)
   "Returns true if val is between min and max (inclusive)."
@@ -50,4 +54,19 @@
   (if copy?
       (copy-seq vector)
       vector))
+
+(defun copy-matrix (matrix copy?)
+  "If desired, makes a copy of a matrix."
+  (if (= (number-of-dimensions matrix) 1)
+      (copy-vector matrix copy?)
+      (if copy?
+	  (let ((new-matrix (make-array (list (array-dimension matrix 0)
+					      (array-dimension matrix 1))
+					:initial-element 0.0
+					:element-type 'float)))
+	    (dotimes (i (array-dimension matrix 0))
+	      (dotimes (j (array-dimension matrix 1))
+		(setf (aref new-matrix i j) (aref matrix i j))))
+	    new-matrix)
+	  matrix)))
 
