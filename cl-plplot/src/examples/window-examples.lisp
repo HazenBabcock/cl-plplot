@@ -217,3 +217,14 @@
 	 (w (basic-window)))
     (add-plot-to-window w b)
     (render w g-dev)))
+
+
+;; A side by side bar graph with custom widths
+
+(defun bar-graph-5 ()
+  (let* ((y (my-make-bar-graph-data 10 3))
+	 (s (my-make-vector 10 #'(lambda(x) (+ 0.1 (* 0.05 (sqrt x))))))
+	 (b (new-bar-graph nil y :bar-widths s :side-by-side t :line-colors (vector :black :black :black)))
+	 (w (basic-window)))
+    (add-plot-to-window w b)
+    (render w g-dev)))

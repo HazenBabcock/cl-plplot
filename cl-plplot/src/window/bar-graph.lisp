@@ -90,9 +90,15 @@
 	(y-min 0)
 	(y-max 0))
     (if (bar-widths a-bar-graph)
-	(progn
-	  (setf x-min (- (aref (data-x a-bar-graph) 0) (* 0.6 (aref (bar-widths a-bar-graph) 0))))
-	  (setf x-max (+ (aref (data-x a-bar-graph) x-len) (* 0.6 (aref (bar-widths a-bar-graph) x-len)))))
+	(let ((x-factor (if (side-by-side a-bar-graph)
+			    (if (> (number-of-dimensions data) 1)
+				(array-dimension data 1)
+				1)
+			    1)))
+	  (setf x-min (- (aref (data-x a-bar-graph) 0) 
+			 (* 0.6 (aref (bar-widths a-bar-graph) 0) x-factor)))
+	  (setf x-max (+ (aref (data-x a-bar-graph) x-len) 
+			 (* 0.6 (aref (bar-widths a-bar-graph) x-len) x-factor))))
 	(progn
 	  (setf x-min (- (aref (data-x a-bar-graph) 0) 
 			 (* 0.6 (- (aref (data-x a-bar-graph) 1) (aref (data-x a-bar-graph) 0)))))
@@ -186,7 +192,9 @@
 		(dotimes (i (length data-x))
 		  (let* ((bar-width (aref bar-widths i))
 			 (real-width (* 1.11 bar-width))
-			 (start-x (- (aref data-x i) (* 0.5 real-width number-bars))))
+			 (start-x (- (aref data-x i) 
+				     (- (* 0.5 real-width number-bars)
+					(* 0.5 real-width)))))
 		    (dotimes (j number-bars)
 		      (draw-box start-x
 				bar-width
