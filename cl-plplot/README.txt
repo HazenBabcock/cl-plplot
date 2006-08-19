@@ -2,7 +2,7 @@
 ; The Common Lisp / CFFI based interface to the PLplot Scientific Plotting 
 ; Library.
 ;
-; hazen 4/06
+; hazen 8/06
 ;
 
 This is in fact two packages, one is a "low-level" package (cl-plplot-system) 
@@ -14,18 +14,20 @@ Lisp & ASDF installable, but I'm a little new to these things so mistakes may
 have been made.
 
 cl-plplot:
-This is currently 11 files (src/window).
+This is currently 13 files (in src/window).
 1) axis-label.lisp handles the axis-label object.
 2) axis.lisp handles the axis object.
-3) classes.lisp specifies all the cl-plplot classes.
-4) macros.lisp contains the important macros.
-5) package.lisp defines the package & the global variables.
-6) text-item.lisp handles the text-item object.
-7) text-label.lisp handles the text-label object.
-8) utility-functions.lisp is a collection of low-level functions.
-9) window.lisp handles the window object.
-10) x-y-plot.lisp handles the x-y-plot object.
-11) color-table.lisp handles color.
+3) bar-graph.lisp handles the bar-graph object.
+4) classes.lisp specifies all the cl-plplot classes.
+5) color-table.lisp handles color.
+6) macros.lisp contains the important macros.
+7) package.lisp defines the package & the global variables.
+8) text-item.lisp handles the text-item object.
+9) text-label.lisp handles the text-label object.
+10) utility-functions.lisp is a collection of low-level functions.
+11) window.lisp handles the window object.
+12) x-y-plot.lisp handles the x-y-plot object.
+13) color-table.lisp handles color.
  
 This is still a work in progress so some things may be changed, particularly
 regarding the interface that has been provided to manipulate objects of 
