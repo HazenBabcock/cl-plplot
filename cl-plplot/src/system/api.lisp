@@ -40,6 +40,12 @@
 	    (lexp plint)
 	    (sigdig plint))
 
+(pl-defcfun ("c_pl_setcontlabelparam" pl-setcontlabelparam) :void
+	    (offset plflt)
+	    (size plflt)
+	    (spacing plflt)
+	    (active plint))
+
 (pl-defcfun ("c_pladv" pladv) :void 
 	    (page plint))
 
