@@ -28,7 +28,8 @@
 (in-package #:cl-plplot)
 
 (def-plplot-class color-table ()
-  (color-map))
+  (color-map
+   extended-color-map))
 
 (def-plplot-class text-item ()
   (the-text
@@ -79,7 +80,18 @@
    line-colors
    fill-colors
    line-width
-   filled))
+   Filled))
+
+(def-plplot-class contour-plot (plot)
+  (data
+   line-width
+   fill-type
+   contour-levels
+   contour-labels
+   data-x-min
+   data-x-max
+   data-y-min
+   data-y-max))
 
 (def-plplot-class window ()
   (x-axis
