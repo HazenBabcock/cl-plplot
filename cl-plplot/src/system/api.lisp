@@ -135,6 +135,41 @@
 (pl-defcfun ("c_plcol1" plcol1) :void 
 	    (col1 plflt))
 
+
+;;
+;; Coming on this a couple months later I had a pretty hard time figuring
+;; out what I was trying to do in the first place, so here I attempt a
+;; better explanation.
+;;
+;; In the case of 2D gridded data, as you might have for a contour or
+;; surface plot, plplot allows you do one of four things to specify
+;; how to map that data to world (i.e. plot coordinates).
+;;
+;; (1) Nothing, meaning matrix element (0,0) goes to coordinate (0,0).
+;;      This is done with the plplot function pltr0.
+;; (2) Map to a grid defined by a vector in x and a vector in y
+;;     (0,0) -> (x(0), y(0)), handled by the function pltr1.
+;; (3) Map to a grid defined my a matrix in x and y.
+;;     (0,0) -> (x(0,0), y(0,0)), handled by the function pltr2.
+;; (4) Completely arbitrary. This is implemented here by passing the 
+;;     data contained in gridx through C to a callback function that 
+;;     you specify "on the other side". Since the "other side" is back
+;;     where you started, i.e. in Lisp, you also have the option of 
+;;     using in your callback function anything that it is accessible
+;;     to it in the current Lisp environment.
+;;
+;; The functions pltr0, pltr1 & pltr2, along with the relevant callback
+;; closure, pltr-fn, are defined towards the end of this file.
+;;
+;; The macro callback-closure creates a closure containing the callback
+;; function as well as getter, setter and query functions for
+;; changing and querying the current callback function.
+;;
+;; If you want to use your own callback function it *must* take the
+;; same arguments as the default function(s) for the particular callback
+;; closure.
+;;
+
 (defun plcont (f kx lx ky ly clevel &optional (gridx nil) (gridy nil))
   (with-plcgrid (gridx gridy (array-dimension f 0) (array-dimension f 1))
     (pl-plcont f kx lx ky ly clevel plcgrid)))
@@ -707,7 +742,7 @@
 
 (defun plshade (a left right bottom top shade-min shade-max sh-cmap sh-color sh-width min-color min-width max-color max-width rectangular &optional (gridx nil) (gridy nil))
   (with-plcgrid (gridx gridy (array-dimension a 0) (array-dimension a 1))
-    (pl-plshade a left right bottom top shade-min shade-max sh-cmap sh-color sh-width min-color min-width max-color max-width  rectangular plcgrid)))
+    (pl-plshade a left right bottom top shade-min shade-max sh-cmap sh-color sh-width min-color min-width max-color max-width rectangular plcgrid)))
 
 (export 'plshade (package-name *package*))
 
