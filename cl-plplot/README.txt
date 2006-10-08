@@ -2,7 +2,7 @@
 ; The Common Lisp / CFFI based interface to the PLplot Scientific Plotting 
 ; Library.
 ;
-; hazen 8/06
+; hazen 10/06
 ;
 
 This is in fact two packages, one is a "low-level" package (cl-plplot-system) 
@@ -10,28 +10,30 @@ that contains the interface to the large and hairy plplot API, and the other is
 a (hopefully) easy to use front end (cl-plplot). It was written and tested
 with CFFI-0.9.0 and SBCL-0.9.9 on OS-X 10.4. I have also verified that it works
 on debian (2.6.15) with CFFI-0.9.1 and SBCL-0.9.12. It should all be Common
-Lisp & ASDF installable, but I'm a little new to these things so mistakes may 
-have been made.
+Lisp & ASDF installable, but let me know if you find otherwise.
 
 cl-plplot:
-This is currently 13 files (in src/window).
+This is currently 15 files (in src/window).
 1) axis-label.lisp handles the axis-label object.
 2) axis.lisp handles the axis object.
 3) bar-graph.lisp handles the bar-graph object.
 4) classes.lisp specifies all the cl-plplot classes.
-5) color-table.lisp handles color.
-6) macros.lisp contains the important macros.
-7) package.lisp defines the package & the global variables.
-8) text-item.lisp handles the text-item object.
-9) text-label.lisp handles the text-label object.
-10) utility-functions.lisp is a collection of low-level functions.
-11) window.lisp handles the window object.
-12) x-y-plot.lisp handles the x-y-plot object.
-13) color-table.lisp handles color.
+5) color-table.lisp handles plplot cmap0 color.
+6) contour-plot.lisp handles the contour-plot object.
+7) extended-color-table.lisp handles plplot cmap1 color.
+8) macros.lisp contains the important macros.
+9) package.lisp defines the package & the global variables.
+10) plot.lisp defines the plot object as well as providing an interface whereby
+     the user can define their own custom plot objects.
+11) text-item.lisp handles the text-item object.
+12) text-label.lisp handles the text-label object.
+13) utility-functions.lisp is a collection of low-level functions.
+14) window.lisp handles the window object.
+15) x-y-plot.lisp handles the x-y-plot object.
  
-This is still a work in progress so some things may be changed, particularly
-regarding the interface that has been provided to manipulate objects of 
-these various classes.
+Things should be fairly stable now and the interface should not change much
+going forward.
+
 
 The file src/examples/window-examples.lisp contains examples of how to use 
 cl-plplot to generate different 2D plots. The file classes.txt tries to
