@@ -189,11 +189,11 @@
     (set-color-table w c)
     (render w g-dev)
     (add-color-to-color-table c (vector 255 255 255 :color3))
-    (edit-x-y-plot p :color :color2)
-    (change-foreground-color c :color1)
-    (change-background-color c :color3)
+    (edit-x-y-plot p :color :color3)
+    (edit-window w :foreground-color :color1 :background-color :color2)
     (render w g-dev)
-    (remove-color-from-color-table c :color2)))
+    (remove-color-from-color-table c :color2)
+    nil))
 
 
 ;;; Bar graphs

@@ -36,8 +36,6 @@
 	   #:add-text-label-to-window
 	   #:backspace
 	   #:basic-window
-	   #:change-background-color
-	   #:change-foreground-color
 	   #:default-color-table
 	   #:edit-axis
 	   #:edit-axis-label

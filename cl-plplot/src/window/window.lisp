@@ -28,12 +28,15 @@
 (in-package #:cl-plplot)
 
 (new-object-defun window (&key x-axis y-axis title (window-line-width 1.0) (window-font-size *font-size*) 
+			       (foreground-color *foreground-color*) (background-color *background-color*)
 			       (viewport-x-min 0.1) (viewport-x-max 0.9) (viewport-y-min 0.1) (viewport-y-max 0.9) 
 			       plots text-labels color-table)
   "new-window, creates and returns a new window object
     x-axis is a object of type axis.
     y-axis is a object of type axis.
     title is a object of type axis-label.
+    foreground-color is a color symbol in the current color table.
+    background-color is a color symbol in the curretn color table.
     window-line-width is a floating point number specifying the pen width to use
       when drawing the border & the tick marks.
     window-font-size is the font size to use for the tick mark labels.
@@ -45,12 +48,14 @@
     text-labels is a list of text-label objects.
     color-table specifies what color table to use.")
 
-(def-edit-method window (x-axis y-axis title window-line-width window-font-size viewport-x-min 
-				viewport-x-max viewport-y-min viewport-y-max plots text-labels color-table)
+(def-edit-method window (x-axis y-axis title foreground-color background-color window-line-width window-font-size 
+				viewport-x-min viewport-x-max viewport-y-min viewport-y-max plots text-labels color-table)
   "edit-window, edits a window object.
     Set x-axis to a new object of type axis with :x-axis.
     Set y-axis to a new object of type axis with :y-axis.
     Set title to a new object of type axis-label with :title.
+    Set the foreground color with :foreground-color.
+    Set the background color with :background-color.
     Set the pen width for drawing the border with :window-line-width.
     Set the font size for the tick labels with :window-font-size.
     Set the location of the left border with :viewport-x-min.
@@ -69,8 +74,7 @@
 
 (defun basic-window (&key (x-label "x-axis") (y-label "y-axis") (title "cl-plplot") 
 		   (background-color *background-color*) (foreground-color *foreground-color*))
-  "Creates a basic window object with ready-to-go axises. background-color and
-   foreground-color must be symbols in the default color table."
+  "Creates a basic window object with ready-to-go axises."
   (let ((a-color-table (default-color-table))
 	(title (new-axis-label (new-text-item title :font-size 1.5 :text-color foreground-color) :top 1.5))
 	(x-axis (new-axis :axis-labels (list
@@ -79,11 +83,11 @@
 	(y-axis (new-axis :axis-labels (list
 					(new-axis-label
 					 (new-text-item y-label :font-size 1.3 :text-color foreground-color) :left 3.0)))))
-    (change-background-color a-color-table background-color)
-    (change-foreground-color a-color-table foreground-color)
     (new-window :x-axis x-axis
 		:y-axis y-axis
 		:title title
+		:foreground-color foreground-color
+		:background-color background-color
 		:color-table a-color-table)))
 
 (defgeneric edit-window-axis (window which-axis &key axis-min axis-max major-tick-interval minor-tick-number properties))
@@ -151,7 +155,7 @@
     (if a-color-table
 	(setf *current-color-table* a-color-table)
 	(setf *current-color-table* (default-color-table))))
-  (initialize-color-table *current-color-table*)
+  (initialize-color-table *current-color-table* (foreground-color a-window) (background-color a-window))
   ;; start plotting
   (plinit)
   (unwind-protect

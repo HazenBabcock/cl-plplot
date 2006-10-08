@@ -8,7 +8,7 @@
 ;;;;
 ;;;; Each entry in the color map is a vector of #(r g b :symbol),
 ;;;; where :symbol is your handle to the color for later use
-;;;; during actual plotting. Referring tp the default color table 
+;;;; during actual plotting. Referring to the default color table 
 ;;;; as an example, the first color, designated :white, will be
 ;;;; the background color and the second color, designated
 ;;;; :black, will be the color that the plot rectangle, ticks
@@ -114,13 +114,14 @@
 (defmethod swap-colors ((a-color-table color-table) color1 color2)
   "Swaps the position of color1 and color2 in the color table.
    If one of the colors does not exist then nothing happens."
-  (let* ((a-color-map (color-map a-color-table))
-	 (index1 (find-a-color a-color-table color1))
-	 (index2 (find-a-color a-color-table color2))
-	 (color-vec1 (copy-seq (aref a-color-map index1)))
-	 (color-vec2 (copy-seq (aref a-color-map index2))))
-    (setf (aref a-color-map index1) color-vec2)
-    (setf (aref a-color-map index2) color-vec1)))
+  (let ((a-color-map (color-map a-color-table))
+	(index1 (find-a-color a-color-table color1))
+	(index2 (find-a-color a-color-table color2)))
+    (when (and index1 index2)
+      (let ((color-vec1 (copy-seq (aref a-color-map index1)))
+	    (color-vec2 (copy-seq (aref a-color-map index2))))
+	(setf (aref a-color-map index1) color-vec2)
+	(setf (aref a-color-map index2) color-vec1)))))
 
 (defun find-a-color (a-color-table color-specifier)
   "Returns the index of the specified color in the color table or
@@ -132,11 +133,13 @@
 	  (return-from find-a-color i))))
     nil))
 
-(defgeneric initialize-color-table (a-color-table))
+(defgeneric initialize-color-table (a-color-table foreground-color background-color))
 
-(defmethod initialize-color-table ((a-color-table color-table))
+(defmethod initialize-color-table ((a-color-table color-table) foreground-color background-color)
   "Initializes the color table in plot and sets it to match
    our local version of the color table."
+  (change-background-color a-color-table background-color)
+  (change-foreground-color a-color-table foreground-color)
   (let ((a-color-map (color-map a-color-table)))
     (plscmap0n (length a-color-map))
     (dotimes (i (length a-color-map))
