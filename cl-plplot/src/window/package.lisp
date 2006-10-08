@@ -56,6 +56,7 @@
 	   #:new-bar-graph
 	   #:new-color-table
 	   #:new-contour-plot
+	   #:new-custom-plot-object
 	   #:new-extended-color-table
 	   #:new-text-item
 	   #:new-text-label
@@ -73,6 +74,7 @@
 	   #:script-font
 	   #:send-to-back
 	   #:set-color-table
+	   #:set-foreground-color
 	   #:subscript
 	   #:superscript
 	   #:underline

@@ -338,3 +338,20 @@
     (bring-to-front w p)
     (edit-text-item title :the-text "Right Order?")
     (render w g-dev)))
+
+
+;; Roll your own custom plot type & have it get drawn like any other plot type
+
+(defun custom-plot-type-1 ()
+  (let ((cp (new-custom-plot-object
+	     #'(lambda ()
+		 (vector 0.0 4.0 0.0 4.0))
+	     #'(lambda (plot-number)
+		 (declare (ignore plot-number))
+		 (set-foreground-color :red)
+		 (cl-plplot-system:plfill (vector 1.0 1.2 2.8 3.0)
+					  (vector 1.0 3.0 3.0 1.0)))))
+	(w (basic-window)))
+    (add-plot-to-window w cp)
+    (render w g-dev)))
+
