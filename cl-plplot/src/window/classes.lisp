@@ -62,7 +62,9 @@
    (properties *axis-properties*)
    axis-labels))
 
-(def-plplot-class plot ())
+(def-plplot-class plot ()
+  (min-max-function
+   render-function))
 
 (def-plplot-class x-y-plot (plot)
   (data-x

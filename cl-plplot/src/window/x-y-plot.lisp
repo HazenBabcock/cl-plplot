@@ -93,8 +93,6 @@
     Set the symbol type with :symbol-type (integer or nil to use the default types).
     Set the color with :color symbol.")
 
-(defgeneric plot-min-max (plot))
-
 (defmethod plot-min-max ((a-plot x-y-plot))
   "Returns the minimum and maximum values in a plot as a 4 element vector."
   (let* ((x-data (data-x a-plot))
@@ -114,8 +112,6 @@
 	      (- min-y y-delta) (+ max-y y-delta)))))
 
 ;; draw a plot
-
-(defgeneric render-plot (plot &optional parameters))
 
 (defmethod render-plot ((a-plot x-y-plot) &optional (default-symbol 0))
   "Renders a x-y plot in the current window."
