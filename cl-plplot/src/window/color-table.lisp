@@ -1,6 +1,10 @@
 ;;;;
 ;;;; Functions that are most closely related to the color class.
 ;;;;
+;;;; This color class is used to setup PLplot's color map 0. This
+;;;; color map will contain a few (typically 16) colors that can
+;;;; be referred to by name.
+;;;;
 ;;;; To be compatible with most of the plplot device drivers you
 ;;;; should probably limit yourself to 16 colors. Note that color
 ;;;; index 0 is always the background color and that the default
@@ -94,6 +98,9 @@
 	  (if color-to-remove
 	      (remove-if #'(lambda (x) (equal color-to-remove (aref x 3))) a-color-map)
 	      (butlast a-color-map)))))
+
+
+;; internal
       
 (defgeneric change-background-color (a-color-table color-symbol))
 
@@ -106,8 +113,6 @@
 (defmethod change-foreground-color ((a-color-table color-table) color-symbol)
   "Changes the current foreground color to that specified by color-symbol."
   (swap-colors a-color-table color-symbol (aref (aref (color-map a-color-table) 1) 3)))
-
-;; internal
 
 (defgeneric swap-colors (a-color-table color1 color2))
 
