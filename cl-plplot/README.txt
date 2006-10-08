@@ -61,10 +61,7 @@ should be aware the cl-plplot-system exports lots and lots of symbols
 form "c-pl*" or "pl*", so if you like function names that begin with these 
 characters then watch out! 
 
-You should use caution when using the plplot library as some of its functions
-have the nasty habit of calling exit() when they get the wrong arguments. This
-behavior is really hard to trap & will typically result in your Lisp process
-also exiting. It is a good idea to test your plotting function first before
-running any really long processes whose results you want to plot.
-
+A callback has been added that should trap PLplot when it tries to call exit()
+and instead cause a Lisp side error to be thrown. If you find that you find a
+PLplot error that is not trapped by this callback please let me know.
 

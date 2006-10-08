@@ -176,7 +176,7 @@
 
 (export 'plcont (package-name *package*))
 
-(pl-defcfun ("c_plcont" pl-plcont) :void 
+(pl-defcfun ("c_plcont" pl-plcont) :void
 	    (f **plflt (nx ny))
 	    (nx plint)
 	    (ny plint)
@@ -1153,8 +1153,8 @@
 
 
 ;; These would enable callbacks to user defined functions at various key points in
-;; the graphing process. Currently unimplemented. Too bad you can't override the plplot
-;; exit handler so that it won't kill your lisp process when you make a mistake. Sigh...
+;; the graphing process. We use plsexit to set our own error handler that will
+;; throw a Lisp side error and keep PLplot from calling exit().
 
 ;(defcfun ("plsKeyEH" plskeyeh) :void 
 ;	void (*KeyEH) (PLGraphicsIn *, void *, int *), void *KeyEH_data
@@ -1167,10 +1167,16 @@
 ;
 ;(defcfun ("plseopH" plseoph) :void 
 ;	void (*handler) (void *, int *), void *handler_data
-;
-;(defcfun ("plsexit" plsexit) :void 
-;	int (*handler) (char *)
-;
+
+(defcallback trap-plsexit :int ((message plstr))
+  (error "PLplot error encountered (~A). The current plotting stream is likely corrupted."
+	 (foreign-string-to-lisp message)))
+
+(defcfun ("plsexit" plsexit) :void
+  (plsexit-fn plfunc))
+
+(plsexit (callback trap-plsexit))
+
 ;(defcfun ("plsabort" plsabort) :void 
 ;	void (*handler) (char *)
 
