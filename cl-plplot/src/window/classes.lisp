@@ -84,14 +84,13 @@
 
 (def-plplot-class contour-plot (plot)
   (data
-   line-width
-   fill-type
    contour-levels
-   contour-labels
-   data-x-min
-   data-x-max
-   data-y-min
-   data-y-max))
+   fill-colors
+   fill-type
+   line-color
+   line-width
+   x-mapping
+   y-mapping))
 
 (def-plplot-class window ()
   (x-axis

@@ -160,14 +160,6 @@
 	 (plvpor (viewport-x-min a-window) (viewport-x-max a-window) (viewport-y-min a-window) (viewport-y-max a-window))
 	 (multiple-value-bind (x-min x-max y-min y-max) (get-axis-ranges a-window)
 	   (plwind x-min x-max y-min y-max))
-	 (plwid (window-line-width a-window))
-	 (plschr 0 (window-font-size a-window))
-	 (plbox (get-axis-properties (x-axis a-window)) (major-tick-interval (x-axis a-window)) (minor-tick-number (x-axis a-window))
-		(get-axis-properties (y-axis a-window)) (major-tick-interval (y-axis a-window)) (minor-tick-number (y-axis a-window)))
-	 ;; title & axis labels
-	 (render-axis-label (title a-window))
-	 (render-axis-labels (x-axis a-window))
-	 (render-axis-labels (y-axis a-window))
 	 ;; render plots
 	 (when (plots a-window)
 	   (let ((default-symbol 0))
@@ -178,6 +170,15 @@
 	 (when (text-labels a-window)
 	   (dolist (a-text-label (text-labels a-window))
 	     (render-text-label a-text-label)))
+	 ;; title, axis & axis labels
+	 (set-foreground-color (foreground-color a-window))
+	 (plwid (window-line-width a-window))
+	 (plschr 0 (window-font-size a-window))
+	 (plbox (get-axis-properties (x-axis a-window)) (major-tick-interval (x-axis a-window)) (minor-tick-number (x-axis a-window))
+		(get-axis-properties (y-axis a-window)) (major-tick-interval (y-axis a-window)) (minor-tick-number (y-axis a-window)))
+	 (render-axis-label (title a-window))
+	 (render-axis-labels (x-axis a-window))
+	 (render-axis-labels (y-axis a-window))
 	 ;; get mouse if requested
 	 (when want-mouse?
 	   (plgetcursor)))

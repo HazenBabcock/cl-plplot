@@ -20,7 +20,7 @@
 ;;;; IN THE SOFTWARE.
 ;;;;
 ;;;;
-;;;; Examples that demonstrate using cl-plplot to make 2D plots
+;;;; Examples that demonstrate using cl-plplot to make 2D plots.
 ;;;;
 ;;;; hazen 6/06
 ;;;;
@@ -31,11 +31,21 @@
 
 (in-package :window-examples)
 
+
+;;; Helper functions
+
 (defun my-make-vector (dim init-fn)
   (let ((vec (make-array dim :initial-element 0.0 :element-type 'float)))
     (dotimes (i dim)
       (setf (aref vec i) (funcall init-fn i)))
     vec))
+
+(defun my-make-matrix (dim1 dim2 init-fn)
+  (let ((mat (make-array (list dim1 dim2) :initial-element 0.0 :element-type 'float)))
+    (dotimes (x dim1)
+      (dotimes (y dim2)
+	(setf (aref mat x y) (funcall init-fn x y))))
+    mat))
 
 (defun my-make-bar-graph-data (rows cols)
   (let ((data (make-array (list rows cols) :initial-element 0.0 :element-type 'float)))
@@ -43,6 +53,13 @@
       (dotimes (j cols)
 	(setf (aref data i j) (+ i j))))
     data))
+
+(defun my-contour-plot-fn (x y)
+  (let ((tx (- (* 0.02 x) 0.5))
+	(ty (- (* 0.02 y) 0.5)))
+    (- (* tx tx) (* ty ty)
+       (* (sin (* 7 tx)) (* (cos (* 7 ty)))))))
+
 
 ;; You may need to change these to reflect the plplot drivers available on your system
 ;; If the Slime REPL hangs when you run one of these examples, it may be because the device
@@ -52,6 +69,8 @@
 (defparameter g-dev "aqt")
 (defparameter f-dev "pbm")
 
+
+;;; X-Y-Plots
 
 ;; The simplest plot
 
@@ -177,6 +196,8 @@
     (remove-color-from-color-table c :color2)))
 
 
+;;; Bar graphs
+
 ;; Here we make a simple bar graph
 
 (defun bar-graph-1 ()
@@ -227,4 +248,56 @@
 	 (b (new-bar-graph nil y :bar-widths s :side-by-side t :line-colors (vector :black :black :black)))
 	 (w (basic-window)))
     (add-plot-to-window w b)
+    (render w g-dev)))
+
+
+;;; Contour Plots
+
+
+;; A simple contour plot
+
+(defun contour-plot-1 ()
+  (let ((c (new-contour-plot (my-make-matrix 50 50 #'(lambda (x y) (my-contour-plot-fn x y)))
+			     :line-color :blue :line-width 2))
+	(w (basic-window)))
+    (add-plot-to-window w c)
+    (render w g-dev)))
+
+
+;; The same plot rescaled with filled contours
+
+(defun contour-plot-2 ()
+  (let ((c (new-contour-plot (my-make-matrix 50 50 #'(lambda (x y) (my-contour-plot-fn x y)))
+			     :x-min 0.0 :x-max 1.0 :y-min 0.0 :y-max 1.0 :fill-type :block
+			     :fill-colors (vector :red :grey :blue :yellow :green)))
+	(w (basic-window)))
+    (add-plot-to-window w c)
+    (render w g-dev)))
+
+
+;; Plotted on a user defined simple grid with smooth shading between contours
+
+(defun contour-plot-3 ()
+  (let* ((xp (my-make-vector 50 #'(lambda(x) (+ (* 0.1 x) (* 0.01 x x)))))
+	 (yp (my-make-vector 50 #'(lambda(y) (+ (* 0.1 y) (* 0.001 y y)))))
+	 (c (new-contour-plot (my-make-matrix 50 50 #'(lambda (x y) (my-contour-plot-fn x y)))
+			      :x-mapping xp :y-mapping yp :fill-type :smooth))
+	 (w (basic-window)))
+    (add-plot-to-window w c)
+    (render w g-dev)))
+
+
+;; Plotted on a more complex user defined grid
+
+(defun contour-plot-4 ()
+  (let* ((xp (my-make-matrix 51 51 #'(lambda(x y)
+				       (+ (* 0.02 (- x 25) (* 0.01 (+ y 50)))))))
+	 (yp (my-make-matrix 51 51 #'(lambda(x y)
+				       (declare (ignore x))
+				       (* 0.02 y))))
+	 (cl (my-make-vector 20 #'(lambda(x) (- (* 0.12 x) 1.0))))
+	 (c (new-contour-plot (my-make-matrix 51 51 #'(lambda (x y) (my-contour-plot-fn x y)))
+			      :x-mapping xp :y-mapping yp :contour-levels cl))
+	 (w (basic-window)))
+    (add-plot-to-window w c)
     (render w g-dev)))

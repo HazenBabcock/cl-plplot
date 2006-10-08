@@ -176,6 +176,7 @@
    is ignored & colors wrap when the index is off the end of the color table."
   (plcol0 (1+ (mod index (1- (length (color-map *current-color-table*)))))))
 
+
 ;;;;
 ;;;; Copyright (c) 2006 Hazen P. Babcock
 ;;;;

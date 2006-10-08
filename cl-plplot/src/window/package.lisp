@@ -55,6 +55,7 @@
 	   #:new-axis-label
 	   #:new-bar-graph
 	   #:new-color-table
+	   #:new-contour-plot
 	   #:new-text-item
 	   #:new-text-label
 	   #:new-window
