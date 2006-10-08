@@ -157,14 +157,15 @@
 ;; Draw the contour plot
 
 (defun make-smooth-contour-levels (contour-levels)
-  "Given the contour levels, makes a version of them with 128 different
-   levels, so that shading will hopefully appear smooth."
+  "Given the contour levels, makes a version of them the maximum number of
+   different levels, so that shading will hopefully appear smooth."
   ; FIXME: This assumes that the levels are equally spaced.
-  (let* ((start (aref contour-levels 0))
+  (let* ((total-colors (color-table-size *current-extended-color-table*))
+	 (start (aref contour-levels 0))
 	 (end (aref contour-levels (1- (length contour-levels))))
-	 (increment (/ (- end start) 127))
-	 (smooth-levels (make-float-vector 128)))
-    (dotimes (i (length smooth-levels))
+	 (increment (/ (- end start) (1- total-colors)))
+	 (smooth-levels (make-float-vector total-colors)))
+    (dotimes (i total-colors)
       (setf (aref smooth-levels i) (+ start (* increment i))))
     smooth-levels))
 

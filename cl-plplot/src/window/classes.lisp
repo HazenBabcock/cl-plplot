@@ -28,8 +28,12 @@
 (in-package #:cl-plplot)
 
 (def-plplot-class color-table ()
-  (color-map
-   extended-color-map))
+  (color-map))
+
+(def-plplot-class extended-color-table ()
+  (control-points
+   specified-colors
+   color-table-size))
 
 (def-plplot-class text-item ()
   (the-text
@@ -106,6 +110,7 @@
    (viewport-y-max 0.9)
    plots
    text-labels
-   color-table))
+   color-table
+   extended-color-table))
 
 

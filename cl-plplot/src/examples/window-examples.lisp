@@ -301,3 +301,17 @@
 	 (w (basic-window)))
     (add-plot-to-window w c)
     (render w g-dev)))
+
+
+;; The same as contour-plot-3, but with a gray scale color table.
+
+(defun contour-plot-5 ()
+  (let* ((ct (new-extended-color-table :control-points (vector #(0.0 0 0 0) #(1.0 255 255 255))))
+	 (xp (my-make-vector 50 #'(lambda(x) (+ (* 0.1 x) (* 0.01 x x)))))
+	 (yp (my-make-vector 50 #'(lambda(y) (+ (* 0.1 y) (* 0.001 y y)))))
+	 (c (new-contour-plot (my-make-matrix 50 50 #'(lambda (x y) (my-contour-plot-fn x y)))
+			      :x-mapping xp :y-mapping yp :fill-type :smooth))
+	 (w (basic-window)))
+    (add-plot-to-window w c)
+    (set-color-table w ct)
+    (render w g-dev)))

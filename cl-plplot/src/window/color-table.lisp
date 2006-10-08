@@ -173,11 +173,16 @@
 (defvar *current-color-table*)
 
 (defun set-foreground-color (color)
-  "Switches the pen to the desired foreground color."
-  (let ((color-index (find-a-color *current-color-table* color)))
-    (if color-index
-	(plcol0 color-index)
-	(plcol0 1))))
+  "Switches the pen to the desired foreground color, or the default
+   foreground color if the desired color cannot be found."
+  (cond
+    ((symbolp color)
+     (let ((color-index (find-a-color *current-color-table* color)))
+       (if color-index
+	   (plcol0 color-index)
+	   (plcol0 1))))
+    (t
+     (format t "Failed to set color to: ~A~%" color))))
 
 (defun set-color-by-index (index)
   "Switches the pen to color currently at index. The background color

@@ -150,12 +150,21 @@
   (when filename
     (plsfnam filename))
   (plspage 0 0 size-x size-y 0 0)
+
   ;; color table initialization
   (let ((a-color-table (color-table a-window)))
     (if a-color-table
 	(setf *current-color-table* a-color-table)
 	(setf *current-color-table* (default-color-table))))
   (initialize-color-table *current-color-table* (foreground-color a-window) (background-color a-window))
+
+  ;; extended color table initialization
+  (let ((a-extended-color-table (extended-color-table a-window)))
+    (if a-extended-color-table
+	(setf *current-extended-color-table* a-extended-color-table)
+	(setf *current-extended-color-table* (default-extended-color-table))))
+  (initialize-extended-color-table *current-extended-color-table*)
+
   ;; start plotting
   (plinit)
   (unwind-protect
@@ -164,16 +173,19 @@
 	 (plvpor (viewport-x-min a-window) (viewport-x-max a-window) (viewport-y-min a-window) (viewport-y-max a-window))
 	 (multiple-value-bind (x-min x-max y-min y-max) (get-axis-ranges a-window)
 	   (plwind x-min x-max y-min y-max))
+
 	 ;; render plots
 	 (when (plots a-window)
 	   (let ((default-symbol 0))
 	     (dolist (a-plot (plots a-window))
 	       (render-plot a-plot default-symbol)
 	       (incf default-symbol))))
+
 	 ;; text labels
 	 (when (text-labels a-window)
 	   (dolist (a-text-label (text-labels a-window))
 	     (render-text-label a-text-label)))
+
 	 ;; title, axis & axis labels
 	 (set-foreground-color (foreground-color a-window))
 	 (pllsty 1)
@@ -184,6 +196,7 @@
 	 (render-axis-label (title a-window))
 	 (render-axis-labels (x-axis a-window))
 	 (render-axis-labels (y-axis a-window))
+
 	 ;; get mouse if requested
 	 (when want-mouse?
 	   (plgetcursor)))
@@ -206,5 +219,8 @@
     device: a string naming a plplot graphical device such as 'xwin'.
     filename: where to save the graph for file based devices.
     size-x: the size of the window in x (pixels).
-    size-y: the size of the window in y (pixels)."
+    size-y: the size of the window in y (pixels).
+   If you are using cl-plplot in a multi-threaded environment you should
+   thread lock prior to calling render, as the PLplot library only handles
+   rendering one plot at a time."
   (render-window a-window device filename size-x size-y))
