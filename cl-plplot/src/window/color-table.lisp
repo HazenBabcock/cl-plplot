@@ -174,10 +174,7 @@
 (defun set-color-by-index (index)
   "Switches the pen to color currently at index. The background color
    is ignored & colors wrap when the index is off the end of the color table."
-  (let ((color-table-length (- (length (color-map *current-color-table*)) 2)))
-    (if (> index color-table-length)
-	(set-color-by-index (- index color-table-length))
-	(plcol0 (1+ index)))))
+  (plcol0 (1+ (mod index (1- (length (color-map *current-color-table*)))))))
 
 ;;;;
 ;;;; Copyright (c) 2006 Hazen P. Babcock
