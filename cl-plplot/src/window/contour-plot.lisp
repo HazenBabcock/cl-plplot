@@ -183,7 +183,9 @@
       ((= 2 (array-rank (x-mapping a-plot)))
        (unless (equal (pl-get-pltr-fn) #'pltr2)
 	 (pl-set-pltr-fn #'pltr2))))
-    ; draw the plot
+
+    ;; draw the plot
+    ; deal with shaded plots first
     (cond
       ((equal (fill-type a-plot) :none))
       ((equal (fill-type a-plot) :smooth)
@@ -203,11 +205,15 @@
 		      (x-mapping a-plot) (y-mapping a-plot)))))
       (t
        (format t "Sorry I don't know how to draw contour plots of type ~A~%" (fill-type a-plot))))
+
+    ; draw the contours next
     (set-foreground-color (line-color a-plot))
     (when (> (line-width a-plot) 0)
       (plwid (line-width a-plot))
       (plcont (data a-plot) 1 (array-dimension (data a-plot) 0) 1 (array-dimension (data a-plot) 1)
 	      (contour-levels a-plot) (x-mapping a-plot) (y-mapping a-plot)))
+
+    ; reset the point mapping callback function
     (pl-set-pltr-fn callback-fn)))
 
 
