@@ -40,6 +40,7 @@
 	   #:edit-axis
 	   #:edit-axis-label
 	   #:edit-bar-graph
+	   #:edit-contour-plot
 	   #:edit-text-item
 	   #:edit-text-label
 	   #:edit-window
