@@ -124,12 +124,12 @@
 		      :x-mapping (copy-matrix checked-x-mapping copy)
 		      :y-mapping (copy-matrix checked-y-mapping copy)))))
 
-(def-edit-method contour-plot (line-color line-width fill-type contour-labels)
-  "edit-contour-plot, Edits the visual properties of a plot
+(def-edit-method contour-plot (line-color line-width fill-type fill-colors)
+  "edit-contour-plot, Edits the visual properties of a contour plot
     Set the line color with :line-color (this should be a color symbol in the current color table).
     Set the line width with :line-width (integer, 0 means no line).
     Set the fill-type with :fill-type (:none :block :smooth).
-    Set the contour-labels...")
+    Set the fill-colors with :fill-colors (should be a vector of color symbols)")
 
 (defmethod plot-min-max ((a-plot contour-plot))
   "Returns the minimum and maximum values in a contour plot as a 4 element vector."
