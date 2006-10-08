@@ -36,6 +36,7 @@
 	   #:add-text-label-to-window
 	   #:backspace
 	   #:basic-window
+	   #:bring-to-front
 	   #:default-color-table
 	   #:edit-axis
 	   #:edit-axis-label
@@ -70,6 +71,7 @@
 	   #:render
 	   #:roman-font
 	   #:script-font
+	   #:send-to-back
 	   #:set-color-table
 	   #:subscript
 	   #:superscript

@@ -72,6 +72,22 @@
 (def-add-remove-methods window text-labels text-label)
   ;Creates methods add-text-label-to-window & remove-text-label-from-window.
 
+(defgeneric bring-to-front (a-window a-plot))
+
+(defmethod bring-to-front ((a-window window) (a-plot plot))
+  "Organizes the plots so that a-plot is drawn on top."
+  (when (member a-plot (plots a-window))
+    (remove-plot-from-window a-window a-plot)
+    (add-plot-to-window a-window a-plot)))
+
+(defgeneric send-to-back (a-window a-plot))
+
+(defmethod send-to-back ((a-window window) (a-plot plot))
+  "Organizes the plots so that a-plot is drawn on the bottom."
+  (when (member a-plot (plots a-window))
+    (remove-plot-from-window a-window a-plot)
+    (setf (plots a-window) (append (list a-plot) (plots a-window)))))
+
 (defun basic-window (&key (x-label "x-axis") (y-label "y-axis") (title "cl-plplot") 
 		   (background-color *background-color*) (foreground-color *foreground-color*))
   "Creates a basic window object with ready-to-go axises."

@@ -32,7 +32,6 @@
 
 (def-plplot-class extended-color-table ()
   (control-points
-   specified-colors
    color-table-size))
 
 (def-plplot-class text-item ()
@@ -112,5 +111,3 @@
    text-labels
    color-table
    extended-color-table))
-
-

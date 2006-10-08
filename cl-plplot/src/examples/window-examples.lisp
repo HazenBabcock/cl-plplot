@@ -315,3 +315,26 @@
     (add-plot-to-window w c)
     (set-color-table w ct)
     (render w g-dev)))
+
+
+;; Mixing different plot types is also possible, though care must be taken
+;; to draw them in the right order.
+
+(defun mixed-plot-1 ()
+  (let* ((x (my-make-vector 40 #'(lambda(x) (* 0.1 x))))
+	 (y (my-make-vector 40 #'(lambda(x) (* (* 0.1 x) (* 0.1 x)))))
+	 (p (new-x-y-plot x y :line-width 2))
+	 (c (new-contour-plot (my-make-matrix 50 50 #'(lambda (x y) (my-contour-plot-fn x y)))
+			      :x-min 0.0 :x-max 4.0 :y-min 0.0 :y-max 15.0 :fill-type :block
+			      :fill-colors (vector :red :grey :blue :yellow :green)))
+	 (title (new-text-item "..." :font-size 1.5))
+	 (l (new-axis-label title :top 1.5))
+	 (w (basic-window :title "")))
+    (add-plot-to-window w p)
+    (add-plot-to-window w c)
+    (edit-window w :title l)
+    (edit-text-item title :the-text "Wrong Order?")
+    (render w g-dev)
+    (bring-to-front w p)
+    (edit-text-item title :the-text "Right Order?")
+    (render w g-dev)))
