@@ -4,14 +4,58 @@
 ;;;; hazen 10/06
 ;;;;
 
-; :none - straight plcont.
-; :block - multiple cycles of plshade w/ defined color map.
-; :smooth - plshades w/ 128 contours, then plcont.
-;
-; color map 1 handling
-; contour line text?
-
 (in-package #:cl-plplot)
+
+
+;; This function doesn't have much to (directly) with creating contour plots,
+;; but it is very useful for gridding data for making contour plots.
+
+(defun x-y-z-data-to-grid (data x-grid y-grid &key (algorithm :grid-csa) optional-data)
+  "Calls the plplot function plgriddata to turn irregulary spaced data as (x,y,z) points 
+    into the 2D array data[i,j] = z. Please see the PLplot manual for further documenation.
+   data is either a 3 x N matrix of (x,y,z) points, or a list containing
+     (x-vector, y-vector, z-vector).
+   x-grid specifies the locations of the grid points in the x direction.
+   y-grid specifies the locations of the grid points in the y direction.
+   algorithm is one of :grid-csa, :grid-dtli, :grid-nni, :grid-nnidw, :grid-nnli
+     or :grid-nnaidw and specifies what algorithm to use to grid the data.
+   optional-data is a floating point number used in some of the algorithms
+     for determining how to best grid the data."
+  (let ((x-vector)
+	(y-vector)
+	(z-vector))
+    (if (listp data)
+	(progn
+	  (setf x-vector (elt data 0))
+	  (setf y-vector (elt data 1))
+	  (setf z-vector (elt data 2)))
+	(let ((data-len (array-dimension data 1)))
+	  (setf x-vector (make-float-vector data-len))
+	  (setf y-vector (make-float-vector data-len))
+	  (setf z-vector (make-float-vector data-len))
+	  (dotimes (i data-len)
+	    (setf (aref x-vector i) (aref data 0 i))
+	    (setf (aref y-vector i) (aref data 1 i))
+	    (setf (aref z-vector i) (aref data 2 i)))))
+    (plgriddata x-vector y-vector z-vector x-grid y-grid
+		; given algorithm, pass the right number
+		(cond
+		  ((equal algorithm :grid-csa) 1)
+		  ((equal algorithm :grid-dtli) 2)
+		  ((equal algorithm :grid-nni) 3)
+		  ((equal algorithm :grid-nnidw) 4)
+		  ((equal algorithm :grid-nnli) 5)
+		  ((equal algorithm :grid-nnaidw) 6)
+		  (t
+		   (format t "x-y-z-data-to-grid called with wnrecognized algorithm ~A~%" algorithm)
+		   1))
+		; pass optional-data if specified, otherwise try and choose an intelligent default
+		(if optional-data
+		    optional-data
+		    (cond
+		      ((equal algorithm :grid-nnidw) 2)
+		      ((equal algorithm :grid-nnli) 1)
+		      ((equal algorithm :grid-nni) 0))))))
 
 (defun check-contour-levels (data contour-levels)
   "Creates default contour levels based on data in the event that the contour
