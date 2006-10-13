@@ -79,7 +79,8 @@
 	   #:superscript
 	   #:underline
 	   #:unicode-char
-	   #:update-color))
+	   #:update-color
+	   #:x-y-z-data-to-grid))
 	   
 
 (in-package #:cl-plplot)

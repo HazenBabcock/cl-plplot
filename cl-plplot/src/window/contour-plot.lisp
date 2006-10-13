@@ -55,7 +55,8 @@
 		    (cond
 		      ((equal algorithm :grid-nnidw) 2)
 		      ((equal algorithm :grid-nnli) 1)
-		      ((equal algorithm :grid-nni) 0))))))
+		      ((equal algorithm :grid-nni) 0)
+		      (t 1.0))))))
 
 (defun check-contour-levels (data contour-levels)
   "Creates default contour levels based on data in the event that the contour

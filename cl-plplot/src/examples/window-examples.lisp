@@ -317,6 +317,32 @@
     (render w g-dev)))
 
 
+;; Use PLplot's ability to grid data to convert your (x,y,z) data into a
+;; plottable 2D grid.
+
+(defun contour-plot-6 ()
+  (let* ((x (my-make-vector 1000 #'(lambda(x)
+				    (declare (ignore x))
+				    (- (random 4.0) 2.0))))
+	 (y (my-make-vector 1000 #'(lambda(y)
+				    (declare (ignore y))
+				    (- (random 4.0) 2.0))))
+	 (z (make-array 1000 :initial-element 0.0 :element-type 'float))
+	 (xgrid (my-make-vector 21 #'(lambda(x) (- (* 0.2 x) 2.0))))
+	 (ygrid (my-make-vector 21 #'(lambda(x) (- (* 0.2 x) 2.0))))
+	 (p (new-x-y-plot x y :line-width 0 :symbol-type 2 :symbol-size 0.75))
+	 (w (basic-window)))
+    (dotimes (i (length z))
+      (let ((tx (aref x i))
+	    (ty (aref y i)))
+	(setf (aref z i) (- (* tx tx) (* ty ty) (* (sin tx) (* (cos ty)))))))
+    (let* ((d (x-y-z-data-to-grid (list x y z) xgrid ygrid :algorithm :grid-nnli))
+	   (c (new-contour-plot d :x-mapping xgrid :y-mapping ygrid :fill-type :block)))
+      (add-plot-to-window w c)
+      (add-plot-to-window w p)
+      (render w g-dev))))
+
+
 ;; Mixing different plot types is also possible, though care must be taken
 ;; to draw them in the right order.
 
@@ -327,13 +353,13 @@
 	 (c (new-contour-plot (my-make-matrix 50 50 #'(lambda (x y) (my-contour-plot-fn x y)))
 			      :x-min 0.0 :x-max 4.0 :y-min 0.0 :y-max 15.0 :fill-type :block
 			      :fill-colors (vector :red :grey :blue :yellow :green)))
-	 (title (new-text-item "..." :font-size 1.5))
-	 (l (new-axis-label title :top 1.5))
-	 (w (basic-window :title "")))
+	 (title (new-text-item "..." :font-size 1.5)) ; create a text object for the title
+	 (l (new-axis-label title :top 1.5))          ; create an axis label containing the title object
+	 (w (basic-window)))
     (add-plot-to-window w p)
     (add-plot-to-window w c)
-    (edit-window w :title l)
-    (edit-text-item title :the-text "Wrong Order?")
+    (edit-window w :title l)  ; replace the default title object with our own title object
+    (edit-text-item title :the-text "Wrong Order?") ; change the text in the title object
     (render w g-dev)
     (bring-to-front w p)
     (edit-text-item title :the-text "Right Order?")
