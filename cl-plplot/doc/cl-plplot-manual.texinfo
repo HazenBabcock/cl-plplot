@@ -3,6 +3,12 @@
 @setfilename cl-plplot.info
 @settitle Cl-plplot User Manual
 
+@syncodeindex tp cp
+@syncodeindex fn cp
+
+@c=======================================================================
+
+
 @copying
 Copyright @copyright{} 2006 Hazen P. Babcock <hbabcockos1 at mac.com>
 
@@ -31,29 +37,540 @@ software or the use or other dealings in the software.}
 @titlepage
 @title Cl-plplot User Manual
 @vskip 0pt plus 1filll
-October 13, 2006
+October 14, 2006
 
 @page
 @vskip 0pt plus 1fill
 @insertcopying
 @end titlepage
 
+
+@c=======================================================================
+
 @menu
 * Introduction::
 * The Low Level Interface to PLplot::
 * The High Level Plotting Package::
+* Index::
 @end menu
+
+
+@c=======================================================================
 
 @node Introduction
 @chapter Introduction
-The introduction
+Cl-plplot provides a CFFI based interface to the PLplot graphics 
+library. The PLplot graphics library supports the drawing of many different 
+types of 2D and 3D graphs using a large variety of output devices including
+X11, postscript and png. PLplot can also be used to make scaled drawing,
+diagrams, etc... 
+
+At present, cl-plplot consists of two packages, one is low-level interface 
+to the PLplot library and the other is high-level plotting interface that 
+attempts to make using PLplot with Lisp easier. It has been tested on
+OS-X and debian linux with SBCL. Since it interfaces to the PLplot
+library using CFFI, it should work with any combination of lisp 
+implementation and operating system that is supported by CFFI.
+
+
+@c=======================================================================
 
 @node The Low Level Interface to PLplot
 @chapter The Low Level Interface to PLplot
-The low level interface to PLplot
+
+@section Introduction
+The low level interface @code{:cl-plplot-system}
+provides both 'direct' and 'wrapped' access to
+the functions in the PLplot library. What this means is that each of 
+the functions in the PLplot library is available in two ways. The
+'direct' form expects that all arguments are in a form appropriate 
+for handing off to the C library function. In cases where the C
+function returns an array or a string it will be returned as C
+pointer. On the other hand, the 'wrapped' form will automatically
+convert Lisp variables to the appropriate C variables, fill in
+any array size arguments and then call the 'direct' form. 
+In the case where the C function returns an
+array or a string the 'wrapped' form will automatically convert
+this into the appropriate Lisp type. Furthermore, the 'wrapped' form
+takes care of allocating and deallocating the necessary memory to
+make the C function call. The 'wrapped' form is recommended for
+general use, but the 'direct' form is also available in situations
+where speed may be important or you are already using C pointers
+and do not want to pay the overhead of converting them back and
+forth to Lisp variables.
+
+@section Example (the PLplot arrows function)
+@lisp
+  (defcfun ("plarrows" c-plarrows)
+           :void
+           (u *plflt)
+           (v *plflt)
+           (x *plflt)
+           (y *plflt)
+           (n plint)
+           (scale plflt)
+           (dx plflt)
+           (dy plflt))
+
+  (defun plarrows (u v x y scale dx dy)
+    (let ((c-u (make-ptr u :double #'(lambda (x) 
+                                      (coerce x 'double-float))))
+          (c-v (make-ptr v :double #'(lambda (x) 
+                                      (coerce x 'double-float))))
+          (c-x (make-ptr x :double #'(lambda (x) 
+                                      (coerce x 'double-float))))
+          (n (length y))
+          (c-y (make-ptr y :double #'(lambda (x) 
+                                      (coerce x 'double-float)))))
+      (unwind-protect
+          (c-plarrows c-u
+                      c-v
+                      c-x
+                      c-y
+                      (funcall #'(lambda (x) (round x)) n)
+                      (funcall #'(lambda (x) 
+                                  (coerce x 'double-float)) scale)
+                      (funcall #'(lambda (x) 
+                                  (coerce x 'double-float)) dx)
+                      (funcall #'(lambda (x) 
+                                  (coerce x 'double-float)) dy))
+        (progn
+         (foreign-free c-u)
+         (foreign-free c-v)
+         (foreign-free c-x)
+         (foreign-free c-y)))))
+@end lisp
+
+@subheading Notes
+@itemize
+@item
+The name of the PLplot function as defined in the PLplot manual
+is used for the 'wrapped' form and the name of the 'direct' has
+@code{c-} appended onto the front. This convention is followed
+for most PLplot functions.
+@item
+The function @code{make-ptr} handles the creation of a C array from
+a Lisp vector.
+@item
+The argument @code{n} required by PLplots arrows function is
+automatically determined from the length of the vector y
+and does not need to be passed in.
+@item
+The call to the PLplot library function is wrapped with
+@code{unwind-protect} so that if the C function fails the memory
+occupied by @code{c-u}, @code{c-v}, @code{c-x} and @code{c-y}
+is still freed.
+@end itemize
+
+@section Exceptions
+@itemize
+@item
+There are a few exceptions to the above naming conventions
+for the 'direct' and 'wrapped' forms. Typically these occur
+for functions that have very complicated arguments, for example
+functions that required callbacks. When in doubt the best
+approach is probably to peruse @code{src/system/api.lisp} where
+all of the PLplot functions are defined.
+@item
+Not all of the PLplot library functions are available in cl-plpot.
+Some were deemed to be too esoteric, or better handled by an
+equivalent Lisp function. However, if you find a function that
+you feel should be supported please let me know.
+@end itemize
+
+@section Supported PLplot Functions
+The current best reference is the manual that comes with PLplot.
+TODO: a list of the supported PLplot functions and their arguments.
+
+@c=======================================================================
+
 
 @node The High Level Plotting Package
 @chapter The High Level Plotting Package
-The high level plotting package
+@section Introduction
+The high level interface @code{:cl-plplot} tries to make PLplot
+a little more Lispy using a CLOS based approach. You create
+window objects, then associate axis objects, text objects and
+plot objects to the window objects. When everything is set you
+call the @code{render} method on the window object to display
+the plot using the display device of your choice.
+
+An effort was made to try and make PLplot easier to use from
+Lisp without sacrificing any of PLplot's functionality. In
+situations where a decision had to be made between ease of use
+and flexibility I tried to err on the side of flexibility.
+Ease of use typically means assumptions about how something
+will be used. These assumptions can be quite frustrating
+in situations where you want to do something a bit different.
+
+@section The Object Layout
+@example
+  window object
+   |--axis object (1 for the x axis, 1 for the y-axis)
+   |   |--axis-label object (0 or more per axis object)
+   |       |--text-item object (1 per axis-label object)
+   |--axis-label object (0 or more)
+   |--plot object (0 more more)
+   |--text-label object (0 or more)
+   |   |--text-item object (1 per text-label object)
+   |--color-table object (1 per window)
+   |--extended-color-table object (1 per window)
+@end example
+
+@section Object Definitions
+@subheading The Window Object
+This is the main object without which it is impossible
+to actually create a plot. It always contains references to two 
+axis objects, one for the x-axis and one for the y-axis (It 
+isn't clear to me yet how I'll extend this to 3D plots). It can
+also contain references to additional axis-label objects that
+might be used to provide a title for the plot as well as any
+other axis labeling that is needed, references to plot objects
+that will be drawn in the window and references to text labels
+to draw in the window. When you call @code{render} on a window
+object it determines the coordinate system and size of the
+plotting rectangle in which the plots will appear, then calls 
+the @code{render} methods of the axis-label, text-label and 
+plot objects to create the final plot.
+
+@subheading The Axis Object
+This object is used to set minimum
+and maximum values to plot in the window, as well as 
+specifying how to label the axis, major tick interval,
+minor tick interval, ticks, grid, ...
+
+@subheading The Axis-label Object
+This object is used to draw text relative
+to one of the sides of the plotting rectangle. It specifies 
+where to draw the text relative to one of the edges of the 
+rectangle as well as in what orientation.
+
+@subheading The Text-label Object
+This is like the axis-label object except
+that it is typically drawn inside the plotting rectangle
+and its location is determined by the plot coordinate
+system.
+
+@subheading The Text-item Object
+This object is used to actually draw the
+text. It specifies font, size, color, superscript, ...
+
+@subheading The Plot Object
+This object is used to convert data into a
+plot. In its most generic form it contains two functions,
+one that returns its preference for the x and y ranges of the
+window coordinate system and another that draws the object
+in the current window using @code{:cl-plplot-system}
+function calls. Specialized forms currently include x-y-plot, 
+bar-graph and contour-plot.
+
+@subheading The Color-table Object
+This object handles the use of PLplot's color map 0. Typically it
+will consist of 16 colors, each of with contains red, green and blue
+values as well as symbol (like @code{:blue}) that you can use to refer
+to the color. This color table is used by PLplot to draw essentially
+all of the 'basic' items, i.e. lines, text, axises. You can have more
+then 16 colors but not all of the graphics devices will handle that
+many colors. Some in fact may only handle black and white.
+
+@subheading The Extended-color-table Object
+This object handles the use of PLplot's color map 1. Typically this
+color table will contain anywhere between 128 to 256 different colors,
+though, again, not all graphics devices will handle so many
+colors. It used for shading plots, such as contour plots, where it is
+often desirable to have continuous range of colors rather than a few
+blocky colors.
+
+@section Examples
+Note: These are also available in @code{src/examples/window-examples.lisp}.
+
+@subheading X versus Y plots
+@lisp
+(defun x-y-plot ()
+  (let* ((x (my-make-vector 40 #'(lambda(x) (* 0.1 x))))
+	 (y (my-make-vector 40 #'(lambda(x) (* (* 0.1 x) (* 0.1 x)))))
+	 (p (new-x-y-plot x y))
+	 (w (basic-window)))
+    (add-plot-to-window w p)
+    (render w "xwin")))
+@end lisp
+The vectors x and y are created using the function
+@code{y = x^2}. A x-y-plot object is then created to plot the vector x versus the
+vector y. Finally a window object is created in which the x-y-plot
+object p can be plotted. The x-y-plot object p is added to the window
+w by the function @code{add-plot-to-window}. Then the window is drawn
+by calling the @code{render} method and specifying what PLplot graphics
+device to use for the graphical output ('xwin' is the X11 graphics device).
+
+@subheading Bar Graphs
+@lisp
+(defun bar-graph ()
+  (let* ((y (my-make-vector 10 #'(lambda(x) (* (* 0.2 x) (* 0.2 x)))))
+	 (b (new-bar-graph nil y :fill-colors (vector :grey)))
+	 (w (basic-window)))
+    (add-plot-to-window w b)
+    (render w "xwin")))
+@end lisp
+A vector y is created using the function @code{y = (0.2 * x)^2}. This
+vector is used to make a bar-graph object in which each of the bars
+will be filled with the color grey. As in the X versus Y plot example,
+a window w is created, the bar-graph object b is added to this window
+and then the window is rendered using the X11 graphics device.
+
+@subheading Contour Plots
+@lisp
+(defun contour-plot ()
+  (let ((c (new-contour-plot 
+            (my-make-matrix 50 50 #'(lambda (x y) 
+                                     (my-contour-plot-fn x y)))
+            :x-min 0.0 :x-max 1.0 :y-min 0.0 :y-max 1.0 
+            :fill-type :smooth))
+	(w (basic-window)))
+    (add-plot-to-window w c)
+    (render w g-dev)))
+@end lisp
+A contour plot object is created from a 2D matrix of
+data. Additionally the coordinate system of the matrix is specified
+with @code{:x-min}, @code{:x-max}, @code{:y-min} and @code{:y-max} and
+the contour plot fill type is specified with @code{:fill-type}. The
+function @code{my-make-matrix} is defined in @code{src/examples/window-examples.lisp}.
+
+@section Cl-plplot Functions in Alphabetical order
+@subheading add-axis-label-to-axis
+@cindex add-axis-label-to-axis
+@subsubheading Syntax:
+@code{(add-axis-label-to-axis a-axis-object a-axis-label-object)}
+@subsubheading Documenation:
+Adds a axis-label object to the list of axis-label objects maintained by the axis object.
+
+@subheading add-color-to-color-table
+@cindex add-color-to-color-table
+@subsubheading Syntax:
+@code{(add-color-to-color-table a-color-table a-color)}
+@subsubheading Documentation:
+Adds a color, @code{#(r g b :symbol)}, to the end of a color table.
+
+@subheading add-plot-to-window
+@cindex add-plot-to-window
+@subsubheading Syntax:
+@code{(add-plot-to-window a-window a-plot)}
+@subsubheading Documentation:
+Add a plot object to the list of plots maintained by the window object.
+
+@subheading add-text-label-to-window
+@cindex add-text-label-to-window
+@subsubheading Syntax:
+@code{(add-text-label-to-window a-window a-text-label)}
+@subsubheading Documentation:
+Add a text-label object to the list of text-label objects maintained
+by the window object.
+
+@subheading backspace
+@cindex backspace
+@subsubheading Syntax:
+@code{(backspace)}
+@subsubheading Documentation:
+Inserts a PLplot backspace character into a text string. This can be
+useful for when you desire to have both a superscript and a subscript
+on the same character.
+
+@subheading basic-window
+@cindex basic-window
+@subsubheading Syntax:
+@lisp
+(basic-window (&key (x-label "x-axis") 
+                    (y-label "y-axis") 
+                    (title "cl-plplot") 
+                    (background-color *background-color*) 
+                    (foreground-color *foreground-color*)))
+@end lisp
+@subsubheading Documentation:
+A convenience function for creating a basic window
+object. @code{:x-label} specifies the text to use for the x-axis of
+the window. @code{:y-label} specifies the text to use for the y-axis
+of the window. @code{:title} specifies the text to use for the title
+of the plot. @code{:background-color} is a color symbol specifying
+what color to use for the window background. @code{:foreground-color}
+is a color symbol specifying what color to use for the window
+foreground, i.e. the axises and the axis labels.
+
+@subheading bring-to-front
+@cindex bring-to-front
+@subsubheading Syntax:
+@code{(bring-to-front a-window a-plot)}
+@subsubheading Documentation:
+Reorganizes the list of plots maintained by a-window so that a-plot is
+drawn last, putting it on top of all the other plots.
+
+@subheading default-color-table
+@cindex default-color-table
+@subsubheading Syntax:
+@code{(default-color-table)}
+@subsubheading Documentation:
+Returns a default color-table object. This can be useful as starting
+point for defining your own color table.
+
+@subheading edit-axis
+@cindex edit-axis
+@lisp
+(edit-axis (a-axis 
+             &key axis-min axis-max 
+             major-tick-interval minor-tick-number 
+             properties))
+@end lisp
+@subsubheading Documentation:
+Edits the visual properties of a axis object. @code{:axis-min}
+specifies the minimum value of the axis. @code{:axis-max} specifies
+the maximum value of the axis. @code{:major-tick-interval} specifies
+the spacing between major ticks. @code{:minor-tick-interval} specifies
+the spacing between the minor ticks. @code{:properties} specifies the
+properties of the axis. This should be a list containing one or more
+of the following symbols: @code{:draw} - draw a axis on both sides of
+the window. @code{:draw-bottom/left} - draw a axis on the bottom/left
+(depending on whether it is a x or y axis) of the
+window. @code{:draw-top/right} - draw a axis on the top/right of the
+window. @code{:fixed-point} - use fixed point
+labels. @code{:major-tick-grid} - draw a grid on the graph at the
+major ticks. @code{:minor-tick-grid} - draw a grid on the graph at the
+minor ticks. @code{:invert-ticks} - draw the ticks inward rather than
+outwards. @code{:log-axis} - draw the axis on a log
+scale. @code{:major-tick-labels-above/right} - draw the tick labels
+above/right of the ticks (depending on whether it is a x or y
+axis). @code{:major-tick-labels-below/left} - draw the tick labels
+below/left of the ticks. @code{:minor-ticks} - draw minor
+ticks. @code{:major-ticks} - draw major ticks.
+
+@subheading edit-axis-label
+@cindex edit-axis-label
+
+@subheading edit-bar-graph
+@cindex edit-bar-graph
+
+@subheading edit-contour-plot
+@cindex edit-contour-plot
+
+@subheading edit-text-item
+@cindex edit-text-item
+
+@subheading edit-text-label
+@cindex edit-text-label
+
+@subheading edit-window
+@cindex edit-window
+
+@subheading edit-window-axis
+@cindex edit-window-axis
+
+@subheading edit-x-y-plot
+@cindex edit-x-y-plot
+
+@subheading get-cursor
+@cindex get-cursor
+
+@subheading greek-char
+@cindex greek-char
+
+@subheading hershey-char
+@cindex hershey-char
+
+@subheading italic-font
+@cindex italic-font
+
+@subheading new-axis
+@cindex new-axis
+
+@subheading new-axis-label
+@cindex new-axis-label
+
+@subheading new-bar-graph
+@cindex new-bar-graph
+
+@subheading new-color-table
+@cindex new-color-table
+
+@subheading new-contour-plot
+@cindex new-contour-plot
+
+@subheading new-custom-plot-object
+@cindex new-custom-plot-object
+
+@subheading new-extended-color-table
+@cindex new-extended-color-table
+
+@subheading new-text-item
+@cindex new-text-item
+
+@subheading new-text-label
+@cindex new-text-label
+
+@subheading new-window
+@cindex new-window
+
+@subheading new-x-y-plot
+@cindex new-x-y-plot
+
+@subheading normal-font
+@cindex normal-font
+
+@subheading number-symbol
+@cindex number-symbol
+
+@subheading overline
+@cindex overline
+
+@subheading remove-axis-label-from-axis
+@cindex remove-axis-label-from-axis
+
+@subheading remove-color-from-color-table
+@cindex remove-color-from-color-table
+
+@subheading remove-plot-from-window
+@cindex remove-plot-from-window
+
+@subheading remove-text-label-from-window
+@cindex remove-text-label-from-window
+
+@subheading render
+@cindex render
+
+@subheading roman-font
+@cindex roman-font
+
+@subheading script-font
+@cindex script-font
+
+@subheading send-to-back
+@cindex send-to-back
+
+@subheading set-color-table
+@cindex set-color-table
+
+@subheading set-foreground-color
+@cindex set-foreground-color
+
+@subheading subscript
+@cindex subscript
+
+@subheading superscript
+@cindex superscript
+
+@subheading underline
+@cindex underline
+
+@subheading unicode-char
+@cindex unicode-char
+
+@subheading update-color
+@cindex update-color
+
+@subheading x-y-z-data-to-grid
+@cindex x-y-z-data-to-grid
+
+
+@c=======================================================================
+
+@node Index
+@chapter Index
+@printindex cp
 
 @bye
