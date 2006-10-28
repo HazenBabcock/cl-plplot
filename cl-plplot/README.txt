@@ -62,6 +62,6 @@ form "c-pl*" or "pl*", so if you like function names that begin with these
 characters then watch out! 
 
 A callback has been added that should trap PLplot when it tries to call exit()
-and instead cause a Lisp side error to be thrown. If you find that you find a
-PLplot error that is not trapped by this callback please let me know.
+and instead cause a Lisp side error to be thrown. If you find a PLplot error
+that is not trapped by this callback please let me know.
 
