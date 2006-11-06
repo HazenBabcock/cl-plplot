@@ -335,8 +335,6 @@ the contour plot fill type is specified with @code{:fill-type}. The
 function @code{my-make-matrix} is defined in @code{src/examples/window-examples.lisp}.
 
 @section Cl-plplot Functions in Alphabetical order
-Note: this was (mostly) automatically generated from the function
-documentation strings.
 
 @subheading add-axis-label-to-axis
 @cindex add-axis-label-to-axis
@@ -403,49 +401,183 @@ returns the default color table.
 @subsubheading Argument List
 (a-axis &key axis-min axis-max major-tick-interval minor-tick-number properties)
 @subsubheading Documentation
-edit-axis, edits an axis. set the minimum value with :axis-min. set the maximum value with :axis-max. set the spacing between major ticks with major-tick-interval. set the spacing between minor ticks with minor-tick-interval. set the properties with :properties. this should containing zero of more of the following symbols: :draw - draw axis on both sides of the window. :draw-bottom/left - draw axis on the bottom/left side of the window. :draw-top/right - draw axis on the top/right side of the window. :fixed-point - use fixed point labels. :major-tick-grid - draw a grid on the graph at the major ticks. :minor-tick-grid - draw a grid on the graph at the minor ticks. :invert-ticks - draw ticks inward rather than outwards. :log-axis - draw the axis on a log scale. :major-tick-labels-above/right - draw the tick labels above/right of the ticks. :major-tick-labels-below/left - draw the tick labels below/left of the ticks. :minor-ticks - draw minor ticks. :major-ticks - draw major ticks.
+edit-axis, edits an axis.
+@itemize @bullet
+@item 
+set the minimum value with :axis-min. 
+@item 
+set the maximum value with :axis-max. 
+@item
+set the spacing between major ticks with :major-tick-interval. 
+@item
+set the spacing between minor ticks with :minor-tick-interval.
+@item
+set the properties with :properties. this should be a list containing zero of more of the following symbols: 
+@itemize @space
+@item
+:draw - draw axis on both sides of the window. 
+@item
+:draw-bottom/left - draw axis on the bottom/left side of the window. 
+@item
+:draw-top/right - draw axis on the top/right side of the window. 
+@item
+:fixed-point - use fixed point labels. 
+@item
+:major-tick-grid - draw a grid on the graph at the major ticks. 
+@item
+:minor-tick-grid - draw a grid on the graph at the minor ticks. 
+@item
+:invert-ticks - draw ticks inward rather than outwards. 
+@item
+:log-axis - draw the axis on a log scale. 
+@item
+:major-tick-labels-above/right - draw the tick labels above/right of
+the ticks.
+@item
+:major-tick-labels-below/left - draw the tick labels below/left of the
+ticks. 
+@item
+:minor-ticks - draw minor ticks. 
+@item
+:major-ticks - draw major ticks.
+@end itemize
+@end itemize
 
 @subheading edit-axis-label
 @cindex edit-axis-label
 @subsubheading Argument List
 (a-axis-label &key axis-text-item side displacement location orientation)
 @subsubheading Documentation
-edit-axis-label, edits a axis-label object. set axis-text-item to a new object of class text-item with :axis-text-item. set which side to draw the label on with :side. set the displacement from the edge of the the graph with :displacement. set the location with along the side of the graph with :location. set the orientation with (:parallel or :perpendicular) with :orientation.
+edit-axis-label, edits a axis-label object. 
+@itemize @bullet
+@item
+set axis-text-item to a new object of class text-item with
+:axis-text-item. 
+@item
+set which side to draw the label on with :side.
+@item
+set the displacement from the edge of the the graph with
+:displacement. 
+@item
+set the location with along the side of the graph with :location. 
+@item
+set the orientation with (:parallel or :perpendicular) with :orientation.
+@end itemize
 
 @subheading edit-bar-graph
 @cindex edit-bar-graph
 @subsubheading Argument List
 (a-bar-graph &key side-by-side line-colors fill-colors line-width filled)
 @subsubheading Documentation
-edit-bar-graph, edits the visual properties of a bar-graph. set whether the bars are plotted side-by-side or on top of each other with side-by-side. set the colors of the bars with colors. set whether or not the bars are filled with filled.
+edit-bar-graph, edits the visual properties of a bar-graph. 
+@itemize @bullet
+@item
+set whether the bars are plotted side-by-side or on top of each other
+with :side-by-side.
+@item
+set the line colors of the bars with :line-colors.
+@item
+set the fill colors of the bars with :fill-colors.
+@item
+set the line width of the bars with :line-width.
+@item
+set whether or not the bars are filled with :filled.
+@end itemize
 
 @subheading edit-contour-plot
 @cindex edit-contour-plot
 @subsubheading Argument List
 (a-contour-plot &key line-color line-width fill-type fill-colors)
 @subsubheading Documentation
-edit-contour-plot, edits the visual properties of a contour plot set the line color with :line-color (this should be a color symbol in the current color table). set the line width with :line-width (integer, 0 means no line). set the fill-type with :fill-type (:none :block :smooth). set the fill-colors with :fill-colors (should be a vector of color symbols)
+edit-contour-plot, edits the visual properties of a contour plot.
+@itemize @bullet
+@item
+set the line color with :line-color (this should be a color symbol in
+the current color table). 
+@item
+set the line width with :line-width (integer, 0 means no line).
+@item
+set the fill-type with :fill-type (:none :block :smooth).
+@item
+set the fill-colors with :fill-colors (should be a vector of color symbols)
+@end itemize
 
 @subheading edit-text-item
 @cindex edit-text-item
 @subsubheading Argument List
 (a-text-item &key the-text text-color text-justification font-size)
 @subsubheading Documentation
-edit-text-item, edits a text-item object. set the text with :text. set the color of the text with :text-color symbol. set the justification with :text-justification (0.0 = left justified, 1.0 = right justified). set the font-size with :font-size (relative to the default size).
+edit-text-item, edits a text-item object. 
+@itemize @bullet
+@item
+set the text with :text.
+@item
+set the color of the text with :text-color symbol.
+@item
+set the justification with :text-justification (0.0 = left justified,
+1.0 = right justified).
+@item
+set the font-size with :font-size (relative to the default size).
+@end itemize
 
 @subheading edit-text-label
 @cindex edit-text-label
 @subsubheading Argument List
 (a-text-label &key label-text-item text-x text-y text-dx text-dy)
 @subsubheading Documentation
-edit-text-label, edits a text-label object. set text-item to a new object of class text-item with :label-text-item. set the x location of the text with :text-x. set the y location of the text with :text-y. set dx for drawing text at an angle with :text-dx. set dy for drawing text at an angle with :text-dy.
+edit-text-label, edits a text-label object.
+@itemize @bullet
+@item
+set text-item to a new object of class text-item with
+:label-text-item.
+@item
+set the x location of the text with :text-x. 
+@item
+set the y location of the text with :text-y. 
+@item
+set dx for drawing text at an angle with :text-dx.
+@item
+set dy for drawing text at an angle with :text-dy.
+@end itemize
 
 @subheading edit-window
 @cindex edit-window
 @subsubheading Argument List
 (a-window &key x-axis y-axis title foreground-color background-color window-line-width window-font-size viewport-x-min viewport-x-max viewport-y-min viewport-y-max plots text-labels color-table)
 @subsubheading Documentation
-edit-window, edits a window object. set x-axis to a new object of type axis with :x-axis. set y-axis to a new object of type axis with :y-axis. set title to a new object of type axis-label with :title. set the foreground color with :foreground-color. set the background color with :background-color. set the pen width for drawing the border with :window-line-width. set the font size for the tick labels with :window-font-size. set the location of the left border with :viewport-x-min. set the location of the right border with :viewport-x-max. set the location of the bottom border with :viewport-y-min. set the location of the top border with :viewport-y-max. set :plots to a list of plot objects to change the plots associated with a window. set :text-labels to a list of text-label objects to change the text-labels associated with a window. set :color-table to a new color table object to change the colors of a plot.
+edit-window, edits a window object.
+@itemize @bullet
+@item
+set x-axis to a new object of type axis with :x-axis. 
+@item
+set y-axis to a new object of type axis with :y-axis. 
+@item
+set title to a new object of type axis-label with :title. 
+@item
+set the foreground color with :foreground-color. 
+@item
+set the background color with :background-color. 
+@item
+set the pen width for drawing the border with :window-line-width. 
+@item
+set the font size for the tick labels with :window-font-size. 
+@item
+set the location of the left border with :viewport-x-min. 
+@item
+set the location of the right border with :viewport-x-max. 
+@item
+set the location of the bottom border with :viewport-y-min. 
+@item
+set the location of the top border with :viewport-y-max. 
+@item
+set :plots to a list of plot objects to change the plots associated
+with a window. 
+@item
+set :text-labels to a list of text-label objects to change the
+text-labels associated with a window. 
+@item
+set :color-table to a new color table object to change the colors of a plot.
+@end itemize
 
 @subheading edit-window-axis
 @cindex edit-window-axis
@@ -459,7 +591,21 @@ allows the user to edit the axis of a window. which-axis should be one of the sy
 @subsubheading Argument List
 (a-x-y-plot &key line-width line-style symbol-size symbol-type color)
 @subsubheading Documentation
-edit-x-y-plot, edits the visual properties of a plot set the line width with :line-width (integer, 0 means no line). set the line style with :line-style (integer between 1 and 8). set the symbol size with :symbol-size (1.0 is the defaul size, 0.0 means no symbols). set the symbol type with :symbol-type (integer or nil to use the default types). set the color with :color symbol.
+edit-x-y-plot, edits the visual properties of a x-y-plot. 
+@itemize @bullet
+@item
+set the line width with :line-width (integer, 0 means no line). 
+@item
+set the line style with :line-style (integer between 1 and 8). 
+@item
+set the symbol size with :symbol-size (1.0 is the defaul size, 0.0
+means no symbols). 
+@item
+set the symbol type with :symbol-type (integer or nil to use the
+default types). 
+@item
+set the color with :color symbol.
+@end itemize
 
 @subheading get-cursor
 @cindex get-cursor
@@ -488,21 +634,77 @@ none.
 @subsubheading Argument List
 (&key axis-min axis-max (major-tick-interval 0) (minor-tick-number 0) (properties *axis-properties*) axis-labels)
 @subsubheading Documentation
-new-axis, creates and returns an axis object. axis-min is the minimum value for the axis. axis-amx is the maximum value for the axis. major-tick-interval is the spacing between major ticks (0 means use plplot default). minor-tick-number is the number of minor ticks to put between the major ticks. properties is a list of symbols as explained in edit-axis. axis-labels is a list of axis-label objects.
+new-axis, creates and returns an axis object.
+@itemize @bullet
+@item
+axis-min is the minimum value for the axis. 
+@item
+axis-max is the maximum value for the axis. 
+@item
+major-tick-interval is the spacing between major ticks (0 means use
+plplot default). 
+@item
+minor-tick-number is the number of minor ticks to put between the
+major ticks. 
+@item
+properties is a list of symbols as explained in edit-axis. 
+@item
+axis-labels is a list of axis-label objects.
+@end itemize
 
 @subheading new-axis-label
 @cindex new-axis-label
 @subsubheading Argument List
 (axis-text-item side displacement &key (location 0.5) (orientation parallel))
 @subsubheading Documentation
-new-axis-label, create and returns a new axis label. axis-text-item is a object of type text-item. side is one of :top, :bottom, :left or :right. displacement specifies the distance from the edge of the graph in units of the default font-size. location is the position of the label along the side of the graph (0.0 - 1.0). orientation is one :parallel or :perpendicular.
+new-axis-label, create and returns a new axis label. 
+@itemize @bullet
+@item
+axis-text-item is a object of type text-item. 
+@item
+side is one of :top, :bottom, :left or :right. 
+@item
+displacement specifies the distance from the edge of the graph in
+units of the default font-size. 
+@item
+location is the position of the label along the side of the graph (0.0
+- 1.0). 
+@item
+orientation is one :parallel or :perpendicular.
+@end itemize
 
 @subheading new-bar-graph
 @cindex new-bar-graph
 @subsubheading Argument List
 (x data &key bar-widths side-by-side line-colors fill-colors (line-width 1.0) (filled t) (copy t))
 @subsubheading Documentation
-creates a new bar-graph plot object. x is an array of size (n) specifying the centers of the bars with x[i] < x[i+1]. if x is nil then data will be plotted against its index. data should be an array of size (n x m), where m > 0. bar-widths should be an array of size (n). it will specify the full width of each bar. defaults are chosen if this is not specified. side-by-side is t or nil. it specifies whether to draw the bars on top of each other or next to each other. line-colors should be an array of symbols of size (m) specifying colors in the current color table. fill-colors should be an array of symbols of size (m) specifying what color to use when filling in the bars. line-width is a number specifying how wide of a line to draw around the bar. filled specifies whether or not the bars are filled. if copy is true, then copies are made of x, data and widths, otherwise references are kept to the original vectors.
+creates a new bar-graph plot object. 
+@itemize @bullet
+@item
+x is an array of size (n) specifying the centers of the bars with x[i]
+< x[i+1]. if x is nil then data will be plotted against its index. 
+@item
+data should be an array of size (n x m), where m > 0. 
+@item
+bar-widths should be an array of size (n). it will specify the full width of each
+bar. defaults are chosen if this is not specified. 
+@item
+side-by-side is t or nil. it specifies whether to draw the bars on top
+of each other or next to each other. 
+@item
+line-colors should be an array of symbols of size (m) specifying
+colors in the current color table. 
+@item
+fill-colors should be an array of symbols of size (m) specifying what
+color to use when filling in the bars. 
+@item
+line-width is a number specifying how wide of a line to draw around
+the bar. 
+@item
+filled specifies whether or not the bars are filled.
+@item
+if copy is true, then copies are made of x, data and widths, otherwise references are kept to the original vectors.
+@end itemize
 
 @subheading new-color-table
 @cindex new-color-table
@@ -516,14 +718,50 @@ creates a new color table instance from a vector of rgb triples, which also incl
 @subsubheading Argument List
 (data &key contour-levels (line-color *foreground-color*) (line-width 1) (fill-type none) fill-colors x-min x-max x-mapping y-min y-max y-mapping (copy t))
 @subsubheading Documentation
-creates a new contour plot. data is a 2d array of z values. contour-levels is a 1d vector of floats specifying the levels at which the contours should appear. if this is nil, then default contours are created based on the minimum and maximum values in data. line-color is a symbol specifying which color to use in the current color table for the contour lines. line-width is an integer specifying what size line to use for the contours (or zero for no line). fill-type is one of :none (contours only), :block (a single color between each contour) or :smooth (color varies continously between contours). fill-colors is a (optional) vector of colors from the current color table to use when fill-type is :block. x-min & y-min specify the location of data(0, 0) in plot coordinates. x-max & y-max specify the location of data(max, max) in plot coordinates. x-mapping & y-mapping are either 1 1d vectors or 2d matrices specifying how to map points in data into plot coordinates. if they are 1d vector, then data(i,j) is mapped to [x-mapping(i), y-mapping(j)]. if they are 2d vectors then data(i,j) is mapped to [x-mapping(i,j), y-mapping(i,j)]. they must be used together and both must be the same type & also match the dimensions of data. they will override x-min, y-min, x-max and y-max if they are specified.
+creates a new contour plot. 
+@itemize @bullet
+@item
+data is a 2d array of z values. 
+@item
+contour-levels is a 1d vector of floats specifying the levels at which
+the contours should appear. if this is nil, then default contours are
+created based on the minimum and maximum values in data. 
+@item
+line-color is a symbol specifying which color to use in the current
+color table for the contour lines. 
+@item
+line-width is an integer specifying what size line to use for the
+contours (or zero for no line). 
+@item
+fill-type is one of :none (contours only), :block (a single color
+between each contour) or :smooth (color varies continously between
+contours). 
+@item
+fill-colors is a (optional) vector of colors from the current color
+table to use when fill-type is :block. 
+@item
+x-min & y-min specify the location of data(0, 0) in plot coordinates. 
+@item
+x-max & y-max specify the location of data(max, max) in plot
+coordinates. 
+@item
+x-mapping & y-mapping are either 1d vectors or 2d matrices specifying how to map points in data into plot coordinates. If they are 1d vector, then data(i,j) is mapped to [x-mapping(i), y-mapping(j)]. If they are 2d vectors then data(i,j) is mapped to [x-mapping(i,j), y-mapping(i,j)]. They must be used together and both must be the same type & also match the dimensions of data. They will override x-min, y-min, x-max and y-max if they are specified.
+@end itemize
 
 @subheading new-custom-plot-object
 @cindex new-custom-plot-object
 @subsubheading Argument List
 (min-max-function render-function)
 @subsubheading Documentation
-allows the user to create their own custom plot object. min-max-function must be either nil or a function of no arguments that returns the vector #(xmin xmax ymin ymax) that specifies the ideal window size for this object. render-function must be a function of one argument that specifies how to render the plot object. generally the rendering will be done with a bunch of calls to functions in the cl-plplot-system module. the current plot number will be passed to this function.
+allows the user to create their own custom plot object. 
+@itemize @bullet
+@item
+min-max-function must be either nil or a function of no arguments that
+returns the vector #(xmin xmax ymin ymax) that specifies the ideal
+window size for this object. 
+@item
+render-function must be a function of one argument that specifies how to render the plot object. generally the rendering will be done with a bunch of calls to functions in the cl-plplot-system module. the current plot number will be passed to this function.
+@end itemize
 
 @subheading new-extended-color-table
 @cindex new-extended-color-table
@@ -537,28 +775,116 @@ creates a new extended color table instance from a vector of control points. for
 @subsubheading Argument List
 (the-text &key (text-color *foreground-color*) (text-justification 0.5) (font-size *font-size*))
 @subsubheading Documentation
-new-text-item, creates and returns a new text item. text is a string specifying the text. text-color is a symbol specifying the text color. text-justification specifies how to center the string relative to its reference point. 0.0 - 1.0, where 0.5 means the string is centered. font-size sets the fontsize relative to the default font size.
+new-text-item, creates and returns a new text item. 
+@itemize @bullet
+@item
+text is a string specifying the text. 
+@item
+text-color is a symbol specifying the text color. 
+@item
+text-justification specifies how to center the string relative to its
+@item
+reference point. 0.0 - 1.0, where 0.5 means the string is centered. 
+@item
+font-size sets the fontsize relative to the default font size.
+@end itemize
 
 @subheading new-text-label
 @cindex new-text-label
 @subsubheading Argument List
 (label-text-item text-x text-y &key (text-dx 0.0) (text-dy 0.0))
 @subsubheading Documentation
-new-text-label, creates and returns a new text-label object. text-item should be an object created by new-text-item. text-x specifies the x location of the text reference point (in window coordinates). text-y specifies the y location of the text reference point. text-dx and text-dy specify the location of a second reference point (in window coordinates) the text is drawn along a line connecting (text-x,text-y) and (text-x + text-dx, text-y + text-dy).
+new-text-label, creates and returns a new text-label object. 
+@itemize @bullet
+@item
+text-item should be an object created by new-text-item. 
+@item
+text-x specifies the x location of the text reference point (in window
+coordinates). 
+@item
+text-y specifies the y location of the text reference point. 
+@item
+text-dx and text-dy specify the location of a second reference point (in window coordinates) the text is drawn along a line connecting (text-x,text-y) and (text-x + text-dx, text-y + text-dy).
+@end itemize
 
 @subheading new-window
 @cindex new-window
 @subsubheading Argument List
 (&key x-axis y-axis title (window-line-width 1.0) (window-font-size *font-size*) (foreground-color *foreground-color*) (background-color *background-color*) (viewport-x-min 0.1) (viewport-x-max 0.9) (viewport-y-min 0.1) (viewport-y-max 0.9) plots text-labels color-table)
 @subsubheading Documentation
-new-window, creates and returns a new window object x-axis is a object of type axis. y-axis is a object of type axis. title is a object of type axis-label. foreground-color is a color symbol in the current color table. background-color is a color symbol in the curretn color table. window-line-width is a floating point number specifying the pen width to use when drawing the border & the tick marks. window-font-size is the font size to use for the tick mark labels. viewport-x-min (0.0 - 1.0) is the location of the left side of the border in the device window. viewport-x-max (0.0 - 1.0) is the location of the right side of the border. viewport-y-min (0.0 - 1.0) is the location of the bottom side of the border. viewport-y-max (0.0 - 1.0) is the location of the top side of the border. plots is a list of plot objects. text-labels is a list of text-label objects. color-table specifies what color table to use.
+new-window, creates and returns a new window object. 
+@itemize @bullet
+@item
+x-axis is a object of type axis. 
+@item
+y-axis is a object of type axis. 
+@item
+title is a object of type axis-label. 
+@item
+foreground-color is a color symbol in the current color table. 
+@item
+background-color is a color symbol in the current color table. 
+@item
+window-line-width is a floating point number specifying the pen width
+to use when drawing the border & the tick marks. 
+@item
+window-font-size is the font size to use for the tick mark labels. 
+@item
+viewport-x-min (0.0 - 1.0) is the location of the left side of the
+border in the device window. 
+@item
+viewport-x-max (0.0 - 1.0) is the location of the right side of the
+border. 
+@item
+viewport-y-min (0.0 - 1.0) is the location of the bottom side of the
+border. 
+@item
+viewport-y-max (0.0 - 1.0) is the location of the top side of the
+border. 
+@item
+plots is a list of plot objects. 
+@item
+text-labels is a list of text-label objects. 
+@item
+color-table specifies what color table to use.
+@end itemize
 
 @subheading new-x-y-plot
 @cindex new-x-y-plot
 @subsubheading Argument List
 (x y &key (copy t) (line-width 1) (line-style 1) (symbol-size 0.0) symbol-type (color *foreground-color*) x-error y-error)
 @subsubheading Documentation
-creates a new x-y plot. if x is nil then y will be plotted against its index. if copy is true then copies of x,y,x-error and y-error will be made, otherwise references will be kept to the original vectors. line-width should be an integer line width, or zero if no line is desired line-style specifies what style line to draw (if a line is drawn), this should be a number between 1 and 8. symbol-size specified how big to draw the symbols (1.0 is standard size). if it is zero the symbols are not drawn. symbol-type should be set to a number (that specifies a symbol) if you want specific types of symbols, otherwise default symbol types are used. color is the color to use when plotting the lines and symbols, it should be a symbol that specifies a color in the current color table. if it is not specified then the current foreground color will be used. x-error should be a vector of the same length as x that contains the size of the error bars in x. y-error is for error bars in y.
+creates a new x-y plot. 
+@itemize @bullet
+@item
+if x is nil then y will be plotted against its index. 
+@item
+if copy is true then copies of x,y,x-error and y-error will be made,
+otherwise references will be kept to the original vectors. 
+@item
+line-width should be an integer line width, or zero if no line is
+desired. 
+@item
+line-style specifies what style line to draw (if a line is drawn),
+this should be a number between 1 and 8. 
+@item
+symbol-size specified how big to draw the symbols (1.0 is standard
+size). if it is zero the symbols are not drawn. 
+@item
+symbol-type should be set to a number (that specifies a symbol) if you
+want specific types of symbols, otherwise default symbol types are
+used. 
+@item
+color is the color to use when plotting the lines and symbols, it
+should be a symbol that specifies a color in the current color
+table. if it is not specified then the current foreground color will
+be used. 
+@item
+x-error should be a vector of the same length as x that contains the
+size of the error bars in x. 
+@item
+y-error is for error bars in y.
+@end itemize
 
 @subheading normal-font
 @cindex normal-font
@@ -608,7 +934,18 @@ remove-text-label-from-window, destructively removes a-text-label from a-window.
 @subsubheading Argument List
 (a-window device &key filename (size-x 600) (size-y 500))
 @subsubheading Documentation
-renders a window and it associated plots and labels using device. device: a string naming a plplot graphical device such as 'xwin'. filename: where to save the graph for file based devices. size-x: the size of the window in x (pixels). size-y: the size of the window in y (pixels). if you are using cl-plplot in a multi-threaded environment you should thread lock prior to calling render, as the plplot library only handles rendering one plot at a time.
+renders a window and it associated plots and labels using device. 
+@itemize @bullet
+@item
+device: a string naming a plplot graphical device such as 'xwin'. 
+@item
+filename: where to save the graph for file based devices. 
+@item
+size-x: the size of the window in x (pixels). 
+@item
+size-y: the size of the window in y (pixels). 
+@end itemize
+if you are using cl-plplot in a multi-threaded environment you should thread lock prior to calling render, as the plplot library only handles rendering one plot at a time.
 
 @subheading roman-font
 @cindex roman-font
@@ -673,8 +1010,24 @@ changes the color specified by color-symbol to new-color, which should be a rgb 
 @subsubheading Argument List
 (data x-grid y-grid &key (algorithm grid-csa) optional-data)
 @subsubheading Documentation
-calls the plplot function plgriddata to turn irregulary spaced data as (x,y,z) points into the 2d array data[i,j] = z. please see the plplot manual for further documenation. data is either a 3 x n matrix of (x,y,z) points, or a list containing (x-vector, y-vector, z-vector). x-grid specifies the locations of the grid points in the x direction. y-grid specifies the locations of the grid points in the y direction. algorithm is one of :grid-csa, :grid-dtli, :grid-nni, :grid-nnidw, :grid-nnli or :grid-nnaidw and specifies what algorithm to use to grid the data. optional-data is a floating point number used in some of the algorithms for determining how to best grid the data.
-
+calls the plplot function plgriddata to turn irregulary spaced data as
+(x,y,z) points into the 2d array data[i,j] = z. please see the plplot
+manual for further documenation. 
+@itemize @bullet
+@item
+data is either a 3 x n matrix of (x,y,z) points, or a list containing
+(x-vector, y-vector, z-vector). 
+@item
+x-grid specifies the locations of the grid points in the x direction. 
+@item
+y-grid specifies the locations of the grid points in the y direction. 
+@item
+algorithm is one of :grid-csa, :grid-dtli, :grid-nni, :grid-nnidw,
+:grid-nnli or :grid-nnaidw and specifies what algorithm to use to grid
+the data. 
+@item
+optional-data is a floating point number used in some of the algorithms for determining how to best grid the data.
+@end itemize
 
 @c=======================================================================
 
