@@ -35,13 +35,17 @@
 (in-package #:cl-plplot-system)
 
 (defun load-libraries ()
-  (push "/usr/local/lib/" *foreign-library-directories*)
+  (pushnew #P"/usr/local/lib/" *foreign-library-directories* :test #'equal)
   (define-foreign-library libplplot
     (t (:default "libplplotd")))
   (use-foreign-library libplplot)
-  (define-foreign-library libc
-    (t (:or "libc.dylib" "libc.so.6")))
-  (use-foreign-library libc)
-  (format t "libplplotd & libc libraries loaded~%"))
+
+;; Most lisps already have libc loaded?
+;
+;  (define-foreign-library libc
+;    (t (:or "libc.dylib" "libc.so.6")))
+;  (use-foreign-library libc)
+
+  (format t "libplplotd library loaded~%"))
 
 (load-libraries)
