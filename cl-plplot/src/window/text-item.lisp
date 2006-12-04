@@ -61,15 +61,14 @@
 
 (create-esc-function unicode-char "#[" "]")
 
-(defgeneric render-text (text-item))
-
-(defmethod render-text ((a-text-item text-item))
-  "Sets the current color and font size to those specified by the
-   text item. Processes the possibly utf-8 encoded string contained 
-   in text item to properly handle non ASCII characters. Returns
-   the processed string."
-  (set-foreground-color (text-color a-text-item))
-  (plschr 0 (font-size a-text-item))
+(defun render-text (a-text-item &optional is-a-3d-window-label)
+  "If this text is not the label of a 3d window, set the current color 
+   and font size to those specified by the text item. Then process the 
+   possibly utf-8 encoded string contained in text item to properly handle 
+   non ASCII characters and return the processed string."
+  (unless is-a-3d-window-label
+    (set-foreground-color (text-color a-text-item))
+    (plschr 0 (font-size a-text-item)))
   (let* ((utf8-text (the-text a-text-item))
 	 (escaped-string (make-array (* 10 (length utf8-text)) :element-type 'character))
 	 (l 0))

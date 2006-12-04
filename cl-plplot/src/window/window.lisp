@@ -1,25 +1,4 @@
 ;;;;
-;;;; Copyright (c) 2006 Hazen P. Babcock
-;;;;
-;;;; Permission is hereby granted, free of charge, to any person obtaining a copy 
-;;;; of this software and associated documentation files (the "Software"), to 
-;;;; deal in the Software without restriction, including without limitation the 
-;;;; rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
-;;;; sell copies of the Software, and to permit persons to whom the Software is 
-;;;; furnished to do so, subject to the following conditions:
-;;;;
-;;;; The above copyright notice and this permission notice shall be included in 
-;;;; all copies or substantial portions of the Software.
-;;;;
-;;;; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
-;;;; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-;;;; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
-;;;; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-;;;; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
-;;;; FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
-;;;; IN THE SOFTWARE.
-;;;;
-;;;;
 ;;;; Functions that are most closely related to the window class.
 ;;;;
 ;;;; hazen 6/06
@@ -110,9 +89,12 @@
 
 (defmethod edit-window-axis ((a-window window) which-axis &key axis-min axis-max major-tick-interval minor-tick-number properties)
   "Allows the user to edit the axis of a window. 
-   which-axis should be one of the symbols :x or :y.
+   which-axis should be one of the symbols :x or :y (or :z for 3D-windows only).
    See edit-axis for a more detailed explanation of the meaning of the different key words."
-  (let ((a-axis (if (equal which-axis :x) (x-axis a-window) (y-axis a-window))))
+  (let ((a-axis (cond
+		  ((equal which-axis :x) (x-axis a-window))
+		  ((equal which-axis :y) (y-axis a-window))
+		  ((equal which-axis :z) (z-axis a-window)))))
     (edit-axis a-axis
 	       :axis-min axis-min
 	       :axis-max axis-max
@@ -120,19 +102,30 @@
 	       :minor-tick-number minor-tick-number
 	       :properties properties)))
 
+; FIXME:
+;  This function seems long and awkward and redundant for what it does. It seems 
+; like it should be possible to have a function that this function would call on
+; each axis. However, this will involve changing the plot-min-max function 
+; for each plot type so that you could specify which axis you were interested 
+; in...
+
 (defun get-axis-ranges (a-window)
-  "Figures out the minimum and maximum values for both axises if this has
-   not already been specified. Defaults to 1.0 x 1.0 if there are no plots
+  "Figures out the minimum and maximum values for the plot axises if this has
+   not already been specified. Defaults to 1.0 x 1.0 x 1.0 if there are no plots
    associated with the window."
   (let ((x-min (axis-min (x-axis a-window)))
 	(x-max (axis-max (x-axis a-window)))
 	(y-min (axis-min (y-axis a-window)))
-	(y-max (axis-max (y-axis a-window))))
+	(y-max (axis-max (y-axis a-window)))
+	(z-min (if (slot-exists-p a-window 'z-axis) (z-axis a-window) 0.0))
+	(z-max (if (slot-exists-p a-window 'z-axis) (z-axis a-window) 1.0)))
     (unless (and x-min x-max y-min y-max)
       (let ((temp-x-min)
 	    (temp-x-max)
 	    (temp-y-min)
-	    (temp-y-max))
+	    (temp-y-max)
+	    (temp-z-min)
+	    (temp-z-max))
 	(if (plots a-window)
 	    (dolist (a-plot (plots a-window))
 	      (let ((range (plot-min-max a-plot)))
@@ -147,21 +140,32 @@
 		  (setf temp-y-min (aref range 2)))
 		(when (or (not temp-y-max)
 			  (> (aref range 3) temp-y-max))
-		  (setf temp-y-max (aref range 3)))))
+		  (setf temp-y-max (aref range 3)))
+		(when (>= (length range) 6)
+		  (when (or (not temp-z-min)
+			    (< (aref range 4) temp-z-min))
+		    (setf temp-z-min (aref range 4)))
+		  (when (or (not temp-z-max)
+			    (> (aref range 5) temp-z-max))
+		    (setf temp-z-max (aref range 5))))))
 	    (progn
 	      (setf temp-x-min 0.0)
 	      (setf temp-x-max 1.0)
 	      (setf temp-y-min 0.0)
-	      (setf temp-y-max 1.0)))
+	      (setf temp-y-max 1.0)
+	      (setf temp-z-min 0.0)
+	      (setf temp-z-max 1.0)))
 	(unless x-min (setf x-min temp-x-min))
 	(unless x-max (setf x-max temp-x-max))
 	(unless y-min (setf y-min temp-y-min))
-	(unless y-max (setf y-max temp-y-max))))
-    (values x-min x-max y-min y-max)))
+	(unless y-max (setf y-max temp-y-max))
+	(unless z-min (setf z-min temp-z-min))
+	(unless z-max (setf z-max temp-z-max))))
+    (values x-min x-max y-min y-max z-min z-max)))
 
-(defun render-window (a-window device filename size-x size-y &optional want-mouse?)
-  "This handles drawing the window & optionally returns the coordinates of a mouse click."
-  ;; setup window
+(defun setup-window (a-window device filename size-x size-y)
+  "Handles window setup. Factored out because both render-window and 
+   render-3D-window use this functionality, then diverge afterwards."
   (plsdev device)
   (when filename
     (plsfnam filename))
@@ -179,7 +183,12 @@
     (if a-extended-color-table
 	(setf *current-extended-color-table* a-extended-color-table)
 	(setf *current-extended-color-table* (default-extended-color-table))))
-  (initialize-extended-color-table *current-extended-color-table*)
+  (initialize-extended-color-table *current-extended-color-table*))
+
+(defun render-window (a-window device filename size-x size-y &optional want-mouse?)
+  "This handles drawing the window & optionally returns the coordinates of a mouse click."
+  ;; setup window
+  (setup-window a-window device filename size-x size-y)
 
   ;; start plotting
   (plinit)
@@ -240,3 +249,25 @@
    thread lock prior to calling render, as the PLplot library only handles
    rendering one plot at a time."
   (render-window a-window device filename size-x size-y))
+
+;;;;
+;;;; Copyright (c) 2006 Hazen P. Babcock
+;;;;
+;;;; Permission is hereby granted, free of charge, to any person obtaining a copy 
+;;;; of this software and associated documentation files (the "Software"), to 
+;;;; deal in the Software without restriction, including without limitation the 
+;;;; rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
+;;;; sell copies of the Software, and to permit persons to whom the Software is 
+;;;; furnished to do so, subject to the following conditions:
+;;;;
+;;;; The above copyright notice and this permission notice shall be included in 
+;;;; all copies or substantial portions of the Software.
+;;;;
+;;;; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+;;;; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+;;;; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+;;;; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+;;;; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+;;;; FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
+;;;; IN THE SOFTWARE.
+;;;;

@@ -42,7 +42,6 @@
 				       #'(lambda () (vector 0.0 1.0 0.0 1.0)))
 		 :render-function render-function))
 
-
 ;;;;
 ;;;; Copyright (c) 2006 Hazen P. Babcock
 ;;;;
