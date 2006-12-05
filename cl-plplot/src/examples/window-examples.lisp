@@ -1,28 +1,7 @@
 ;;;;
-;;;; Copyright (c) 2006 Hazen P. Babcock
+;;;; Examples that demonstrate using cl-plplot to make 2D & 3D plots.
 ;;;;
-;;;; Permission is hereby granted, free of charge, to any person obtaining a copy 
-;;;; of this software and associated documentation files (the "Software"), to 
-;;;; deal in the Software without restriction, including without limitation the 
-;;;; rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
-;;;; sell copies of the Software, and to permit persons to whom the Software is 
-;;;; furnished to do so, subject to the following conditions:
-;;;;
-;;;; The above copyright notice and this permission notice shall be included in 
-;;;; all copies or substantial portions of the Software.
-;;;;
-;;;; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
-;;;; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-;;;; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
-;;;; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-;;;; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
-;;;; FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
-;;;; IN THE SOFTWARE.
-;;;;
-;;;;
-;;;; Examples that demonstrate using cl-plplot to make 2D plots.
-;;;;
-;;;; hazen 6/06
+;;;; hazen 12/06
 ;;;;
 
 (defpackage :window-examples
@@ -381,3 +360,36 @@
     (add-plot-to-window w cp)
     (render w g-dev)))
 
+
+;;; 3D plots
+
+;; A simple 3d plot
+
+(defun 3d-plot-1 ()
+  (let ((c (new-3d-plot nil nil (my-make-matrix 50 50 #'(lambda (x y) (my-contour-plot-fn x y)))
+			:line-color :blue))
+	(w (basic-3d-window)))
+    (add-plot-to-window w c)
+    (render w g-dev)))
+
+;;;;
+;;;; Copyright (c) 2006 Hazen P. Babcock
+;;;;
+;;;; Permission is hereby granted, free of charge, to any person obtaining a copy 
+;;;; of this software and associated documentation files (the "Software"), to 
+;;;; deal in the Software without restriction, including without limitation the 
+;;;; rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
+;;;; sell copies of the Software, and to permit persons to whom the Software is 
+;;;; furnished to do so, subject to the following conditions:
+;;;;
+;;;; The above copyright notice and this permission notice shall be included in 
+;;;; all copies or substantial portions of the Software.
+;;;;
+;;;; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+;;;; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+;;;; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+;;;; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+;;;; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+;;;; FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
+;;;; IN THE SOFTWARE.
+;;;;

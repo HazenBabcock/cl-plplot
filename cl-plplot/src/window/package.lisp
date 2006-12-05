@@ -35,9 +35,11 @@
 	   #:add-plot-to-window
 	   #:add-text-label-to-window
 	   #:backspace
+	   #:basic-3d-window
 	   #:basic-window
 	   #:bring-to-front
 	   #:default-color-table
+	   #:edit-3d-window
 	   #:edit-axis
 	   #:edit-axis-label
 	   #:edit-bar-graph
@@ -51,6 +53,8 @@
 	   #:greek-char
 	   #:hershey-char
 	   #:italic-font
+	   #:new-3d-plot
+	   #:new-3d-window
 	   #:new-axis
 	   #:new-axis-label
 	   #:new-bar-graph

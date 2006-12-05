@@ -37,7 +37,7 @@
      (make-instance '3D-plot
 		    :data-x (copy-vector (if data-x data-x (make-index-vector (array-dimension data-z 0))) copy)
 		    :data-y (copy-vector (if data-y data-y (make-index-vector (array-dimension data-z 1))) copy)
-		    :data-z (copy-vector data-z copy)
+		    :data-z (copy-matrix data-z copy)
 		    :line-width line-width
 		    :line-style line-style
 		    :line-color line-color
@@ -80,7 +80,7 @@
 (defmethod render-plot ((a-plot 3D-plot) &optional (default-symbol 0))
   "Renders a 3D plot in the current window."
   (declare (ignore default-symbol))
-  (set-foreground-color (color a-plot))
+  (set-foreground-color (line-color a-plot))
   (when (> (line-width a-plot) 0)
     (when (range-check (line-style a-plot) 1 8)
       (pllsty (line-style a-plot)))

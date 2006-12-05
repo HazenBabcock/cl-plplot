@@ -102,7 +102,7 @@
    color-table
    extended-color-table))
 
-(def-plplot-class 3D-window ()
+(def-plplot-class 3D-window (window)
   (z-axis
    (altitude 60)
    (azimuth 30)))

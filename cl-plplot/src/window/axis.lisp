@@ -47,6 +47,8 @@
       :draw - draw axis on both sides of the window.
       :draw-bottom/left - draw axis on the bottom/left side of the window.
       :draw-top/right - draw axis on the top/right side of the window.
+      :grid-lines - (z axis of 3D plots only) draw grid lines parallel to the
+         x-y plane behind the figure.
       :fixed-point - use fixed point labels.
       :major-tick-grid - draw a grid on the graph at the major ticks.
       :minor-tick-grid - draw a grid on the graph at the minor ticks.
@@ -55,7 +57,13 @@
       :major-tick-labels-above/right - draw the tick labels above/right of the ticks.
       :major-tick-labels-below/left - draw the tick labels below/left of the ticks.
       :minor-ticks - draw minor ticks.
-      :major-ticks - draw major ticks.")
+      :major-ticks - draw major ticks.
+      :text-under-axis - (x & y axis of 3D plots only) draw the text label under
+         the x/y axis.
+      :text-by-left-axis - (z axis of 3D plots only) draw the text label beside the
+         left hand axis.
+      :text-by-right-axis) (z axis of 3D plots only) draw the text label beside the
+         right hand axis.")
 
 (def-add-remove-methods axis axis-labels axis-label)
   ;Creates the functions add-axis-label-to-axis & remove-axis-label-from-axis.
@@ -73,6 +81,7 @@
 	  ((equal property :draw) (my-cat "a"))
 	  ((equal property :draw-bottom/left) (my-cat "b"))
 	  ((equal property :draw-top/right) (my-cat "c"))
+	  ((equal property :grid-lines) (my-cat "d"))
 	  ((equal property :fixed-point) (my-cat "f"))
 	  ((equal property :major-tick-grid) (my-cat "g"))
 	  ((equal property :minor-tick-grid) (my-cat "h"))
@@ -82,6 +91,9 @@
 	  ((equal property :major-tick-labels-below/left) (my-cat "n"))
 	  ((equal property :minor-ticks) (my-cat "s"))
 	  ((equal property :major-ticks) (my-cat "t"))
+	  ((equal property :text-under-axis) (my-cat "u"))
+	  ((equal property :text-by-left-axis) (my-cat "u"))
+	  ((equal property :text-by-right-axis) (my-cat "v"))
 	  (t (format t "Unrecognized property ~A~%" property)))))
     opt-string))
 
