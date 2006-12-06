@@ -66,7 +66,7 @@
       contour-levels
       (progn
 	(when contour-levels
-	  (format t "Contour-levels must be a vector of contour values."))
+	  (format t "Contour-levels must be a vector of contour values. Using defaults instead.~%"))
 	(let ((min (aref data 0 0))
 	      (max (aref data 0 0))
 	      (default-levels (make-float-vector 10)))

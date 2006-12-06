@@ -58,8 +58,8 @@
 (def-add-remove-methods 3D-window text-labels text-label)
   ;Creates methods add-text-label-to-window & remove-text-label-from-window.
 
-(defun basic-3D-window (&key (x-label "x-axis") (y-label "y-axis") (z-label "z-axis") (title "cl-plplot") 
-		   (background-color *background-color*) (foreground-color *foreground-color*))
+(defun basic-3D-window (&key (x-label "x-axis") (y-label "y-axis") (z-label "z-axis") (title "cl-plplot")
+			(altitude 60) (azimuth 30) (background-color *background-color*) (foreground-color *foreground-color*))
   "Creates a 3D window object with ready-to-go axises. Note that in 3D plots you don't have the same control
    that you have in 2D plots about the text location, font-size, etc... so we don't bother to set so many
    axis-label and text-item object properties. The label font size of the axis labels is instead determined
@@ -78,7 +78,9 @@
 		   :z-axis z-axis
 		   :title title
 		   :foreground-color foreground-color
-		   :background-color background-color)))
+		   :background-color background-color
+		   :altitude altitude
+		   :azimuth azimuth)))
 
 (defun render-3D-window (a-window device filename size-x size-y)
   "This handles drawing a 3D window."
@@ -94,14 +96,11 @@
 	 (plvpor (viewport-x-min a-window) (viewport-x-max a-window) 
 		 (viewport-y-min a-window) (viewport-y-max a-window))
 	 (multiple-value-bind (x-min x-max y-min y-max z-min z-max) (get-axis-ranges a-window)
-	   (plwind -1.0 1.0 -0.6 1.4)
-	   (plw3d 1.1 1.1 1.1
-		  x-min x-max y-min y-max z-min z-max
-		  (altitude a-window) (azimuth a-window)))
-
-;	   (plw3d (- x-max x-min) (- y-max y-min) (- z-max z-min)
-;		  x-min x-max y-min y-max z-min z-max
-;		  (altitude a-window) (azimuth a-window)))
+	   (let ((y-offset (- -0.2 (* 0.01 (altitude a-window)))))
+	     (plwind -1.0 1.0 y-offset (+ 2.0 y-offset))
+	     (plw3d 1.1 1.1 1.1
+		    x-min x-max y-min y-max z-min z-max
+		    (altitude a-window) (azimuth a-window))))
 
 	 ;; title, axis & axis labels
 	 (set-foreground-color (foreground-color a-window))

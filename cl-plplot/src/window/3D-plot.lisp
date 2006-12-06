@@ -18,37 +18,53 @@
     (return-from 3D-plot-check-lengths nil))
   t)
 
-(defun new-3D-plot (data-x data-y data-z &key (copy t) (line-width 1) (line-style 1) (line-color *foreground-color*) surface)
+(defun new-3D-plot (data-x data-y data-z &key contour-levels (copy t) (line-width 1) (line-style 1) 
+		    (line-color *foreground-color*) (grid-type :grid-xy) contour-options curtain)
    "Creates a new 3D (surface) plot.
     data-z is a 2D array of z values for the plot.
     data-x specifies the x values of the points in data-z. If data-x is nil then data-z will 
        be plotted against its row index in x.
     data-y specifies the y avlues of the points in data-z. If data-y is nil then data-z will 
        be plotted against its column index in y.
+    contour-levels specifies the levels at which to draw contours, if desired. If this is
+       not specified, default values are chosen.
     If copy is true then copies of data-x, data-y and data-z will be made, otherwise reference
        will be kept to the original vectors.
     line-width should be an integer line width, or zero if no line is desired
     line-style specifies what style line to draw (if a line is drawn), this should be a number
        between 1 and 8.
     line-color is the color to use for the lines in the plot.
-    surface is a symbol specifying what type of surface to. It should be one of:
-       :mesh, :solid, :solid-mesh or :contour."
+    grid-type should be one of :gridx, :gridy or :gridxy. This specifies whether to draw
+       lines only in x, only in y, or in both dimensions between the data points.
+    contour-options should be one of nil, :magnitude-contour, :base-contour or :both.
+       nil - no contours.
+       :magnitude-contour - draw contour lines on the plot.
+       :base-contour - draw contour lines on the x-y plane below the plot.
+       :both - draw both magnitude and base contours.
+    curtain should be t or nil. This specifies whether to draw a 'curtain' around the
+       edges of the plot."
    (when (3D-plot-check-lengths data-x data-y data-z)
      (make-instance '3D-plot
 		    :data-x (copy-vector (if data-x data-x (make-index-vector (array-dimension data-z 0))) copy)
 		    :data-y (copy-vector (if data-y data-y (make-index-vector (array-dimension data-z 1))) copy)
 		    :data-z (copy-matrix data-z copy)
+		    :contour-levels (check-contour-levels data-z (copy-vector contour-levels copy))
 		    :line-width line-width
 		    :line-style line-style
 		    :line-color line-color
-		    :surface surface)))
+		    :grid-type grid-type
+		    :contour-options contour-options
+		    :curtain curtain)))
 
-(def-edit-method 3D-plot (line-width line-style line-color surface)
+(def-edit-method 3D-plot (line-width line-style line-color grid-type contour-options curtain)
   "edit-3D-plot, Edits the visual properties of a 3D plot
     Set the line width with :line-width (integer, 0 means no line).
     Set the line style with :line-style (integer between 1 and 8).
     Set the line color with :line-color symbol.
-    Set the surface type with :surface to one of (:mesh, :solid, :solid-mesh or :contour)")
+    Set the grid type with :grid-type to one of (:gridx, :gridy or :gridxy).
+    Set the contour options with :contour-options to one of (:magnitude-contour,
+       :base-contour or :both)
+    Set the whether or not display a curtain with :curtain")
 
 (defmethod plot-min-max ((a-plot 3D-plot))
   "Returns the minimum and maximum values in the 3D plot as a 6 element vector."
@@ -70,10 +86,11 @@
 	(when (< (aref z-data i j) min-z) (setf min-z (aref z-data i j)))
 	(when (> (aref z-data i j) max-z) (setf max-z (aref z-data i j)))))
     (let ((x-delta (* 0.05 (- max-x min-x)))
-	  (y-delta (* 0.05 (- max-y min-y))))
+	  (y-delta (* 0.05 (- max-y min-y)))
+	  (z-delta (* 0.05 (- max-z min-z))))
       (vector (- min-x x-delta) (+ max-x x-delta) 
 	      (- min-y y-delta) (+ max-y y-delta)
-	      min-z max-z))))
+	      (- min-z z-delta) (+ max-z z-delta)))))
 
 ;; draw a plot
 
@@ -85,7 +102,22 @@
     (when (range-check (line-style a-plot) 1 8)
       (pllsty (line-style a-plot)))
     (plwid (line-width a-plot)))
-  (plmesh (data-x a-plot) (data-y a-plot) (data-z a-plot) 3))
+  (let ((parsed-options
+	 (+ (cond
+	      ((equal (grid-type a-plot) :grid-x) 1)
+	      ((equal (grid-type a-plot) :grid-y) 2)
+	      ((equal (grid-type a-plot) :grid-xy) 3)
+	      (t 0))
+	    (cond
+	      ((equal (contour-options a-plot) :magnitude-contour) 4)
+	      ((equal (contour-options a-plot) :base-contour) 8)
+	      ((equal (contour-options a-plot) :both) (+ 4 8))
+	      (t 0))
+	    (if (curtain a-plot) 64 0))))
+    (if (or (contour-options a-plot)
+	    (curtain a-plot))
+	(plmeshc (data-x a-plot) (data-y a-plot) (data-z a-plot) parsed-options (contour-levels a-plot))
+	(plmesh (data-x a-plot) (data-y a-plot) (data-z a-plot) parsed-options))))
 
 ;;;;
 ;;;; Copyright (c) 2006 Hazen P. Babcock

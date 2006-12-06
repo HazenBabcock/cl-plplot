@@ -80,10 +80,13 @@
   (data-x
    data-y
    data-z
+   contour-levels
    line-width
    line-style
    line-color
-   surface))
+   grid-type
+   contour-options
+   curtain))
 
 (def-plplot-class window ()
   (x-axis
