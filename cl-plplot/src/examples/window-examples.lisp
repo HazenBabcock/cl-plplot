@@ -389,7 +389,18 @@
 
 (defun 3d-plot-3 ()
   (let ((c (new-3d-plot nil nil (my-make-matrix 50 50 #'(lambda (x y) (my-contour-plot-fn x y)))
-			:line-color :blue :grid-type :grid-x :contour-options :both))
+			:grid-type :grid-x :contour-options :both))
+	(w (basic-3d-window :altitude 30 :azimuth 60)))
+    (add-plot-to-window w c)
+    (render w g-dev)))
+
+
+;; The same plot with magnitude coloring on the plot. Additionally a "curtain"
+;; is drawn around the plot.
+
+(defun 3d-plot-4 ()
+  (let ((c (new-3d-plot nil nil (my-make-matrix 50 50 #'(lambda (x y) (my-contour-plot-fn x y)))
+			:contour-options :magnitude-contour :curtain t))
 	(w (basic-3d-window :altitude 30 :azimuth 60)))
     (add-plot-to-window w c)
     (render w g-dev)))

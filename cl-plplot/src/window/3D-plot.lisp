@@ -85,12 +85,7 @@
       (dotimes (j (length y-data))
 	(when (< (aref z-data i j) min-z) (setf min-z (aref z-data i j)))
 	(when (> (aref z-data i j) max-z) (setf max-z (aref z-data i j)))))
-    (let ((x-delta (* 0.05 (- max-x min-x)))
-	  (y-delta (* 0.05 (- max-y min-y)))
-	  (z-delta (* 0.05 (- max-z min-z))))
-      (vector (- min-x x-delta) (+ max-x x-delta) 
-	      (- min-y y-delta) (+ max-y y-delta)
-	      (- min-z z-delta) (+ max-z z-delta)))))
+    (vector min-x max-x min-y max-y min-z max-z)))
 
 ;; draw a plot
 
@@ -114,9 +109,10 @@
 	      ((equal (contour-options a-plot) :both) (+ 4 8))
 	      (t 0))
 	    (if (curtain a-plot) 64 0))))
-    (if (or (contour-options a-plot)
-	    (curtain a-plot))
-	(plmeshc (data-x a-plot) (data-y a-plot) (data-z a-plot) parsed-options (contour-levels a-plot))
+    (if (contour-options a-plot)
+	(if (curtain a-plot)
+	    (plot3dc (data-x a-plot) (data-y a-plot) (data-z a-plot) parsed-options (contour-levels a-plot))
+	    (plmeshc (data-x a-plot) (data-y a-plot) (data-z a-plot) parsed-options (contour-levels a-plot)))
 	(plmesh (data-x a-plot) (data-y a-plot) (data-z a-plot) parsed-options))))
 
 ;;;;
