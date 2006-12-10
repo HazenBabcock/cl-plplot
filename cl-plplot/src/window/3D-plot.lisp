@@ -102,12 +102,16 @@
 	      ((equal (grid-type a-plot) :grid-x) 1)
 	      ((equal (grid-type a-plot) :grid-y) 2)
 	      ((equal (grid-type a-plot) :grid-xy) 3)
-	      (t 0))
+	      (t
+	       (format t "Unknown grid option : ~A, using default option~%" (grid-type a-plot))
+	       3))
 	    (cond
 	      ((equal (contour-options a-plot) :magnitude-contour) 4)
 	      ((equal (contour-options a-plot) :base-contour) 8)
 	      ((equal (contour-options a-plot) :both) (+ 4 8))
-	      (t 0))
+	      (t
+	       (format t "Unknown contour option : ~A, using default option~%" (contour-options a-plot))
+	       0))
 	    (if (curtain a-plot) 64 0))))
     (if (contour-options a-plot)
 	(if (curtain a-plot)
