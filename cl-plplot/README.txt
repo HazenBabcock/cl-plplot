@@ -44,8 +44,7 @@ explain the organization of the various cl-plplot classes.
 
 cl-plplot-system: 
 This is currently 4 files (src/system).
-1) loadlib.lisp defines the package and loads the plplot library as well as
-	the standard C library.
+1) loadlib.lisp defines the package and loads the PLplot library.
 2) defcfun.lisp defines the macro that is used to facilitate wrapping all the
 	CFFI calls.
 3) misc.lisp contains some helper functions and macros.
