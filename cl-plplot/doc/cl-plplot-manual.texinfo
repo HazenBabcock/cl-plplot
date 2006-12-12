@@ -49,6 +49,7 @@ October 14, 2006
 
 @menu
 * Introduction::
+* Installation::
 * The Low Level Interface to PLplot::
 * The High Level Plotting Package::
 * Index::
@@ -72,6 +73,21 @@ OS-X and debian linux with SBCL. Since it interfaces to the PLplot
 library using CFFI, it should work with any combination of lisp 
 implementation and operating system that is supported by CFFI.
 
+@c=======================================================================
+
+@node Installation
+@chapter Installation
+Cl-plplot depends on a working installation of the PLplot plotting
+library. This is available as a debian package, but it is also not too
+hard to compile from source on most systems. The current recommended debian
+package is libplplot-dev 5.6.1 in testing. 
+
+Once you have installed the PLplot library cl-plplot will hopefully not
+have any trouble finding the library. If you do encounter difficulties
+with cl-plplot finding the PLplot library, then the you will probably
+need to edit the function load-libraries in /cl-plplot/src/system. All
+that should be necessary is to provide the appropriate path to the
+library file 'libplplotd'.
 
 @c=======================================================================
 
