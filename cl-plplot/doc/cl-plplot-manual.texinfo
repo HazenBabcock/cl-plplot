@@ -211,11 +211,6 @@ plot objects to the window objects. When everything is set you
 call the @code{render} method on the window object to display
 the plot using the display device of your choice.
 
-An effort was made to try and make PLplot easier to use from
-Lisp without sacrificing any of PLplot's functionality. In
-situations where a decision had to be made between ease of use
-and flexibility I tried to err on the side of flexibility.
-
 @section The Object Layout
 @example
   window object
