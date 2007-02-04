@@ -76,17 +76,23 @@
    x-mapping
    y-mapping))
 
-(def-plplot-class 3D-plot (plot)
+(def-plplot-class 3D-plot-class (plot)
   (data-x
    data-y
    data-z
    contour-levels
    line-width
    line-style
-   line-color
-   grid-type
+   line-color))
+
+(def-plplot-class 3D-plot (3D-plot-class)
+  (grid-type
    contour-options
    curtain))
+
+(def-plplot-class surface-plot (3D-plot-class)
+  (light-source
+   surface-options))
 
 (def-plplot-class window ()
   (x-axis

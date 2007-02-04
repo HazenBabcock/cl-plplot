@@ -66,8 +66,8 @@
        :base-contour or :both)
     Set the whether or not display a curtain with :curtain")
 
-(defmethod plot-min-max ((a-plot 3D-plot))
-  "Returns the minimum and maximum values in the 3D plot as a 6 element vector."
+(defmethod plot-min-max ((a-plot 3D-plot-class))
+  "Returns the minimum and maximum values in the 3D plot class object as a 6 element vector."
   (let* ((x-data (data-x a-plot))
 	 (y-data (data-y a-plot))
 	 (z-data (data-z a-plot))

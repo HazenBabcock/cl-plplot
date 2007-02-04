@@ -46,8 +46,6 @@
 ;; in the inferior lisp buffer.
 
 (defparameter g-dev "aqt")
-(defparameter f-dev "pbm")
-
 
 ;;; X-Y-Plots
 

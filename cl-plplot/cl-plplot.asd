@@ -64,6 +64,7 @@
 		 (:file "bar-graph" :depends-on ("plot"))
     		 (:file "contour-plot" :depends-on ("plot"))
                  (:file "3D-plot" :depends-on ("plot"))
+                 (:file "surface-plot" :depends-on ("3D-plot"))
 		 (:file "window" :depends-on ("plot" "axis" "color-table" "extended-color-table"))
 		 (:file "3D-window" :depends-on ("window")))
     :depends-on (:src/system)))

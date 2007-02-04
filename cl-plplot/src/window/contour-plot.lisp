@@ -215,7 +215,7 @@
     smooth-levels))
 
 (defmethod render-plot ((a-plot contour-plot) &optional ignored)
-  "Renders a x-y plot in the current window."
+  "Renders a contour plot in the current window."
   (declare (ignore ignored))
   ; Set the coordinate mapping callback function appropriately. The value
   ; is saved and reset for the benefit of other functions that might
