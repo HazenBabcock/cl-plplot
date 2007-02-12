@@ -44,6 +44,7 @@
 	   #:edit-axis-label
 	   #:edit-bar-graph
 	   #:edit-contour-plot
+	   #:edit-surface-plot
 	   #:edit-text-item
 	   #:edit-text-label
 	   #:edit-window
@@ -62,6 +63,7 @@
 	   #:new-contour-plot
 	   #:new-custom-plot-object
 	   #:new-extended-color-table
+	   #:new-surface-plot
 	   #:new-text-item
 	   #:new-text-label
 	   #:new-window

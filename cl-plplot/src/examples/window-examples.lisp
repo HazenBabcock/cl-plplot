@@ -404,6 +404,27 @@
     (render w g-dev)))
 
 
+;;; Surface plots
+
+;; A simple surface plot
+
+(defun surface-plot-1 ()
+  (let ((c (new-surface-plot nil nil (my-make-matrix 50 50 #'(lambda (x y) (my-contour-plot-fn x y)))
+			:line-color :blue))
+	(w (basic-3d-window :altitude 30 :azimuth 60)))
+    (add-plot-to-window w c)
+    (render w g-dev)))
+
+;; The same plot with a curtain and coloring according to the magnitude in z
+
+(defun surface-plot-2 ()
+  (let ((c (new-surface-plot nil nil (my-make-matrix 50 50 #'(lambda (x y) (my-contour-plot-fn x y)))
+			     :surface-options '(:curtain :magnitude-coloring)))
+	(w (basic-3d-window :altitude 30 :azimuth 60)))
+    (add-plot-to-window w c)
+    (render w g-dev)))
+
+
 ;;;;
 ;;;; Copyright (c) 2006 Hazen P. Babcock
 ;;;;
