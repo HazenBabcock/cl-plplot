@@ -37,8 +37,7 @@ software or the use or other dealings in the software.}
 @titlepage
 @title Cl-plplot User Manual
 @vskip 0pt plus 1filll
-October 14, 2006
-
+February 19, 2007
 @page
 @vskip 0pt plus 1fill
 @insertcopying
@@ -209,7 +208,15 @@ a little more Lispy using a CLOS based approach. You create
 window objects, then associate axis objects, text objects and
 plot objects to the window objects. When everything is set you
 call the @code{render} method on the window object to display
-the plot using the display device of your choice.
+the plot using the display device of your choice. 
+
+This approach was adopted in part because the PLplot library 
+does not support drawing multiple graphs simultaneously. By 
+deferring the actual calls to the PLplot library until the 
+moment when render is called on the window object, the user 
+can build several graphs simultaneously. This also means 
+that thread locks are a good idea in calls to render in a 
+multi-threaded environment.
 
 @section The Object Layout
 @example
@@ -224,15 +231,14 @@ the plot using the display device of your choice.
    |--color-table object (1 per window)
    |--extended-color-table object (1 per window)
 @end example
-Note that this is @strong{NOT} an inheritance diagram. Each of the above objects
-is a distinct entity.
+Note that this is @strong{NOT} an inheritance diagram. Each 
+of the above objects is a distinct entity.
 
 @section Object Definitions
 @subheading The Window Object
 This is the main object without which it is impossible
 to actually create a plot. It always contains references to two 
-axis objects, one for the x-axis and one for the y-axis (It 
-isn't clear to me yet how I'll extend this to 3D plots). It can
+axis objects, one for the x-axis and one for the y-axis. It can
 also contain references to additional axis-label objects that
 might be used to provide a title for the plot as well as any
 other axis labeling that is needed, references to plot objects
@@ -273,6 +279,10 @@ window coordinate system and another that draws the object
 in the current window using @code{:cl-plplot-system}
 function calls. Specialized forms currently include x-y-plot, 
 bar-graph and contour-plot.
+
+@subheading The 3D Plot Object
+This object inherits from the plot object. Specialized forms
+currently include the 3D-mesh and surface-plot.
 
 @subheading The Color-table Object
 This object handles the use of PLplot's color map 0. Typically it
@@ -337,13 +347,44 @@ and then the window is rendered using the X11 graphics device.
             :fill-type :smooth))
 	(w (basic-window)))
     (add-plot-to-window w c)
-    (render w g-dev)))
+    (render w "xwin")))
 @end lisp
 A contour plot object is created from a 2D matrix of
 data. Additionally the coordinate system of the matrix is specified
 with @code{:x-min}, @code{:x-max}, @code{:y-min} and @code{:y-max} and
 the contour plot fill type is specified with @code{:fill-type}. The
 function @code{my-make-matrix} is defined in @code{src/examples/window-examples.lisp}.
+
+@subheading 3D mesh plots
+@lisp
+(defun 3d-plot-1 ()
+  (let ((c (new-3d-mesh nil nil 
+            (my-make-matrix 50 50 #'(lambda (x y) 
+                                     (my-contour-plot-fn x y)))
+            :line-color :blue))
+	(w (basic-3d-window :altitude 30 :azimuth 60)))
+    (add-plot-to-window w c)
+    (render w "xwin")))
+@end lisp
+A 3D-mesh object is created from a 2D matrix of 
+data. A 3D-window object is created in which to draw the 3D-plot
+object, with the viewing angle specified by @code{:altitude} and 
+@code{:azimuth}. The plot is added to the window and is then
+rendered using the X11 graphics device.
+
+@subheading 3D surface plots
+@lisp
+(defun surface-plot-1 ()
+  (let ((c (new-surface-plot nil nil 
+            (my-make-matrix 50 50 #'(lambda (x y) 
+                                     (my-contour-plot-fn x y)))
+	    :line-color :blue))
+	(w (basic-3d-window :altitude 30 :azimuth 60)))
+    (add-plot-to-window w c)
+    (render w "xwin")))
+@end lisp
+This example is essentially the same as the mesh plot example,
+except that we now create a surface-plot object.
 
 @section Cl-plplot Functions in Alphabetical order
 
@@ -352,7 +393,8 @@ function @code{my-make-matrix} is defined in @code{src/examples/window-examples.
 @subsubheading Argument List
 (a-axis a-axis-label)
 @subsubheading Documentation
-add-axis-label-to-axis, adds a-axis-label to a-axis.
+adds a-axis-label to a-axis.
+@sp 2
 
 @subheading add-color-to-color-table
 @cindex add-color-to-color-table
@@ -360,6 +402,7 @@ add-axis-label-to-axis, adds a-axis-label to a-axis.
 (a-color-table new-color)
 @subsubheading Documentation
 adds a new color #(r g b :smybol) to the end of a color table.
+@sp 2
 
 @subheading add-plot-to-window
 @cindex add-plot-to-window
@@ -367,6 +410,7 @@ adds a new color #(r g b :smybol) to the end of a color table.
 (a-window a-plot)
 @subsubheading Documentation
 add-plot-to-window, adds a-plot to a-window.
+@sp 2
 
 @subheading add-text-label-to-window
 @cindex add-text-label-to-window
@@ -374,6 +418,7 @@ add-plot-to-window, adds a-plot to a-window.
 (a-window a-text-label)
 @subsubheading Documentation
 add-text-label-to-window, adds a-text-label to a-window.
+@sp 2
 
 @subheading backspace
 @cindex backspace
@@ -385,6 +430,7 @@ number-symbol, overline, roman-font, script-font, subscript,
 superscript, underline and unicode-char) exist to insert PLplot escape
 sequences into a string. Cl-plplot uses the default PLplot escape
 character ``#''.
+@sp 2
 
 @subheading basic-window
 @cindex basic-window
@@ -392,6 +438,7 @@ character ``#''.
 (&key (x-label x-axis) (y-label y-axis) (title cl-plplot) (background-color *background-color*) (foreground-color *foreground-color*))
 @subsubheading Documentation
 creates a basic window object with ready-to-go axises.
+@sp 2
 
 @subheading bring-to-front
 @cindex bring-to-front
@@ -399,6 +446,7 @@ creates a basic window object with ready-to-go axises.
 (a-window a-plot)
 @subsubheading Documentation
 organizes the plots so that a-plot is drawn on top.
+@sp 2
 
 @subheading default-color-table
 @cindex default-color-table
@@ -406,6 +454,82 @@ organizes the plots so that a-plot is drawn on top.
 none.
 @subsubheading Documentation
 returns the default color table.
+@sp 2
+
+@subheading edit-3D-mesh
+@cindex edit-3D-mesh
+@subsubheading Argument List
+(a-3d-mesh &key line-width line-style line-color grid-type
+contour-options curtain)
+@subsubheading Documentation
+Edits the visual properties of a 3D-mesh plot object.
+@itemize @bullet
+@item
+Set the line width with :line-width (integer, 0 means no line).
+@item
+Set the line style with :line-style (integer between 1 and 8).
+@item
+Set the line color with :line-color symbol.
+@item
+Set the grid type with :grid-type to one of (:gridx, :gridy or
+:gridxy).
+@item
+Set the contour options with :contour-options to one of
+(:magnitude-contour, :base-contour or :both).
+@item
+Set the whether or not display a curtain with :curtain
+@end itemize
+@sp 2
+
+@subheading edit-3D-window
+@cindex edit-3D-window
+@subsubheading Argument List
+(a-3d-window &key x-axis y-axis z-axis title foreground-color
+background-color window-line-width window-font-size viewport-x-min
+viewport-x-max viewport-y-min viewport-y-max plots text-labels
+color-table altitude azimuth)
+@subsubheading Documentation
+edit-3D-window, edits the visual properties of a 3D-window.
+@itemize @bullet
+@item
+Set x-axis to a new object of type axis with :x-axis.
+@item
+Set y-axis to a new object of type axis with :y-axis.
+@item
+Set z-axis to a new object of type axis with :z-axis.
+@item
+Set title to a new object of type axis-label with :title.
+@item
+Set the foreground color with :foreground-color.
+@item
+Set the background color with :background-color.
+@item
+Set the pen width for drawing the border with :window-line-width.
+@item
+Set the font size for the tick labels with :window-font-size.
+@item
+Set the location of the left border with :viewport-x-min.
+@item
+Set the location of the right border with :viewport-x-max.
+@item
+Set the location of the bottom border with :viewport-y-min.
+@item
+Set the location of the top border with :viewport-y-max.
+@item
+Set :plots to a list of plot objects to change the plots associated
+with a window.
+@item
+Set :text-labels to a list of text-label objects to change the
+text-labels associated with a window.
+@item
+Set :color-table to a new color table object to change the colors of a
+plot.
+@item
+Set the observer altitude in degrees with :altitude.
+@item
+Set the observer azimuth in degrees with :azimuth.
+@end itemize
+@sp 2
 
 @subheading edit-axis
 @cindex edit-axis
@@ -453,6 +577,7 @@ ticks.
 :major-ticks - draw major ticks.
 @end itemize
 @end itemize
+@sp 2
 
 @subheading edit-axis-label
 @cindex edit-axis-label
@@ -474,6 +599,7 @@ set the location with along the side of the graph with :location.
 @item
 set the orientation with (:parallel or :perpendicular) with :orientation.
 @end itemize
+@sp 2
 
 @subheading edit-bar-graph
 @cindex edit-bar-graph
@@ -494,6 +620,7 @@ set the line width of the bars with :line-width.
 @item
 set whether or not the bars are filled with :filled.
 @end itemize
+@sp 2
 
 @subheading edit-contour-plot
 @cindex edit-contour-plot
@@ -512,6 +639,42 @@ set the fill-type with :fill-type (:none :block :smooth).
 @item
 set the fill-colors with :fill-colors (should be a vector of color symbols)
 @end itemize
+@sp 2
+
+@subheading edit-surface-plot
+@cindex edit-surface-plot
+@subsubheading Argument List
+(a-surface-plot &key line-width line-style line-color light-source
+surface-options)
+@subsubheading Documentation
+edit-surface-plot, edits the visual properties of a solid surface
+plot.
+@itemize @bullet
+@item
+Set the line width with :line-width (integer, 0 means no line).
+@item
+Set the line style with :line-style (integer between 1 and 8).
+@item
+Set the line color with :line-color symbol.
+@item
+Move the light-source to a new position with :light-source #(x y z).
+@item
+Change the surface-options with :surface-options to a list including
+zero or more of:
+@itemize @space
+@item
+:faceted
+@item
+:base-contours
+@item
+:surface-contours
+@item
+:curtain
+@item
+:magnitude-coloring
+@end itemize
+@end itemize
+@sp 2
 
 @subheading edit-text-item
 @cindex edit-text-item
@@ -530,6 +693,7 @@ set the justification with :text-justification (0.0 = left justified,
 @item
 set the font-size with :font-size (relative to the default size).
 @end itemize
+@sp 2
 
 @subheading edit-text-label
 @cindex edit-text-label
@@ -550,6 +714,7 @@ set dx for drawing text at an angle with :text-dx.
 @item
 set dy for drawing text at an angle with :text-dy.
 @end itemize
+@sp 2
 
 @subheading edit-window
 @cindex edit-window
@@ -589,6 +754,7 @@ text-labels associated with a window.
 @item
 set :color-table to a new color table object to change the colors of a plot.
 @end itemize
+@sp 2
 
 @subheading edit-window-axis
 @cindex edit-window-axis
@@ -596,6 +762,7 @@ set :color-table to a new color table object to change the colors of a plot.
 (a-window which-axis &key axis-min axis-max major-tick-interval minor-tick-number properties)
 @subsubheading Documentation
 allows the user to edit the axis of a window. which-axis should be one of the symbols :x or :y. see edit-axis for a more detailed explanation of the meaning of the different key words.
+@sp 2
 
 @subheading edit-x-y-plot
 @cindex edit-x-y-plot
@@ -617,6 +784,7 @@ default types).
 @item
 set the color with :color symbol.
 @end itemize
+@sp 2
 
 @subheading get-cursor
 @cindex get-cursor
@@ -624,21 +792,132 @@ set the color with :color symbol.
 (a-window device &key (size-x 600) (size-y 500))
 @subsubheading Documentation
 get the location (in window coordinates) of the next mouse click. in order to do this the window must first be rendered so that the user has something to click on.
+@sp 2
 
 @subheading greek-char
 @cindex greek-char
 @subsubheading Argument List
 none.
+@sp 2
 
 @subheading hershey-char
 @cindex hershey-char
 @subsubheading Argument List
 none.
+@sp 2
 
 @subheading italic-font
 @cindex italic-font
 @subsubheading Argument List
 none.
+@sp 2
+
+@subheading new-3D-mesh
+@cindex new-3D-mesh
+@subsubheading Argument List
+(data-x data-y data-z &key contour-levels (copy t) (line-width 1)
+(line-style 1) (line-color *foreground-color*) (grid-type :grid-xy)
+contour-options curtain)
+@subsubheading Documentation
+new-3D-mesh, creates a new 3D mesh (surface) plot object.
+@itemize @bullet
+@item
+data-x specifies the x values of the points in data-z. If data-x is
+nil then data-z will be plotted against its row index in x.
+@item
+data-y specifies the y avlues of the points in data-z. If data-y is
+nil then data-z will be plotted against its column index in y.
+@item
+data-z is a 2D array of z values for the plot.
+@item
+contour-levels specifies the levels at which to draw contours, if
+desired. If this is not specified, default values are chosen.
+@item
+If copy is true then copies of data-x, data-y and data-z will be made,
+otherwise reference will be kept to the original vectors.
+@item
+line-width should be an integer line width, or zero if no line is
+desired
+@item
+line-style specifies what style line to draw (if a line is drawn),
+this should be a number between 1 and 8.
+@item
+line-color is the color to use for the lines in the plot.
+@item
+grid-type should be one of :gridx, :gridy or :gridxy. This specifies
+whether to draw lines only in x, only in y, or in both dimensions
+between the data points.
+@item
+contour-options should be one of nil, :magnitude-contour,
+:base-contour or :both. nil - no contours.
+@itemize @space
+@item
+:magnitude-contour - draw contour lines on the plot.
+@item
+:base-contour - draw contour lines on the x-y plane below the plot.
+@item
+:both - draw both magnitude and base contours.
+@end itemize
+@item
+curtain should be t or nil. This specifies whether to draw a 'curtain'
+around the edges of the plot."
+@end itemize
+@sp 2
+
+@subheading new-3D-window
+@cindex new-3D-window
+@subsubheading Argument List
+(&key x-axis y-axis z-axis title (window-line-width 1.0)
+(window-font-size *font-size*) (foreground-color *foreground-color*)
+(background-color *background-color*) (viewport-x-min 0.1)
+(viewport-x-max 0.9) (viewport-y-min 0.1) (viewport-y-max 0.9)
+plots text-labels color-table (altitude 60) (azimuth 30))
+@subsubheading Documentation
+new-3D-window, creates and returns a new 3D-window object.
+@itemize @bullet
+@item
+x-axis is a object of type axis.
+@item
+y-axis is a object of type axis.
+@item
+z-axis is a object of type axis.
+@item
+title is a object of type axis-label.
+@item
+foreground-color is a color symbol in the current color table.
+@item
+background-color is a color symbol in the curretn color table.
+@item
+window-line-width is a floating point number specifying the pen width
+to use when drawing the border & the tick marks.
+@item
+window-font-size is the font size to use for the tick mark labels.
+@item
+viewport-x-min (0.0 - 1.0) is the location of the left side of the
+border in the device window.
+@item
+viewport-x-max (0.0 - 1.0) is the location of the right side of the
+border.
+@item
+viewport-y-min (0.0 - 1.0) is the location of the bottom side of the
+border.
+@item
+viewport-y-max (0.0 - 1.0) is the location of the top side of the
+border.
+@item
+plots is a list of plot objects.
+@item
+text-labels is a list of text-label objects.
+@item
+color-table specifies what color table to use.
+@item
+altitude specifies the angle by which to rotate the plot around the x
+axis.
+@item
+azimuth specified the angle by which to rotate the plot around the z
+axis.
+@end itemize
+@sp 2
 
 @subheading new-axis
 @cindex new-axis
@@ -662,6 +941,7 @@ properties is a list of symbols as explained in edit-axis.
 @item
 axis-labels is a list of axis-label objects.
 @end itemize
+@sp 2
 
 @subheading new-axis-label
 @cindex new-axis-label
@@ -683,6 +963,7 @@ location is the position of the label along the side of the graph (0.0
 @item
 orientation is one :parallel or :perpendicular.
 @end itemize
+@sp 2
 
 @subheading new-bar-graph
 @cindex new-bar-graph
@@ -716,6 +997,7 @@ filled specifies whether or not the bars are filled.
 @item
 if copy is true, then copies are made of x, data and widths, otherwise references are kept to the original vectors.
 @end itemize
+@sp 2
 
 @subheading new-color-table
 @cindex new-color-table
@@ -723,6 +1005,7 @@ if copy is true, then copies are made of x, data and widths, otherwise reference
 (&optional rgb-colors)
 @subsubheading Documentation
 creates a new color table instance from a vector of rgb triples, which also includes a symbol to refer to the color by. for example: #((0 0 0 :black) (128 128 128 :grey) (255 255 255 :white)).
+@sp 2
 
 @subheading new-contour-plot
 @cindex new-contour-plot
@@ -758,6 +1041,7 @@ coordinates.
 @item
 x-mapping & y-mapping are either 1d vectors or 2d matrices specifying how to map points in data into plot coordinates. If they are 1d vector, then data(i,j) is mapped to [x-mapping(i), y-mapping(j)]. If they are 2d vectors then data(i,j) is mapped to [x-mapping(i,j), y-mapping(i,j)]. They must be used together and both must be the same type & also match the dimensions of data. They will override x-min, y-min, x-max and y-max if they are specified.
 @end itemize
+@sp 2
 
 @subheading new-custom-plot-object
 @cindex new-custom-plot-object
@@ -773,6 +1057,7 @@ window size for this object.
 @item
 render-function must be a function of one argument that specifies how to render the plot object. generally the rendering will be done with a bunch of calls to functions in the cl-plplot-system module. the current plot number will be passed to this function.
 @end itemize
+@sp 2
 
 @subheading new-extended-color-table
 @cindex new-extended-color-table
@@ -780,6 +1065,65 @@ render-function must be a function of one argument that specifies how to render 
 (&key control-points (color-table-size 128))
 @subsubheading Documentation
 creates a new extended color table instance from a vector of control points. for example: #((0.0 0.0 0.0 0.0) (1.0 255 255 255)) will create a gray scale color table. see plscmap1l in the plplot documentation for a more thorough explanation.
+@sp 2
+
+@subheading new-surface-plot
+@cindex new-surface-plot
+@subsubheading Argument List
+(data-x data-y data-z &key contour-levels (copy t) (line-width 1)
+(line-style 1) (line-color *foreground-color*) light-source
+surface-options)
+@subsubheading Documentation
+Creates a new 3D (solid surface) plot.
+@itemize @bullet
+@item
+data-x specifies the x values of the points in data-z. If data-x is
+nil then data-z will be plotted against its row index in x.
+@item
+data-y specifies the y avlues of the points in data-z. If data-y is
+nil then data-z will be plotted against its column index in y.
+@item
+data-z is a 2D array of z values for the plot.
+@item
+contour-levels specifies the levels at which to draw contours, if
+desired. If this is not specified, default values are chosen.
+@item
+If copy is true then copies of data-x, data-y and data-z will be made,
+otherwise reference will be kept to the original vectors.
+@item
+line-width should be an integer line width, or zero if no line is
+desired
+@item
+line-style specifies what style line to draw (if a line is drawn),
+this should be a number between 1 and 8.
+@item
+line-color is the color to use for the lines in the plot.
+@item
+light-source is a 3 element vector #(x y z) specifying the location of
+the light source that will illuminate the plot surface.
+@item
+surface-options is list containing zero or more of the following
+symbols:
+@itemize @space
+@item
+:faceted - a network of lines is drawing connecting the points that
+make up the surface.
+@item
+:base-contours - a contour plot is also drawn in the base xy plane.
+@item
+:surface-contours - contour levels are drawn on the surface of the
+plot.
+@item
+:curtain - a curtain between the borders of the surface and the base
+xy plane.
+@item
+:magnitude-coloring - the surface is colored according to the z value
+of the plot. If this is not set then surface is colored according the
+intensity of the reflected light from light source."
+@end itemize
+@end itemize
+@sp 2
+
 
 @subheading new-text-item
 @cindex new-text-item
@@ -799,6 +1143,7 @@ reference point. 0.0 - 1.0, where 0.5 means the string is centered.
 @item
 font-size sets the fontsize relative to the default font size.
 @end itemize
+@sp 2
 
 @subheading new-text-label
 @cindex new-text-label
@@ -817,6 +1162,7 @@ text-y specifies the y location of the text reference point.
 @item
 text-dx and text-dy specify the location of a second reference point (in window coordinates) the text is drawn along a line connecting (text-x,text-y) and (text-x + text-dx, text-y + text-dy).
 @end itemize
+@sp 2
 
 @subheading new-window
 @cindex new-window
@@ -859,6 +1205,7 @@ text-labels is a list of text-label objects.
 @item
 color-table specifies what color table to use.
 @end itemize
+@sp 2
 
 @subheading new-x-y-plot
 @cindex new-x-y-plot
@@ -896,21 +1243,25 @@ size of the error bars in x.
 @item
 y-error is for error bars in y.
 @end itemize
+@sp 2
 
 @subheading normal-font
 @cindex normal-font
 @subsubheading Argument List
 none.
+@sp 2
 
 @subheading number-symbol
 @cindex number-symbol
 @subsubheading Argument List
 none.
+@sp 2
 
 @subheading overline
 @cindex overline
 @subsubheading Argument List
 none.
+@sp 2
 
 @subheading remove-axis-label-from-axis
 @cindex remove-axis-label-from-axis
@@ -918,6 +1269,7 @@ none.
 (a-axis &optional a-axis-label)
 @subsubheading Documentation
 remove-axis-label-from-axis, destructively removes a-axis-label from a-axis. if a-axis-label is not specified then the last axis-label is removed.
+@sp 2
 
 @subheading remove-color-from-color-table
 @cindex remove-color-from-color-table
@@ -925,6 +1277,7 @@ remove-axis-label-from-axis, destructively removes a-axis-label from a-axis. if 
 (a-color-table &optional color-to-remove)
 @subsubheading Documentation
 removes color-to-remove, if specified, or the last color if not.
+@sp 2
 
 @subheading remove-plot-from-window
 @cindex remove-plot-from-window
@@ -932,6 +1285,7 @@ removes color-to-remove, if specified, or the last color if not.
 (a-window &optional a-plot)
 @subsubheading Documentation
 remove-plot-from-window, destructively removes a-plot from a-window. if a-plot is not specified then the last plot is removed.
+@sp 2
 
 @subheading remove-text-label-from-window
 @cindex remove-text-label-from-window
@@ -939,6 +1293,7 @@ remove-plot-from-window, destructively removes a-plot from a-window. if a-plot i
 (a-window &optional a-text-label)
 @subsubheading Documentation
 remove-text-label-from-window, destructively removes a-text-label from a-window. if a-text-label is not specified then the last text-label is removed.
+@sp 2
 
 @subheading render
 @cindex render
@@ -957,16 +1312,19 @@ size-x: the size of the window in x (pixels).
 size-y: the size of the window in y (pixels). 
 @end itemize
 if you are using cl-plplot in a multi-threaded environment you should thread lock prior to calling render, as the plplot library only handles rendering one plot at a time.
+@sp 2
 
 @subheading roman-font
 @cindex roman-font
 @subsubheading Argument List
 none.
+@sp 2
 
 @subheading script-font
 @cindex script-font
 @subsubheading Argument List
 none.
+@sp 2
 
 @subheading send-to-back
 @cindex send-to-back
@@ -974,6 +1332,7 @@ none.
 (a-window a-plot)
 @subsubheading Documentation
 organizes the plots so that a-plot is drawn on the bottom.
+@sp 2
 
 @subheading set-color-table
 @cindex set-color-table
@@ -981,6 +1340,7 @@ organizes the plots so that a-plot is drawn on the bottom.
 (a-window a-extended-color-table)
 @subsubheading Documentation
 sets the color table associated with a-window to a-color-table. returns the old color table. (set-color-table (cl-plplot::window cl-plplot::color-table)) method documentation: sets the color table associated with a-window to a-color-table. returns the old color table.
+@sp 2
 
 @subheading set-foreground-color
 @cindex set-foreground-color
@@ -988,26 +1348,31 @@ sets the color table associated with a-window to a-color-table. returns the old 
 (color)
 @subsubheading Documentation
 switches the pen to the desired foreground color, or the default foreground color if the desired color cannot be found.
+@sp 2
 
 @subheading subscript
 @cindex subscript
 @subsubheading Argument List
 none.
+@sp 2
 
 @subheading superscript
 @cindex superscript
 @subsubheading Argument List
 none.
+@sp 2
 
 @subheading underline
 @cindex underline
 @subsubheading Argument List
 none.
+@sp 2
 
 @subheading unicode-char
 @cindex unicode-char
 @subsubheading Argument List
 none.
+@sp 2
 
 @subheading update-color
 @cindex update-color
@@ -1015,6 +1380,7 @@ none.
 (a-color-table color-symbol new-color)
 @subsubheading Documentation
 changes the color specified by color-symbol to new-color, which should be a rgb triple in the form #(r g b).
+@sp 2
 
 @subheading x-y-z-data-to-grid
 @cindex x-y-z-data-to-grid

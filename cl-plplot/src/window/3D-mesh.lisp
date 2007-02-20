@@ -20,12 +20,12 @@
 
 (defun new-3D-mesh (data-x data-y data-z &key contour-levels (copy t) (line-width 1) (line-style 1) 
 		    (line-color *foreground-color*) (grid-type :grid-xy) contour-options curtain)
-   "Creates a new 3D (surface) plot.
-    data-z is a 2D array of z values for the plot.
+   "Creates a new 3D mesh (surface) plot.
     data-x specifies the x values of the points in data-z. If data-x is nil then data-z will 
        be plotted against its row index in x.
     data-y specifies the y avlues of the points in data-z. If data-y is nil then data-z will 
        be plotted against its column index in y.
+    data-z is a 2D array of z values for the plot.
     contour-levels specifies the levels at which to draw contours, if desired. If this is
        not specified, default values are chosen.
     If copy is true then copies of data-x, data-y and data-z will be made, otherwise reference
