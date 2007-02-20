@@ -359,12 +359,12 @@
     (render w g-dev)))
 
 
-;;; 3D plots
+;;; 3D mesh plots
 
-;; A simple 3d plot
+;; A simple 3D mesh plot
 
 (defun 3d-plot-1 ()
-  (let ((c (new-3d-plot nil nil (my-make-matrix 50 50 #'(lambda (x y) (my-contour-plot-fn x y)))
+  (let ((c (new-3d-mesh nil nil (my-make-matrix 50 50 #'(lambda (x y) (my-contour-plot-fn x y)))
 			:line-color :blue))
 	(w (basic-3d-window :altitude 30 :azimuth 60)))
     (add-plot-to-window w c)
@@ -374,7 +374,7 @@
 ;; The same plot with (default) cantours drawn in the x-y plane
 
 (defun 3d-plot-2 ()
-  (let ((c (new-3d-plot nil nil (my-make-matrix 50 50 #'(lambda (x y) (my-contour-plot-fn x y)))
+  (let ((c (new-3d-mesh nil nil (my-make-matrix 50 50 #'(lambda (x y) (my-contour-plot-fn x y)))
 			:line-color :blue :contour-options :base-contour))
 	(w (basic-3d-window :altitude 30 :azimuth 60)))
     (add-plot-to-window w c)
@@ -386,7 +386,7 @@
 ;; the x direction.
 
 (defun 3d-plot-3 ()
-  (let ((c (new-3d-plot nil nil (my-make-matrix 50 50 #'(lambda (x y) (my-contour-plot-fn x y)))
+  (let ((c (new-3d-mesh nil nil (my-make-matrix 50 50 #'(lambda (x y) (my-contour-plot-fn x y)))
 			:grid-type :grid-x :contour-options :both))
 	(w (basic-3d-window :altitude 30 :azimuth 60)))
     (add-plot-to-window w c)
@@ -397,7 +397,7 @@
 ;; is drawn around the plot.
 
 (defun 3d-plot-4 ()
-  (let ((c (new-3d-plot nil nil (my-make-matrix 50 50 #'(lambda (x y) (my-contour-plot-fn x y)))
+  (let ((c (new-3d-mesh nil nil (my-make-matrix 50 50 #'(lambda (x y) (my-contour-plot-fn x y)))
 			:contour-options :magnitude-contour :curtain t))
 	(w (basic-3d-window :altitude 30 :azimuth 60)))
     (add-plot-to-window w c)
