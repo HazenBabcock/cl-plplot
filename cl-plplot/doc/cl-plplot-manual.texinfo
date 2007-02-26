@@ -37,7 +37,7 @@ software or the use or other dealings in the software.}
 @titlepage
 @title Cl-plplot User Manual
 @vskip 0pt plus 1filll
-February 19, 2007
+February 25, 2007
 @page
 @vskip 0pt plus 1fill
 @insertcopying
@@ -249,6 +249,16 @@ plotting rectangle in which the plots will appear, then calls
 the @code{render} methods of the axis-label, text-label and 
 plot objects to create the final plot.
 
+@subheading The 3D-Window Object
+This is the main window object for drawing 3D plots. At 
+present these include surface mesh plots (3D-mesh) and
+solid surface plots (surface-plot). This object inherits
+from the Window object, but due to limitations in the
+underlying PLplot library it is not as functional. 
+Basically what this means is that drawing 2D plots in
+3D is not recommended and you are not able to
+draw appropriately transformed text labels in 3D.
+
 @subheading The Axis Object
 This object is used to set minimum
 and maximum values to plot in the window, as well as 
@@ -274,11 +284,11 @@ text. It specifies font, size, color, superscript, ...
 @subheading The Plot Object
 This object is used to convert data into a
 plot. In its most generic form it contains two functions,
-one that returns its preference for the x and y ranges of the
-window coordinate system and another that draws the object
-in the current window using @code{:cl-plplot-system}
-function calls. Specialized forms currently include x-y-plot, 
-bar-graph and contour-plot.
+one that returns its preference for the x and y (and z if
+relevant) ranges of the window coordinate system and another 
+that draws the object in the current window using 
+@code{:cl-plplot-system} function calls. Specialized forms 
+currently include x-y-plot, bar-graph and contour-plot.
 
 @subheading The 3D Plot Object
 This object inherits from the plot object. Specialized forms
