@@ -256,8 +256,10 @@ solid surface plots (surface-plot). This object inherits
 from the Window object, but due to limitations in the
 underlying PLplot library it is not as functional. 
 Basically what this means is that drawing 2D plots in
-3D is not recommended and you are not able to
-draw appropriately transformed text labels in 3D.
+3D is not recommended, you are not able to draw 
+appropriately transformed text labels in 3D and you
+have less (no?) control over the locations of the
+axis labels.
 
 @subheading The Axis Object
 This object is used to set minimum
