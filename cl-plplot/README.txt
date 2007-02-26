@@ -39,8 +39,7 @@ for 2D plotting going forward.
 
 
 The file src/examples/window-examples.lisp contains examples of how to use 
-cl-plplot to generate different 2D plots. The file classes.txt tries to
-explain the organization of the various cl-plplot classes.
+cl-plplot to generate different 2D plots.
 
 
 cl-plplot-system: 
