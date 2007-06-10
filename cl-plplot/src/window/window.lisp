@@ -87,7 +87,11 @@
 
 (defgeneric edit-window-axis (window which-axis &key axis-min axis-max major-tick-interval minor-tick-number properties))
 
-(defmethod edit-window-axis ((a-window window) which-axis &key axis-min axis-max major-tick-interval minor-tick-number properties)
+(defmethod edit-window-axis ((a-window window) which-axis &key (axis-min *cl-plplot-null*) 
+			     (axis-max *cl-plplot-null*) 
+			     (major-tick-interval *cl-plplot-null*) 
+			     (minor-tick-number *cl-plplot-null*)
+			     (properties *cl-plplot-null*))
   "Allows the user to edit the axis of a window. 
    which-axis should be one of the symbols :x or :y (or :z for 3D-windows only).
    See edit-axis for a more detailed explanation of the meaning of the different key words."

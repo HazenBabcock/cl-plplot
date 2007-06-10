@@ -52,9 +52,10 @@
 	(a-class (my-read-from-string "a-" class)))
     `(progn
        (defgeneric ,m-name (,class &key ,@arguments))
-       (defmethod ,m-name ((,a-class ,class) &key ,@arguments)
+;       (defmethod ,m-name ((,a-class ,class) &key ,@arguments)
+       (defmethod ,m-name ((,a-class ,class) &key ,@(mapcar #'(lambda (x) `(,x *cl-plplot-null*)) arguments))
 	 ,documentation
-	 ,@(mapcar #'(lambda (x) `(when ,x (setf (,x ,a-class) ,x))) arguments)))))
+	 ,@(mapcar #'(lambda (x) `(unless (eq ,x *cl-plplot-null*) (setf (,x ,a-class) ,x))) arguments)))))
 
 (defmacro new-object-defun (class arguments &optional (documentation "..."))
   "Easy object creation function creation."

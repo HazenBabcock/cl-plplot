@@ -97,4 +97,4 @@
 (defvar *font* :normal)
 (defvar *font-size* 1.0)
 (defvar *axis-properties* '(:draw-bottom/left :draw-top/right :major-tick-labels-below/left :minor-ticks :major-ticks))
-
+(defvar *cl-plplot-null* (gensym))
