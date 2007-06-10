@@ -37,7 +37,7 @@ software or the use or other dealings in the software.}
 @titlepage
 @title Cl-plplot User Manual
 @vskip 0pt plus 1filll
-February 25, 2007
+June 10, 2007
 @page
 @vskip 0pt plus 1fill
 @insertcopying
@@ -447,9 +447,20 @@ character ``#''.
 @subheading basic-window
 @cindex basic-window
 @subsubheading Argument List
-(&key (x-label x-axis) (y-label y-axis) (title cl-plplot) (background-color *background-color*) (foreground-color *foreground-color*))
+(&key (x-label x-axis) (y-label y-axis) (title cl-plplot) x-axis-min
+x-axis-max y-axis-min y-axis-max (background-color *background-color*) (foreground-color *foreground-color*))
 @subsubheading Documentation
 creates a basic window object with ready-to-go axises.
+@sp 2
+
+@subheading basic-3d-window
+@cindex basic-3d-window
+@subsubheading Argument List
+(&key (x-label x-axis) (y-label y-axis) (z-label z-axis) (title cl-plplot) x-axis-min
+x-axis-max y-axis-min y-axis-max z-axis-min z-axis-max (altitude 60)
+(azimuth 30) (background-color *background-color*) (foreground-color *foreground-color*))
+@subsubheading Documentation
+creates a basic 3D window object with ready-to-go axises.
 @sp 2
 
 @subheading bring-to-front
