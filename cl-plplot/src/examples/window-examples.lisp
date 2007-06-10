@@ -59,6 +59,15 @@
     (add-plot-to-window w p)
     (render w g-dev)))
 
+;; The same plot with a user defined y-axis range
+
+(defun basic-plot-1.1 ()
+  (let* ((x (my-make-vector 40 #'(lambda(x) (* 0.1 x))))
+	 (y (my-make-vector 40 #'(lambda(x) (* (* 0.1 x) (* 0.1 x)))))
+	 (p (new-x-y-plot x y))
+	 (w (basic-window :y-axis-min -5.0 :y-axis-max 50.0)))
+    (add-plot-to-window w p)
+    (render w g-dev)))
 
 ;; Here we add our own labels to the plot, change the size & add another piece of data with
 ;; a heavier red line.
@@ -72,6 +81,7 @@
     (add-plot-to-window w p1)
     (add-plot-to-window w p2)
     (render w g-dev :size-x 400 :size-y 300)))
+;    (render w "png" :filename "/Users/hbabcock/test.png" :size-x 400 :size-y 300)))
 
 
 ;; Here we change the background and foreground colors & the x axis ticks & the 
@@ -370,6 +380,14 @@
     (add-plot-to-window w c)
     (render w g-dev)))
 
+;; The same plot with a custom z axis range
+
+(defun 3d-plot-1.1 ()
+  (let ((c (new-3d-mesh nil nil (my-make-matrix 50 50 #'(lambda (x y) (my-contour-plot-fn x y)))
+			:line-color :blue))
+	(w (basic-3d-window :z-axis-min -2.0 :z-axis-max 2.0 :altitude 30 :azimuth 60)))
+    (add-plot-to-window w c)
+    (render w g-dev)))
 
 ;; The same plot with (default) cantours drawn in the x-y plane
 

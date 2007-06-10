@@ -59,6 +59,7 @@
   ;Creates methods add-text-label-to-window & remove-text-label-from-window.
 
 (defun basic-3D-window (&key (x-label "x-axis") (y-label "y-axis") (z-label "z-axis") (title "cl-plplot")
+			x-axis-min x-axis-max y-axis-min y-axis-max z-axis-min z-axis-max
 			(altitude 60) (azimuth 30) (background-color *background-color*) (foreground-color *foreground-color*))
   "Creates a 3D window object with ready-to-go axises. Note that in 3D plots you don't have the same control
    that you have in 2D plots about the text location, font-size, etc... so we don't bother to set so many
@@ -67,11 +68,17 @@
   (let* ((basic-properties (list :draw-bottom/left :draw-top/right :grid-lines :major-tick-labels-below/left
 				 :minor-ticks :major-ticks))
 	 (title (new-axis-label (new-text-item title :font-size 1.5 :text-color foreground-color) :top 1.5))
-	 (x-axis (new-axis :axis-labels (list (new-axis-label (new-text-item x-label) :na 0))
+	 (x-axis (new-axis :axis-min x-axis-min
+			   :axis-max x-axis-max
+			   :axis-labels (list (new-axis-label (new-text-item x-label) :na 0))
 			   :properties (append basic-properties (list  :text-under-axis))))
-	 (y-axis (new-axis :axis-labels (list (new-axis-label (new-text-item y-label) :na 0))
+	 (y-axis (new-axis :axis-min y-axis-min
+			   :axis-max y-axis-max
+			   :axis-labels (list (new-axis-label (new-text-item y-label) :na 0))
 			   :properties (append basic-properties (list  :text-under-axis))))
-	 (z-axis (new-axis :axis-labels (list (new-axis-label (new-text-item z-label) :na 0))
+	 (z-axis (new-axis :axis-min z-axis-min
+			   :axis-max z-axis-max
+			   :axis-labels (list (new-axis-label (new-text-item z-label) :na 0))
 			   :properties (append basic-properties (list  :grid-lines :text-by-left-axis)))))
     (new-3d-window :x-axis x-axis
 		   :y-axis y-axis

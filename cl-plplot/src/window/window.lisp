@@ -67,15 +67,20 @@
     (remove-plot-from-window a-window a-plot)
     (setf (plots a-window) (append (list a-plot) (plots a-window)))))
 
-(defun basic-window (&key (x-label "x-axis") (y-label "y-axis") (title "cl-plplot") 
-		   (background-color *background-color*) (foreground-color *foreground-color*))
+(defun basic-window (&key (x-label "x-axis") (y-label "y-axis") (title "cl-plplot")
+		     x-axis-min x-axis-max y-axis-min y-axis-max
+		     (background-color *background-color*) (foreground-color *foreground-color*))
   "Creates a basic window object with ready-to-go axises."
   (let ((a-color-table (default-color-table))
 	(title (new-axis-label (new-text-item title :font-size 1.5 :text-color foreground-color) :top 1.5))
-	(x-axis (new-axis :axis-labels (list
+	(x-axis (new-axis :axis-min x-axis-min
+			  :axis-max x-axis-max
+			  :axis-labels (list
 					(new-axis-label
 					 (new-text-item x-label :font-size 1.3 :text-color foreground-color) :bottom 2.5))))
-	(y-axis (new-axis :axis-labels (list
+	(y-axis (new-axis :axis-min y-axis-min
+			  :axis-max y-axis-max
+			  :axis-labels (list
 					(new-axis-label
 					 (new-text-item y-label :font-size 1.3 :text-color foreground-color) :left 3.0)))))
     (new-window :x-axis x-axis
