@@ -1,4 +1,33 @@
 ;;;;
+;;;; Defines the cl-plot package.
+;;;; Loads the plplot library (libplplotd) and the standard C library (libc).
+;;;;
+;;;; hazen 3/06
+;;;;
+
+(in-package #:cl-user)
+
+(defpackage #:cl-plplot-system
+  (:use #:common-lisp
+	#:cffi))
+
+(in-package #:cl-plplot-system)
+
+(defun load-libraries ()
+  ; linux
+  (pushnew #P"/usr/local/lib/" *foreign-library-directories* :test #'equal)
+  ; OS-X / fink
+  (pushnew #P"/sw/lib/" *foreign-library-directories* :test #'equal)
+  ; OS-X / darwinports
+  (pushnew #P"/opt/local/lib/" *foreign-library-directories* :test #'equal)
+  (define-foreign-library libplplot
+    (t (:default "libplplotd")))
+  (use-foreign-library libplplot)
+  (format t "libplplotd library loaded~%"))
+
+(load-libraries)
+
+;;;;
 ;;;; Copyright (c) 2006 Hazen P. Babcock
 ;;;;
 ;;;; Permission is hereby granted, free of charge, to any person obtaining a copy 
@@ -19,33 +48,3 @@
 ;;;; FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
 ;;;; IN THE SOFTWARE.
 ;;;;
-;;;;
-;;;; Defines the cl-plot package.
-;;;; Loads the plplot library (libplplotd) and the standard C library (libc).
-;;;;
-;;;; hazen 3/06
-;;;;
-
-(in-package #:cl-user)
-
-(defpackage #:cl-plplot-system
-  (:use #:common-lisp
-	#:cffi))
-
-(in-package #:cl-plplot-system)
-
-(defun load-libraries ()
-  (pushnew #P"/usr/local/lib/" *foreign-library-directories* :test #'equal)
-  (define-foreign-library libplplot
-    (t (:default "libplplotd")))
-  (use-foreign-library libplplot)
-
-;; Most lisps already have libc loaded?
-;
-;  (define-foreign-library libc
-;    (t (:or "libc.dylib" "libc.so.6")))
-;  (use-foreign-library libc)
-
-  (format t "libplplotd library loaded~%"))
-
-(load-libraries)
