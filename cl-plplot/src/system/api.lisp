@@ -1,25 +1,4 @@
 ;;;;
-;;;; Copyright (c) 2006 Hazen P. Babcock
-;;;;
-;;;; Permission is hereby granted, free of charge, to any person obtaining a copy 
-;;;; of this software and associated documentation files (the "Software"), to 
-;;;; deal in the Software without restriction, including without limitation the 
-;;;; rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
-;;;; sell copies of the Software, and to permit persons to whom the Software is 
-;;;; furnished to do so, subject to the following conditions:
-;;;;
-;;;; The above copyright notice and this permission notice shall be included in 
-;;;; all copies or substantial portions of the Software.
-;;;;
-;;;; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
-;;;; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-;;;; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
-;;;; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-;;;; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
-;;;; FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
-;;;; IN THE SOFTWARE.
-;;;;
-;;;;
 ;;;; Calls to the plplot API. An attempt was made to have the pl-defcfun macro
 ;;;; handle as many as these as possible, but eventually I gave up and just wrote 
 ;;;; out some of the less conventional ones. As a consequence, not all the 'raw'
@@ -530,6 +509,13 @@
 	    (just plflt)
 	    (text plstr))
 
+(pl-defcfun ("c_plmtex3" plmtex3) :void
+	    (side plstr)
+	    (disp plflt)
+	    (pos plflt)
+	    (just plflt)
+	    (text plstr))
+
 (pl-defcfun ("c_plot3d" plot3d) :void 
 	    (x *plflt nx)
 	    (y *plflt ny)
@@ -601,6 +587,19 @@
 	    (y plflt)
 	    (dx plflt)
 	    (dy plflt)
+	    (just plflt)
+	    (text plstr))
+
+(pl-defcfun ("c_plptex3" plptex3) :void 
+	    (x plflt)
+	    (y plflt)
+	    (z plflt)
+	    (dx plflt)
+	    (dy plflt)
+	    (dz plflt)
+	    (sx plflt)
+	    (sy plflt)
+	    (sz plflt)
 	    (just plflt)
 	    (text plstr))
 
@@ -1519,3 +1518,26 @@
 	    (p_h *plflt 1)
 	    (p_l *plflt 1)
 	    (p_s *plflt 1))
+
+
+;;;;
+;;;; Copyright (c) 2006 Hazen P. Babcock
+;;;;
+;;;; Permission is hereby granted, free of charge, to any person obtaining a copy 
+;;;; of this software and associated documentation files (the "Software"), to 
+;;;; deal in the Software without restriction, including without limitation the 
+;;;; rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
+;;;; sell copies of the Software, and to permit persons to whom the Software is 
+;;;; furnished to do so, subject to the following conditions:
+;;;;
+;;;; The above copyright notice and this permission notice shall be included in 
+;;;; all copies or substantial portions of the Software.
+;;;;
+;;;; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+;;;; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+;;;; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+;;;; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+;;;; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+;;;; FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
+;;;; IN THE SOFTWARE.
+;;;;

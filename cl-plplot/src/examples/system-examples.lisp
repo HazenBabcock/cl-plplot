@@ -1,25 +1,4 @@
 ;;;;
-;;;; Copyright (c) 2006 Hazen P. Babcock
-;;;;
-;;;; Permission is hereby granted, free of charge, to any person obtaining a copy 
-;;;; of this software and associated documentation files (the "Software"), to 
-;;;; deal in the Software without restriction, including without limitation the 
-;;;; rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
-;;;; sell copies of the Software, and to permit persons to whom the Software is 
-;;;; furnished to do so, subject to the following conditions:
-;;;;
-;;;; The above copyright notice and this permission notice shall be included in 
-;;;; all copies or substantial portions of the Software.
-;;;;
-;;;; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
-;;;; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-;;;; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
-;;;; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-;;;; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
-;;;; FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
-;;;; IN THE SOFTWARE.
-;;;;
-;;;;
 ;;;; Examples that demonstrate some plplot graphs that can be made
 ;;;; with the cl-plplot-system package.
 ;;;;
@@ -137,7 +116,7 @@
   (pllab "x" "y" "Shade Plot")
   (plend))
 
-;; 3D surface plot
+;; 3D surface plot. Also demonstrates 3D text labeling.
 
 (defun 3D-plot ()
   (plsdev gdev)
@@ -149,7 +128,9 @@
   (plscmap1l 1 (vector 0.0 1.0) (vector 0.2 1) (vector 0.2 1) (vector 0.2 1) (vector nil nil))
   (plw3d 1 1 1 -1.5 1.5 -0.5 1.5 -5 6.5 60 30)
   (plmtex "t" 1 0.5 0.5 "3D plot example")
-  (plbox3 "bnstu" "x axis" 0 0 "bnstu" "y axis" 0 0 "bcdmnstuv" "z axis" 0 0)
+  (plbox3 "bnstu" "x axis" 0 0 "bnstu" "y axis" 0 0 "bcdmnst" "" 0 0)
+  (plmtex3 "zpv" 3.0 0.5 0.5 "z axis")
+  (plptex3 0.0 -0.4 -0.5 1.0 0.0 0.0 0.0 0.0 1.0 0.5 "Surface")
   (plsurf3d (make-levels 40 -1.5 1.5) (make-levels 40 -1.5 1.5) (example-matrix 40 40 #'example-func-2) 0 (make-levels 2 -1 1))
   (plend))
 
@@ -172,3 +153,26 @@
   (plschr 0 4)
   (plptex 0.5 0.5 1.0 0.0 0.5 "Has#[238]t#[238]")
   (plend))
+
+
+;;;;
+;;;; Copyright (c) 2006 Hazen P. Babcock
+;;;;
+;;;; Permission is hereby granted, free of charge, to any person obtaining a copy 
+;;;; of this software and associated documentation files (the "Software"), to 
+;;;; deal in the Software without restriction, including without limitation the 
+;;;; rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
+;;;; sell copies of the Software, and to permit persons to whom the Software is 
+;;;; furnished to do so, subject to the following conditions:
+;;;;
+;;;; The above copyright notice and this permission notice shall be included in 
+;;;; all copies or substantial portions of the Software.
+;;;;
+;;;; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+;;;; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+;;;; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+;;;; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+;;;; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+;;;; FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
+;;;; IN THE SOFTWARE.
+;;;;
