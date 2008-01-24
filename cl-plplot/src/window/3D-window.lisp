@@ -61,24 +61,27 @@
 (defun basic-3D-window (&key (x-label "x-axis") (y-label "y-axis") (z-label "z-axis") (title "cl-plplot")
 			x-axis-min x-axis-max y-axis-min y-axis-max z-axis-min z-axis-max
 			(altitude 60) (azimuth 30) (background-color *background-color*) (foreground-color *foreground-color*))
-  "Creates a 3D window object with ready-to-go axises. Note that in 3D plots you don't have the same control
-   that you have in 2D plots about the text location, font-size, etc... so we don't bother to set so many
-   axis-label and text-item object properties. The label font size of the axis labels is instead determined
-   by window-font-size."
+  "Creates a 3D window object with ready-to-go axises."
   (let* ((basic-properties (list :draw-bottom/left :draw-top/right :grid-lines :major-tick-labels-below/left
 				 :minor-ticks :major-ticks))
 	 (title (new-axis-label (new-text-item title :font-size 1.5 :text-color foreground-color) :top 1.5))
 	 (x-axis (new-axis :axis-min x-axis-min
 			   :axis-max x-axis-max
-			   :axis-labels (list (new-axis-label (new-text-item x-label) :na 0))
+			   :axis-labels (list
+					 (new-3D-axis-label
+					  (new-text-item x-label :font-size 1.3 :text-color foreground-color) :x 2.5))
 			   :properties (append basic-properties (list  :text-under-axis))))
 	 (y-axis (new-axis :axis-min y-axis-min
 			   :axis-max y-axis-max
-			   :axis-labels (list (new-axis-label (new-text-item y-label) :na 0))
+			   :axis-labels (list
+					 (new-3D-axis-label
+					  (new-text-item y-label :font-size 1.3 :text-color foreground-color) :y 2.5))
 			   :properties (append basic-properties (list  :text-under-axis))))
 	 (z-axis (new-axis :axis-min z-axis-min
 			   :axis-max z-axis-max
-			   :axis-labels (list (new-axis-label (new-text-item z-label) :na 0))
+			   :axis-labels (list
+					 (new-3D-axis-label 
+					  (new-text-item z-label :font-size 1.3 :text-color foreground-color) :z 2.5))
 			   :properties (append basic-properties (list  :grid-lines :text-by-left-axis)))))
     (new-3d-window :x-axis x-axis
 		   :y-axis y-axis
@@ -109,23 +112,20 @@
 		    x-min x-max y-min y-max z-min z-max
 		    (altitude a-window) (azimuth a-window))))
 
-	 ;; title, axis & axis labels
+	 ;; axis & axis labels
 	 (set-foreground-color (foreground-color a-window))
 	 (pllsty 1)
 	 (plwid (window-line-width a-window))
 	 (plschr 0 (window-font-size a-window))
-	 (plbox3 (get-axis-properties (x-axis a-window)) ; x-axis
-		 (render-text (axis-text-item (car (axis-labels (x-axis a-window)))) t)
+	 (plbox3 (get-axis-properties (x-axis a-window)) "" ; x-axis
 		 (major-tick-interval (x-axis a-window))
 		 (minor-tick-number (x-axis a-window))
 		 
-		 (get-axis-properties (y-axis a-window)) ; y-axis
-		 (render-text (axis-text-item (car (axis-labels (y-axis a-window)))) t)
+		 (get-axis-properties (y-axis a-window)) "" ; y-axis
 		 (major-tick-interval (y-axis a-window))
 		 (minor-tick-number (y-axis a-window))
 		 
-		 (get-axis-properties (z-axis a-window)) ; z-axis
-		 (render-text (axis-text-item (car (axis-labels (z-axis a-window)))) t)
+		 (get-axis-properties (z-axis a-window)) "" ; z-axis
 		 (major-tick-interval (z-axis a-window))
 		 (minor-tick-number (z-axis a-window)))
 	 
@@ -137,10 +137,14 @@
 	       (incf default-symbol))))
 	   
 	 ;; text labels
-	 (render-axis-label (title a-window))
 	 (when (text-labels a-window)
 	   (dolist (a-text-label (text-labels a-window))
-	     (render-text-label a-text-label))))
+	     (render-text-label a-text-label)))
+	 ;; title and axis labels
+	 (render-axis-label (title a-window))
+	 (render-axis-labels (x-axis a-window))
+	 (render-axis-labels (y-axis a-window))
+	 (render-axis-labels (z-axis a-window)))
     (plend)))
 
 (defmethod render ((a-window 3D-window) device &key filename (size-x 600) (size-y 500))

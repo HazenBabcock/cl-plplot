@@ -33,6 +33,9 @@
    (location 0.5)
    (orientation :parallel)))
 
+(def-plplot-class 3D-axis-label (axis-label)
+  ((primary/secondary :primary)))
+
 (def-plplot-class axis ()
   (axis-min
    axis-max
