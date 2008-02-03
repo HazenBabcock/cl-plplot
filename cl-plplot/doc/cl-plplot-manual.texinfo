@@ -10,7 +10,7 @@
 
 
 @copying
-Copyright @copyright{} 2006 Hazen P. Babcock <hbabcockos1 at mac.com>
+Copyright @copyright{} 2008 Hazen P. Babcock <hbabcockos1 at mac.com>
 
 @quotation
 Permission is hereby granted, free of charge, to any person
@@ -37,7 +37,7 @@ software or the use or other dealings in the software.}
 @titlepage
 @title Cl-plplot User Manual
 @vskip 0pt plus 1filll
-June 10, 2007
+February, 2008
 @page
 @vskip 0pt plus 1fill
 @insertcopying
@@ -78,8 +78,8 @@ implementation and operating system that is supported by CFFI.
 @chapter Installation
 Cl-plplot depends on a working installation of the PLplot plotting
 library. This is available as a debian package, but it is also not too
-hard to compile from source on most systems. The current recommended debian
-package is libplplot-dev 5.6.1 in testing. 
+hard to compile from source on most systems. You will need PLplot
+version 5.8.0 or later.
 
 Once you have installed the PLplot library cl-plplot will hopefully not
 have any trouble finding the library. If you do encounter difficulties
@@ -210,13 +210,16 @@ plot objects to the window objects. When everything is set you
 call the @code{render} method on the window object to display
 the plot using the display device of your choice. 
 
-This approach was adopted in part because the PLplot library 
-does not support drawing multiple graphs simultaneously. By 
-deferring the actual calls to the PLplot library until the 
-moment when render is called on the window object, the user 
-can build several graphs simultaneously. This also means 
-that thread locks are a good idea in calls to render in a 
-multi-threaded environment.
+This approach was adopted in part to make graphing easier in 
+a multi-threaded environment. The PLplot library supports drawing
+multiple graphs simultaneously using the concept of plot streams.
+However using these in a multi-threaded environment would be a 
+challenge as just about every call to a PLplot library function
+would have to prefaced with a function call to set the correct stream.
+As all the calls to the PLplot library are gauranteed to happen
+during @code{render} one only needs to threadlock around this method
+to avoid confusing PLplot.
+
 
 @section The Object Layout
 @example
@@ -253,13 +256,8 @@ plot objects to create the final plot.
 This is the main window object for drawing 3D plots. At 
 present these include surface mesh plots (3D-mesh) and
 solid surface plots (surface-plot). This object inherits
-from the Window object, but due to limitations in the
-underlying PLplot library it is not as functional. 
-Basically what this means is that drawing 2D plots in
-3D is not recommended, you are not able to draw 
-appropriately transformed text labels in 3D and you
-have less (no?) control over the locations of the
-axis labels.
+from the Window object and adds a z-axis as well as
+altitude and azimuthal viewing angles.
 
 @subheading The Axis Object
 This object is used to set minimum
@@ -272,6 +270,10 @@ This object is used to draw text relative
 to one of the sides of the plotting rectangle. It specifies 
 where to draw the text relative to one of the edges of the 
 rectangle as well as in what orientation.
+
+@subheading The 3D-axis-label Object
+This object inherits from the axis-label object. It uses a
+different convention for specifying which axis to label.
 
 @subheading The Text-label Object
 This is like the axis-label object except
@@ -613,7 +615,7 @@ edit-axis-label, edits a axis-label object.
 set axis-text-item to a new object of class text-item with
 :axis-text-item. 
 @item
-set which side to draw the label on with :side.
+set which axis to draw the label on with :side.
 @item
 set the displacement from the edge of the the graph with
 :displacement. 
@@ -621,6 +623,31 @@ set the displacement from the edge of the the graph with
 set the location with along the side of the graph with :location. 
 @item
 set the orientation with (:parallel or :perpendicular) with :orientation.
+@end itemize
+@sp 2
+
+@subheading edit-3D-axis-label
+@cindex edit-3D-axis-label
+@subsubheading Argument List
+(a-axis-label &key axis-text-item side displacement location
+orientation primary/secondary)
+@subsubheading Documentation
+edit-3D-axis-label, edits a 3D-axis-label object. 
+@itemize @bullet
+@item
+set axis-text-item to a new object of class text-item with
+:axis-text-item. 
+@item
+set which axis to draw the label on with :side (:x, :y or :z).
+@item
+set the displacement from the edge of the the graph with
+:displacement. 
+@item
+set the location with along the side of the graph with :location. 
+@item
+set the orientation with (:parallel or :perpendicular) with :orientation.
+@item
+Set which axis to label (:primary or :secondary) with :primary/secondary
 @end itemize
 @sp 2
 
@@ -971,7 +998,7 @@ axis-labels is a list of axis-label objects.
 @subsubheading Argument List
 (axis-text-item side displacement &key (location 0.5) (orientation parallel))
 @subsubheading Documentation
-new-axis-label, create and returns a new axis label. 
+new-axis-label, creates and returns a new axis label. 
 @itemize @bullet
 @item
 axis-text-item is a object of type text-item. 
@@ -985,6 +1012,32 @@ location is the position of the label along the side of the graph (0.0
 - 1.0). 
 @item
 orientation is one :parallel or :perpendicular.
+@end itemize
+@sp 2
+
+@subheading new-3D-axis-label
+@cindex new-3D-axis-label
+@subsubheading Argument List
+(axis-text-item side displacement &key (location 0.5) (orientation
+parallel) (primary/secondary :primary))
+@subsubheading Documentation
+new-3D-axis-label, creates and returns a new 3D axis label. 
+@itemize @bullet
+@item
+axis-text-item is a object of type text-item. 
+@item
+side is one of :x, :y or :z. 
+@item
+displacement specifies the distance from the edge of the graph in
+units of the default font-size. 
+@item
+location is the position of the label along the side of the graph (0.0
+- 1.0). 
+@item
+orientation is one :parallel or :perpendicular.
+@item
+primary/secondary is one of :primary or :secondary. This specifies
+which of two possible choices for each axis should be labeled.
 @end itemize
 @sp 2
 
