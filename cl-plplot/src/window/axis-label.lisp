@@ -61,7 +61,7 @@
     Set the displacement from the edge of the the graph with :displacement.
     Set the location with along the side of the graph with :location.
     Set the orientation with (:parallel or :perpendicular) with :orientation.
-    Set which axis to lable (:primary or :secondary) with :primary/secondary")
+    Set which axis to label (:primary or :secondary) with :primary/secondary")
 
 (defmethod render-axis-label ((a-axis-label 3D-axis-label))
   "Draws a 3D axis label onto the current plot."

@@ -26,6 +26,13 @@
    text-dx
    text-dy))
 
+(def-plplot-class 3D-text-label (text-label)
+  (text-z
+   text-dz
+   text-sx
+   text-sy
+   text-sz))
+
 (def-plplot-class axis-label ()
   (axis-text-item
    side

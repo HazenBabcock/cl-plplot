@@ -39,7 +39,9 @@
 	   #:basic-window
 	   #:bring-to-front
 	   #:default-color-table
+	   #:edit-3d-axis-label
 	   #:edit-3d-mesh
+	   #:edit-3d-text-label
 	   #:edit-3d-window
 	   #:edit-axis
 	   #:edit-axis-label
@@ -55,7 +57,9 @@
 	   #:greek-char
 	   #:hershey-char
 	   #:italic-font
+	   #:new-3d-axis-label
 	   #:new-3d-mesh
+	   #:new-3d-text-label
 	   #:new-3d-window
 	   #:new-axis
 	   #:new-axis-label
