@@ -422,6 +422,23 @@
     (render w g-dev)))
 
 
+;; A simple demonstration 3D text labels.
+
+(defun 3d-plot-5 ()
+  (let ((l1 (new-3D-text-label (new-text-item (roman-font "Label1") :font-size 2.0 :text-color :blue) 0.5 1.0 0.1
+			       :text-dy -1.0))
+	(l2 (new-3D-text-label (new-text-item (roman-font "Label2") :font-size 2.0 :text-color :red) 1.5 1.0 0.1
+			       :text-dx 1.0
+			       :text-sz 1.0))
+	(w (basic-3d-window :altitude 30 :azimuth 60
+			    :x-axis-min 0 :x-axis-max 2.0
+			    :y-axis-min 0 :y-axis-max 2.0
+			    :z-axis-min 0 :z-axis-max 2.0)))
+    (add-text-label-to-window w l1)
+    (add-text-label-to-window w l2)
+    (render w g-dev)))
+
+
 ;;; Surface plots
 
 ;; A simple surface plot
