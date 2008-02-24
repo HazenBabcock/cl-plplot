@@ -281,6 +281,11 @@ that it is typically drawn inside the plotting rectangle
 and its location is determined by the plot coordinate
 system.
 
+@subheading The 3D-text-label Object
+This object inherits from the text-label objects. It is
+used to draw '3D' text and as such requires a number of
+additional parameters to specify how to draw the text.
+
 @subheading The Text-item Object
 This object is used to actually draw the
 text. It specifies font, size, color, superscript, ...
@@ -766,6 +771,38 @@ set dy for drawing text at an angle with :text-dy.
 @end itemize
 @sp 2
 
+@subheading edit-3D-text-label
+@cindex edit-3D-text-label
+@subsubheading Argument List
+(a-text-label &key label-text-item text-x text-y text-z text-dx
+text-dy text-dz text-sx text-sy text-sz)
+@subsubheading Documentation
+edit-3D-text-label, edits a 3D-text-label object.
+@itemize @bullet
+@item
+set text-item to a new object of class text-item with
+:label-text-item.
+@item
+set the x location of the text with :text-x. 
+@item
+set the y location of the text with :text-y. 
+@item
+set the z location of the text with :text-z. 
+@item
+set dx for drawing text at an angle with :text-dx.
+@item
+set dy for drawing text at an angle with :text-dy.
+@item
+set dz for drawing text at an angle with :text-dz.
+@item
+set sx for shearing text with :text-sx.
+@item
+set sy for shearing text with :text-sy.
+@item
+set sz for shearing text with :text-sz.
+@end itemize
+@sp 2
+
 @subheading edit-window
 @cindex edit-window
 @subsubheading Argument List
@@ -1237,6 +1274,35 @@ coordinates).
 text-y specifies the y location of the text reference point. 
 @item
 text-dx and text-dy specify the location of a second reference point (in window coordinates) the text is drawn along a line connecting (text-x,text-y) and (text-x + text-dx, text-y + text-dy).
+@end itemize
+@sp 2
+
+@subheading new-3D-text-label
+@cindex new-3D-text-label
+@subsubheading Argument List
+(label-text-item text-x text-y text-z &key (text-dx 0.0) (text-dy 0.0)
+(text-dz 0.0) (text-sz 0.0) (text-sz 0.0) (text-sz 0.0))
+@subsubheading Documentation
+new-3D-text-label, creates and returns a new 3D-text-label object. 
+@itemize @bullet
+@item
+text-item should be an object created by new-text-item. 
+@item
+text-x specifies the x location of the text reference point (in window
+coordinates). 
+@item
+text-y specifies the y location of the text reference point. 
+@item
+text-z specifies the z location of the text reference point.
+@item
+text-dx, text-dy and text-dz specify the location of a second reference point 
+(in window coordinates) the text is drawn along a line connecting 
+(text-x,text-y and text-z) and (text-x + text-dx, text-y + text-dy,
+text-z + text-dz).
+@item
+test-sx, text-sy and text-sz specify the location of a third reference point
+(in window coordinates) the text is sheared to be parallel to a line connecting
+(text-x,text-y and text-z) and (text-x + text-sx, text-y + text-sy, text-z + text-sz).
 @end itemize
 @sp 2
 
