@@ -1378,6 +1378,10 @@
 (pl-defcfun ("plgesc" plgesc) :void 
 	    (p_esc *plchar 1))
 
+(pl-defcfun ("pl_cmd" pl-cmd) :void
+	    (op plint)
+	    (ptr plpointer))
+
 ;(defcfun ("pl_cmd" pl-cmd) :void 
 ;	PLINT op, void *ptr
 ;
