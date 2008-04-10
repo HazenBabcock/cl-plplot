@@ -255,8 +255,7 @@
     size-x: the size of the window in x (pixels).
     size-y: the size of the window in y (pixels).
    If you are using cl-plplot in a multi-threaded environment you should
-   thread lock prior to calling render, as the PLplot library only handles
-   rendering one plot at a time."
+   thread lock prior to calling render."
   (render-window a-window device filename size-x size-y))
 
 ;;;;
