@@ -194,13 +194,15 @@
 	(setf *current-extended-color-table* (default-extended-color-table))))
   (initialize-extended-color-table *current-extended-color-table*))
 
-(defun render-window (a-window device filename size-x size-y &optional want-mouse?)
+(defun render-window (a-window device filename size-x size-y external-pointer &optional want-mouse?)
   "This handles drawing the window & optionally returns the coordinates of a mouse click."
   ;; setup window
   (setup-window a-window device filename size-x size-y)
 
   ;; start plotting
   (plinit)
+  (when external-pointer
+    (pl-cmd 26 external-pointer))
   (unwind-protect
        (progn
 	 (pladv 0)
@@ -241,22 +243,26 @@
 (defmethod get-cursor ((a-window window) device &key (size-x 600) (size-y 500))
   "Get the location (in window coordinates) of the next mouse click. In
    order to do this the window must first be rendered so that the user has
-   something to click on."
-  (let ((mouse (render-window a-window device nil size-x size-y t)))
+   something to click on. Note that this cannot be used with those drivers
+   that draw into a user supplied area such as ext-cairo."
+  (let ((mouse (render-window a-window device nil size-x size-y nil t)))
     (when mouse
       (values (elt mouse 8) (elt mouse 9)))))
 
-(defgeneric render (window device &key filename size-x size-y))
+(defgeneric render (window device &key filename size-x size-y external-pointer))
 
-(defmethod render ((a-window window) device &key filename (size-x 600) (size-y 500))
+(defmethod render ((a-window window) device &key filename (size-x 600) (size-y 500) external-pointer)
   "Renders a window and it associated plots and labels using device.
     device: a string naming a plplot graphical device such as 'xwin'.
     filename: where to save the graph for file based devices.
     size-x: the size of the window in x (pixels).
     size-y: the size of the window in y (pixels).
+    external-pointer: if the plplot graphical device is one that will
+       plot into an external user supplied plotting area, then you can
+       pass info about that plotting area in using this variable.
    If you are using cl-plplot in a multi-threaded environment you should
    thread lock prior to calling render."
-  (render-window a-window device filename size-x size-y))
+  (render-window a-window device filename size-x size-y external-pointer))
 
 ;;;;
 ;;;; Copyright (c) 2006 Hazen P. Babcock

@@ -92,13 +92,15 @@
 		   :altitude altitude
 		   :azimuth azimuth)))
 
-(defun render-3D-window (a-window device filename size-x size-y)
+(defun render-3D-window (a-window device filename size-x size-y external-pointer)
   "This handles drawing a 3D window."
   ;; setup window
   (setup-window a-window device filename size-x size-y)
 
   ;; start plotting
   (plinit)
+  (when external-pointer
+    (pl-cmd 26 external-pointer))
   (unwind-protect
        (progn
 	 ; setup viewport
@@ -147,15 +149,18 @@
 	 (render-axis-labels (z-axis a-window)))
     (plend)))
 
-(defmethod render ((a-window 3D-window) device &key filename (size-x 600) (size-y 500))
+(defmethod render ((a-window 3D-window) device &key filename (size-x 600) (size-y 500) external-pointer)
   "Renders a 3D-window and it associated plots and labels using device.
     device: a string naming a plplot graphical device such as 'xwin'.
     filename: where to save the graph for file based devices.
     size-x: the size of the window in x (pixels).
     size-y: the size of the window in y (pixels).
+    external-pointer: if the plplot graphical device is one that will
+       plot into an external user supplied plotting area, then you can
+       pass info about that plotting area in using this variable.
    If you are using cl-plplot in a multi-threaded environment you should
    thread lock prior to calling render."
-  (render-3D-window a-window device filename size-x size-y))
+  (render-3D-window a-window device filename size-x size-y external-pointer))
 
 ;;;;
 ;;;; Copyright (c) 2006 Hazen P. Babcock
