@@ -28,6 +28,10 @@
 (pl-defcfun ("c_pladv" pladv) :void 
 	    (page plint))
 
+;;
+;; This function is deprecated and may dissappear at some point
+;;
+
 (pl-defcfun ("plarrows" plarrows) :void
 	    (u *plflt n)
 	    (v *plflt n)
@@ -292,10 +296,23 @@
 	    (g *plint 1)
 	    (b *plint 1))
 
+(pl-defcfun ("c_plgcol0a" plgcol0a) :void 
+	    (icol0 plint)
+	    (r *plint 1)
+	    (g *plint 1)
+	    (b *plint 1)
+	    (a *plflt 1))
+
 (pl-defcfun ("c_plgcolbg" plgcolbg) :void 
 	    (r *plint 1)
 	    (g *plint 1)
 	    (b *plint 1))
+
+(pl-defcfun ("c_plgcolbga" plgcolbga) :void 
+	    (r *plint 1)
+	    (g *plint 1)
+	    (b *plint 1)
+	    (a *plflt 1))
 
 (pl-defcfun ("c_plgcompression" plgcompression) :void 
 	    (compression *plint 1))
@@ -318,16 +335,21 @@
 	    (p_xmax *plflt 1)
 	    (p_ymax *plflt 1))
 
-(pl-defcfun ("c_plgfci" plgfci) :void 
-	    (pfci *plunicode 1))
-
 (pl-defcfun ("c_plgfam" plgfam) :void 
 	    (p_fam *plint 1)
 	    (p_num *plint 1)
 	    (p_bmax *plint 1))
 
+(pl-defcfun ("c_plgfci" plgfci) :void 
+	    (pfci *plunicode 1))
+
 (pl-defcfun ("c_plgfnam" plgfnam) :void 
 	    (fnam plstr 80))
+
+(pl-defcfun ("c_plgfont" plgfont) :void 
+	    (p_family *plint 1)
+	    (p_style *plint 1)
+	    (p_weight *plint 1))
 
 (pl-defcfun ("c_plglevel" plglevel) :void 
 	    (p_level *plint 1))
@@ -341,6 +363,12 @@
 	    (p_yoff *plint 1))
 
 (pl-defcfun ("c_plgra" plgra) :void)
+
+(pl-defcfun ("c_plgradient" plgradient) :void 
+	    (n plint)
+	    (x *plflt n)
+	    (y *plflt n)
+	    (angle plflt))
 
 (defun plgriddata (x y z xg yg type data)
   (let ((sx (length x))
@@ -416,6 +444,7 @@
 	    (nbin plint)
 	    (opt plint))
 
+;; deprecated
 (pl-defcfun ("c_plhls" plhls) :void 
 	    (h plflt)
 	    (l plflt)
@@ -500,7 +529,7 @@
 	    (nlevel plint))
 
 (pl-defcfun ("c_plmkstrm" plmkstrm) :void 
-	    (p_strm plint :out))
+	    (p_strm *plint 1))
 
 (pl-defcfun ("c_plmtex" plmtex) :void 
 	    (side plstr)
@@ -554,6 +583,13 @@
 	    (inc *plint nlin)
 	    (del *plint nlin))
 
+(pl-defcfun ("c_plpath" plpath) :void
+	    (n plint)
+	    (x1 plflt)
+	    (y1 plflt)
+	    (x2 plflt)
+	    (y2 plflt))
+
 (pl-defcfun ("c_plpoin" plpoin) :void 
 	    (n plint)
 	    (x *plflt n)
@@ -603,13 +639,18 @@
 	    (just plflt)
 	    (text plstr))
 
+
+(pl-defcfun ("c_plrandd" plrandd) :double)
+
 (pl-defcfun ("c_plreplot" plreplot) :void)
 
+;; deprecated
 (pl-defcfun ("c_plrgb" plrgb) :void 
 	    (r plflt)
 	    (g plflt)
 	    (b plflt))
 
+;; deprecated
 (pl-defcfun ("c_plrgb1" plrgb1) :void 
 	    (r plint)
 	    (g plint)
@@ -633,6 +674,13 @@
 	    (b *plint ncol0)
 	    (ncol0 plint))
 
+(pl-defcfun ("c_plscmap0a" plscmap0a) :void 
+	    (r *plint ncol0)
+	    (g *plint ncol0)
+	    (b *plint ncol0)
+	    (a *plflt ncol0)
+	    (ncol0 plint))
+
 (pl-defcfun ("c_plscmap0n" plscmap0n) :void 
 	    (ncol0 plint))
 
@@ -640,6 +688,13 @@
 	    (r *plint ncol1)
 	    (g *plint ncol1)
 	    (b *plint ncol1)
+	    (ncol1 plint))
+
+(pl-defcfun ("c_plscmap1a" plscmap1a) :void 
+	    (r *plint ncol1)
+	    (g *plint ncol1)
+	    (b *plint ncol1)
+	    (a *plflt ncol1)
 	    (ncol1 plint))
 
 (pl-defcfun ("c_plscmap1l" plscmap1l) :void 
@@ -651,6 +706,16 @@
 	    (coord3 *plflt npts)
 	    (rev *plbool npts))
 
+(pl-defcfun ("c_plscmap1la" plscmap1la) :void 
+	    (itype plbool)
+	    (npts plint)
+	    (intensity *plflt npts)
+	    (coord1 *plflt npts)
+	    (coord2 *plflt npts)
+	    (coord3 *plflt npts)
+	    (coord4 *plflt npts)
+	    (rev *plbool npts))
+
 (pl-defcfun ("c_plscmap1n" plscmap1n) :void 
 	    (ncol1 plint))
 
@@ -660,10 +725,23 @@
 	    (g plint)
 	    (b plint))
 
+(pl-defcfun ("c_plscol0a" plscol0a) :void 
+	    (icol0 plint)
+	    (r plint)
+	    (g plint)
+	    (b plint)
+	    (a plflt))
+
 (pl-defcfun ("c_plscolbg" plscolbg) :void 
 	    (r plint)
 	    (g plint)
 	    (b plint))
+
+(pl-defcfun ("c_plscolbga" plscolbga) :void 
+	    (r plint)
+	    (g plint)
+	    (b plint)
+	    (a plflt))
 
 (pl-defcfun ("c_plscolor" plscolor) :void 
 	    (color plint))
@@ -703,6 +781,9 @@
 	    (xmax plflt)
 	    (ymax plflt))
 
+(pl-defcfun ("c_plseed" plseed) :void 
+	    (seed plint))
+
 (pl-defcfun ("c_plsesc" plsesc) :void 
 	    (esc plchar))
 
@@ -718,7 +799,6 @@
 ;; is preserved until the next time this function is called
 
 (let ((c-fname nil))
-  
   (defun plsfnam (fname)
     (when c-fname
       (foreign-string-free c-fname))
@@ -729,6 +809,11 @@
 
 (defcfun ("c_plsfnam" c-plsfnam) :void 
   (fnam plstr))
+
+(pl-defcfun ("c_plsfont" plsfont) :void 
+	    (family plint)
+	    (style plint)
+	    (weight plint))
 
 ;; Note that for these functions you have no choice when it comes to the fill function,
 ;; as this is what the plplot docs suggest. You can set a user defined exclude function 
@@ -834,10 +919,11 @@
 ; PLINT max_color, PLINT max_width, 	 void (*fill) (PLINT, PLFLT *, PLFLT *), PLBOOL rectangular, 	 
 ; void (*pltr) (PLFLT, PLFLT, PLFLT *, PLFLT *, PLPointer), 	 PLPointer pltr_data
 
-(pl-defcfun ("c_plsmaj" plsmaj) :void 
-	    (def plflt)
-	    (scale plflt))
+;(pl-defcfun ("c_plsfam" plsfam) :void 
 
+(pl-defcfun ("c_plslabelfunc" plslabelfunc) :void 
+	    (label-func plfunc)
+	    (label-data plpointer))
 
 ;;
 ;; plsmem is broken into three parts:
@@ -924,6 +1010,10 @@
 	    (nx plint)
 	    (ny plint))
 
+(pl-defcfun ("c_plstransform" plstransform) :void 
+	    (transform-fun plfunc)
+	    (data plpointer))
+
 (pl-defcfun ("c_plstripa" plstripa) :void 
 	    (id plint)
 	    (pen plint)
@@ -977,6 +1067,21 @@
 
 (pl-defcfun ("c_plstripd" plstripd) :void 
 	    (id plint))
+
+(pl-defcfun ("c_plimagefr" plimagefr) :void 
+	    (idata **plflt (nx ny))
+	    (nx plint)
+	    (ny plint)
+	    (xmin plflt)
+	    (xmax plflt)
+	    (ymin plflt)
+	    (ymax plflt)
+	    (zmin plflt)
+	    (zmax plflt)
+	    (valuemin plflt)
+	    (valuemax plflt)
+	    (pltr-fn plfunc)
+	    (pltr-data plpointer))
 
 (pl-defcfun ("plimage" plimage) :void 
 	    (data **plflt (nx ny))
@@ -1051,6 +1156,9 @@
 
 (pl-defcfun ("c_pltext" pltext) :void)
 
+(pl-defcfun ("c_pltimefmt" pltimefmt) :void
+	    (fmt plstr))
+			   
 (pl-defcfun ("c_plvasp" plvasp) :void 
 	    (aspect plflt))
 
