@@ -1,5 +1,5 @@
 ;;;;
-;;;; Copyright (c) 2006 Hazen P. Babcock
+;;;; Copyright (c) 2010 Hazen P. Babcock
 ;;;;
 ;;;; Permission is hereby granted, free of charge, to any person obtaining a copy 
 ;;;; of this software and associated documentation files (the "Software"), to 
@@ -23,7 +23,7 @@
 ;;;;
 ;;;; cl-plplot system declaration
 ;;;;
-;;;; hazen 6/06
+;;;; hazen 6/10
 ;;;;
 
 (in-package #:cl-user)
@@ -36,8 +36,8 @@
 
 (defsystem #:cl-plplot
   :name "cl-plplot"
-  :author "Hazen Babcock <hbabcockos1@mac.com>"
-  :version "0.2.0"
+  :author "Hazen Babcock <hbabcock@mac.com>"
+  :version "0.5.0"
   :licence "MIT"
   :description "Interface to the PLplot Scientific Plotting Library"
   :components 
