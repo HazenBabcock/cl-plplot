@@ -69,3 +69,16 @@
 		 (:file "3D-window" :depends-on ("window")))
     :depends-on (:src/system)))
   :depends-on (:cffi))
+
+(defsystem #:plplot-examples
+  :name "plplot-examples"
+  :author "Hazen Babcock <hbabcock@mac.com>"
+  :version "0.1.0"
+  :licence "MIT"
+  :description "PLplot standard examples in Lisp"
+  :components 
+  ((:module
+    :src/examples
+    :components ((:file "plplot-examples")
+                 (:file "x01l" :depends-on ("plplot-examples")))))
+  :depends-on (:cl-plplot))
