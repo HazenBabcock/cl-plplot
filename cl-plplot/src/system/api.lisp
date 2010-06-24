@@ -28,6 +28,15 @@
 (pl-defcfun ("c_pladv" pladv) :void 
 	    (page plint))
 
+(pl-defcfun ("c_plarc" plarc) :void
+	    (x plflt)
+	    (y plflt)
+	    (a plflt)
+	    (b plflt)
+	    (angle1 plflt)
+	    (angle2 plflt)
+	    (fill plbool))
+	    
 ;;
 ;; This function is deprecated and may dissappear at some point
 ;;
