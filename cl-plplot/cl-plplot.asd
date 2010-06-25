@@ -80,5 +80,9 @@
   ((:module
     :src/examples
     :components ((:file "plplot-examples")
-                 (:file "x01l" :depends-on ("plplot-examples")))))
+                 (:file "x01l" :depends-on ("plplot-examples"))
+                 (:file "x02l" :depends-on ("plplot-examples"))
+                 (:file "x03l" :depends-on ("plplot-examples"))
+                 (:file "x04l" :depends-on ("plplot-examples")))))
   :depends-on (:cl-plplot))
+
