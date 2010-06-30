@@ -166,8 +166,16 @@
 	     (multiple-value-bind (name dir) (ptr-name-dir args)
 	       (cond
 		 ((= dir p-in)
-		  `((,(elt args 2) (length ,(elt args 0)))
-		    (,name (make-ptr ,(elt args 0) ,cffi-type ,convf-in))))
+		  `((,(elt args 2) (if (eq ,(elt args 0) 'null)
+				       0
+				       (length ,(elt args 0))))
+		    (,name (if (eq ,(elt args 0) 'null)
+			       (null-pointer)
+			       (make-ptr ,(elt args 0) ,cffi-type ,convf-in)))))
+
+;		  `((,(elt args 2) (length ,(elt args 0)))
+;		    (,name (make-ptr ,(elt args 0) ,cffi-type ,convf-in))))
+
 		 ((= dir p-in-out)
 		  `(,name (make-ptr (vector ,(elt args 0)) ,cffi-type ,convf-in)))
 		 ((= dir p-out)
@@ -193,7 +201,15 @@
 
 (defun std-freeing (args)
   "Standard freeing-function"
-  `(foreign-free ,(c-name args)))
+;  `(foreign-free ,(c-name args)))
+  (multiple-value-bind (name dir) (ptr-name-dir args)
+    (declare (ignore name))
+    (cond
+      ((= dir p-in)
+       `(unless (eq ,(elt args 0) 'null)
+	  (foreign-free ,(c-name args))))
+      (t
+       `(foreign-free ,(c-name args))))))
 
 (defun ptr-name (x)
   "Returns name of pointer to type x (used for 'standard' types)"
@@ -227,11 +243,15 @@
 	  (setf (mem-aref cur :double y) (coerce (aref lisp-mat x y) 'double-float)))))
     c-mat))
 
+(export 'make-matrix (package-name *package*))
+
 (defun free-matrix (c-mat dims)
   "Frees a two-dimensional c array"
   (dotimes (x (car dims))
     (foreign-free (mem-aref c-mat :pointer x)))
   (foreign-free c-mat))
+
+(export 'free-matrix (package-name *package*))
 
 (defun add-std-type (type-name cffi-type lisp-type convf-in convf-out &optional (want-arrays t))
   "Creates items in the *type-forms* list for 'standard' types, i.e. those things like 
