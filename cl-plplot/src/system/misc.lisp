@@ -140,3 +140,27 @@
 
 (export 'pl-null-pointer (package-name *package*))
 
+;;;
+;;; These are the structures for interfacing with the plf... functions
+;;; in PLplot. There are also some macros to make things a little
+;;; easier.
+;;;
+
+(defcstruct plfgrid
+  (f *plflt)
+  (nx plint)
+  (ny plint))
+
+(defcstruct plfgrid2
+  (f **plflt)
+  (ny plint)
+  (ny plint))
+
+(defmacro with-foreign-matrix ((lisp-matrix foreign-matrix) &body body)
+  `(let ((,foreign-matrix (make-matrix ,lisp-matrix)))
+     (unwind-protect
+	  ,@body
+       (free-matrix ,foreign-matrix (list (array-dimension ,lisp-matrix 0)
+					  (array-dimension ,lisp-matrix 1))))))
+
+(export 'with-foreign-matrix (package-name *package*))

@@ -713,7 +713,7 @@
 	    (coord1 *plflt npts)
 	    (coord2 *plflt npts)
 	    (coord3 *plflt npts)
-	    (rev *plbool npts))
+	    (rev *plbool n))
 
 (pl-defcfun ("c_plscmap1la" plscmap1la) :void 
 	    (itype plbool)
@@ -1121,6 +1121,34 @@
 	    (opt plint)
 	    (clevel *plflt nlevel)
 	    (nlevel plint))
+
+;; I wasn't sure which way to go on this, use callbacks to
+;; Lisp? Or just let the user use the available c functions?
+;; I went with the latter, unlike with some of the other
+;; functions like pl-cont. See x08l.lisp for an example of 
+;; how to use this function.
+
+(pl-defcfun ("plfsurf3d" plfsurf3d) :void
+	    (x *plflt nx)
+	    (y *plflt ny)
+	    (zops plpointer)
+	    (zp plpointer)
+	    (nx plint)
+	    (ny plint)
+	    (opt plint)
+	    (clevel *plflt nlevel)
+	    (nlevel plint))
+
+;; These are helper functions for plfsurf3d
+(defcfun "plf2ops_c" :pointer)
+(defcfun "plf2ops_grid_c" :pointer)
+(defcfun "plf2ops_grid_row_major" :pointer)
+(defcfun "plf2ops_grid_col_major" :pointer)
+
+(export 'plf2ops-c (package-name *package*))
+(export 'plf2ops-grid-c (package-name *package*))
+(export 'plf2ops-grid-row-major (package-name *package*))
+(export 'plf2ops-grid-col-major (package-name *package*))
 
 (pl-defcfun ("c_plsurf3dl" plsurf3dl) :void 
 	    (x *plflt nx)
@@ -1535,12 +1563,8 @@
 	(nx plint)
 	(ny plint))
 
-
-;; Not sure about the utility of this one. f must be an appropriately 
-;; created foreign pointer, such as one created by make-matrix
-
 (pl-defcfun ("plMinMax2dGrid" plminmax2dgrid) :void 
-	    (f plpointer)
+	    (f **plflt (nx ny))
 	    (nx plint)
 	    (ny plint)
 	    (fmax *plflt 1)
