@@ -147,14 +147,37 @@
 ;;;
 
 (defcstruct plfgrid
-  (f *plflt)
-  (nx plint)
-  (ny plint))
+  (f :pointer)
+  (nx :int)
+  (ny :int))
 
 (defcstruct plfgrid2
-  (f **plflt)
-  (ny plint)
-  (ny plint))
+  (f :pointer)
+  (nx :int)
+  (ny :int))
+
+(defun create-grid (c-matrix x-points y-points)
+  (let ((ptr (foreign-alloc 'plfgrid2)))
+    (setf (foreign-slot-value ptr 'plfgrid2 'f) c-matrix
+	  (foreign-slot-value ptr 'plfgrid2 'nx) x-points
+	  (foreign-slot-value ptr 'plfgrid2 'ny) y-points)
+    ptr))
+  
+(export 'create-grid (package-name *package*))
+
+(defmacro with-grid ((grid lisp-matrix) &body body)
+  (let ((c-matrix (gensym)))
+    `(let* ((,c-matrix (make-matrix ,lisp-matrix))
+	    (,grid (create-grid ,c-matrix
+				(array-dimension ,lisp-matrix 0)
+				(array-dimension ,lisp-matrix 1))))
+       (unwind-protect
+	    ,@body
+	 (progn
+	   (foreign-free ,c-matrix)
+	   (foreign-free ,grid))))))
+
+(export 'with-grid (package-name *package*))
 
 (defmacro with-foreign-matrix ((lisp-matrix foreign-matrix) &body body)
   `(let ((,foreign-matrix (make-matrix ,lisp-matrix)))
