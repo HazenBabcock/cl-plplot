@@ -1122,12 +1122,7 @@
 	    (clevel *plflt nlevel)
 	    (nlevel plint))
 
-;; I wasn't sure which way to go on this, use callbacks to
-;; Lisp? Or just let the user use the available c functions?
-;; I went with the latter, unlike with some of the other
-;; functions like pl-cont. See x08l.lisp for an example of 
-;; how to use this function.
-
+;; See x08l.lisp for an example of how to use this function.
 (pl-defcfun ("plfsurf3d" plfsurf3d) :void
 	    (x *plflt nx)
 	    (y *plflt ny)
@@ -1139,7 +1134,8 @@
 	    (clevel *plflt nlevel)
 	    (nlevel plint))
 
-;; These are helper functions for plfsurf3d
+;; These are helper functions for plf... functions, they
+;; return a pointer to a "zops" function.
 (defcfun "plf2ops_c" :pointer)
 (defcfun "plf2ops_grid_c" :pointer)
 (defcfun "plf2ops_grid_row_major" :pointer)

@@ -156,28 +156,39 @@
   (nx :int)
   (ny :int))
 
-(defun create-grid (c-matrix x-points y-points)
+(defun is-matrix-p (item)
+  (= (length (array-dimensions item)) 2))
+
+(defun lisp-data-to-foreign (lisp-data)
+  (if (is-matrix-p lisp-data)
+      (make-matrix lisp-data)
+      (make-ptr lisp-data 'plflt (lambda (x) (coerce x 'double-float)))))
+
+(defun create-grid (c-data size-x size-y)
   (let ((ptr (foreign-alloc 'plfgrid2)))
-    (setf (foreign-slot-value ptr 'plfgrid2 'f) c-matrix
-	  (foreign-slot-value ptr 'plfgrid2 'nx) x-points
-	  (foreign-slot-value ptr 'plfgrid2 'ny) y-points)
+    (setf (foreign-slot-value ptr 'plfgrid2 'f) c-data
+	  (foreign-slot-value ptr 'plfgrid2 'nx) size-x
+	  (foreign-slot-value ptr 'plfgrid2 'ny) size-y)
     ptr))
   
 (export 'create-grid (package-name *package*))
 
-(defmacro with-grid ((grid lisp-matrix) &body body)
-  (let ((c-matrix (gensym)))
-    `(let* ((,c-matrix (make-matrix ,lisp-matrix))
-	    (,grid (create-grid ,c-matrix
-				(array-dimension ,lisp-matrix 0)
-				(array-dimension ,lisp-matrix 1))))
+(defmacro with-foreign-grid ((grid lisp-data size-x size-y) &body body)
+  (let ((c-data (gensym)))
+    `(let* ((,c-data (lisp-data-to-foreign ,lisp-data))
+	    (,grid (create-grid ,c-data ,size-x ,size-y)))
        (unwind-protect
 	    ,@body
 	 (progn
-	   (foreign-free ,c-matrix)
+	   (if (is-matrix-p ,lisp-data)
+	       (cl-plplot-system::free-matrix ,c-data
+					      (list
+					       (array-dimension ,lisp-data 0)
+					       (array-dimension ,lisp-data 1)))
+	       (foreign-free ,c-data))
 	   (foreign-free ,grid))))))
 
-(export 'with-grid (package-name *package*))
+(export 'with-foreign-grid (package-name *package*))
 
 (defmacro with-foreign-matrix ((lisp-matrix foreign-matrix) &body body)
   `(let ((,foreign-matrix (make-matrix ,lisp-matrix)))

@@ -243,15 +243,11 @@
 	  (setf (mem-aref cur :double y) (coerce (aref lisp-mat x y) 'double-float)))))
     c-mat))
 
-(export 'make-matrix (package-name *package*))
-
 (defun free-matrix (c-mat dims)
   "Frees a two-dimensional c array"
   (dotimes (x (car dims))
     (foreign-free (mem-aref c-mat :pointer x)))
   (foreign-free c-mat))
-
-(export 'free-matrix (package-name *package*))
 
 (defun add-std-type (type-name cffi-type lisp-type convf-in convf-out &optional (want-arrays t))
   "Creates items in the *type-forms* list for 'standard' types, i.e. those things like 
