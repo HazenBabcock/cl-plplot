@@ -20,6 +20,17 @@
 (defun make-int-array (length &optional (initial-value 0))
   (make-array length :element-type 'integer :initial-element initial-value))
 
+(defun min-max (matrix)
+  (let ((m-min (aref matrix 0 0))
+	(m-max (aref matrix 0 0)))
+    (dotimes (i (array-dimension matrix 0))
+      (dotimes (j (array-dimension matrix 1))
+	(when (< (aref matrix i j) m-min)
+	  (setf m-min (aref matrix i j)))
+	(when (> (aref matrix i j) m-max)
+	  (setf m-max (aref matrix i j)))))
+    (values m-min m-max)))
+
 ;;;;
 ;;;; Copyright (c) 2010 Hazen P. Babcock
 ;;;;
