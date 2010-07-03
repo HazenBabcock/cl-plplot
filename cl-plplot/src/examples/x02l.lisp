@@ -1,5 +1,5 @@
 ;;;;
-;;;; PLplot example 1
+;;;; PLplot example 2
 ;;;;
 ;;;; hazen 06/10
 ;;;;
