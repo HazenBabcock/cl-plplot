@@ -52,8 +52,8 @@
 	    (dy plflt))
 
 (defun plvect (u v scale &optional (gridx nil) (gridy nil))
-  (with-plcgrid (gridx gridy (array-dimension u 0) (array-dimension u 1))  ; this macro creates the variable plcgrid
-    (pl-plvect u v scale plcgrid)))
+  (with-plcgrid (plc-grid gridx gridy (array-dimension u 0) (array-dimension u 1))  ; this macro creates the variable plcgrid
+    (pl-plvect u v scale plc-grid)))
 
 (export 'plvect (package-name *package*))
 
@@ -163,8 +163,8 @@
 ;;
 
 (defun plcont (f kx lx ky ly clevel &optional (gridx nil) (gridy nil))
-  (with-plcgrid (gridx gridy (array-dimension f 0) (array-dimension f 1))
-    (pl-plcont f kx lx ky ly clevel plcgrid)))
+  (with-plcgrid (plc-grid gridx gridy (array-dimension f 0) (array-dimension f 1))
+    (pl-plcont f kx lx ky ly clevel plc-grid)))
 
 (export 'plcont (package-name *package*))
 
@@ -201,8 +201,8 @@
 
 (defun plfcont (f2eval-data nx ny kx lx ky ly clevel &optional (gridx nil) (gridy nil))
   (let ((c-f2eval-data (init-f2eval-data f2eval-data nx ny)))
-    (with-plcgrid (gridx gridy nx ny)
-      (pl-plfcont c-f2eval-data nx ny kx lx ky ly clevel plcgrid))
+    (with-plcgrid (plc-grid gridx gridy nx ny)
+      (pl-plfcont c-f2eval-data nx ny kx lx ky ly clevel plc-grid))
     (free-f2eval-data f2eval-data nx ny)))
 
 (export 'plfcont (package-name *package*))
@@ -834,8 +834,8 @@
 (callback-closure defined-fn #'(lambda(x y) (declare (ignore x y)) 1) plint (x plflt) (y plflt))
 
 (defun plshade (a left right bottom top shade-min shade-max sh-cmap sh-color sh-width min-color min-width max-color max-width rectangular &optional (gridx nil) (gridy nil))
-  (with-plcgrid (gridx gridy (array-dimension a 0) (array-dimension a 1))
-    (pl-plshade a left right bottom top shade-min shade-max sh-cmap sh-color sh-width min-color min-width max-color max-width rectangular plcgrid)))
+  (with-plcgrid (plc-grid gridx gridy (array-dimension a 0) (array-dimension a 1))
+    (pl-plshade a left right bottom top shade-min shade-max sh-cmap sh-color sh-width min-color min-width max-color max-width rectangular plc-grid)))
 
 (export 'plshade (package-name *package*))
 
@@ -863,8 +863,8 @@
 	    (pltr-data plpointer))
 
 (defun plshades (a xmin xmax ymin ymax clevel fill-width cont-color cont-width rectangular &optional (gridx nil) (gridy nil))
-  (with-plcgrid (gridx gridy (array-dimension a 0) (array-dimension a 1))
-    (pl-plshades a xmin xmax ymin ymax clevel fill-width cont-color cont-width rectangular plcgrid)))
+  (with-plcgrid (plc-grid gridx gridy (array-dimension a 0) (array-dimension a 1))
+    (pl-plshades a xmin xmax ymin ymax clevel fill-width cont-color cont-width rectangular plc-grid)))
 
 (export 'plshades (package-name *package*))
     
@@ -1109,8 +1109,8 @@
 
 (pl-defcfun ("c_plstyl" plstyl) :void 
 	    (nms plint)
-	    (mark *plint nms)
-	    (space *plint nms))
+	    (mark *plint n)
+	    (space *plint n))
 
 (pl-defcfun ("c_plsurf3d" plsurf3d) :void 
 	    (x *plflt nx)

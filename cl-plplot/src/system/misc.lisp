@@ -44,13 +44,13 @@
 (defun check-size (a mx my)
   "checks that p-d has the right dimensions"
   (and (= (array-dimension a 0) mx)
-       (= (array-dimension a 0) my)))
+       (= (array-dimension a 1) my)))
 
 (defun init-plcgrid (pdx pdy mx my)
   "initializes plcgrid given user supplied pdx & pdy, if necessary"
   (cond 
     ((equal (pl-get-pltr-fn) #'pltr0)
-     (null-pointer))
+     (values (null-pointer) 'empty-p))
     ((equal (pl-get-pltr-fn) #'pltr1)
      (if (and (vectorp pdx)
 	      (vectorp pdy)
@@ -62,8 +62,10 @@
 	     (setf y (make-ptr pdy 'plflt #'(lambda(x) (coerce x 'double-float))))
 	     (setf nx (length pdx))
 	     (setf ny (length pdy)))
-	   tmp)
-	 (format t "Array dimensions are wrong for pdx or pdy in init-plcgrid~%")))
+	   (values tmp 'vector-p))
+	 (progn
+	   (format t "Array dimensions are wrong for pdx or pdy in init-plcgrid~%")
+	   (values nil nil))))
     ((equal (pl-get-pltr-fn) #'pltr2)
      (if (and (arrayp pdx)
 	      (arrayp pdy)
@@ -74,36 +76,60 @@
 	     (setf x (make-matrix pdx))
 	     (setf y (make-matrix pdy))
 	     (setf nx (array-dimension pdx 0))
-	     (setf ny (array-dimension pdy 0)))
-	   tmp)
-	 (format t "Matrix dimensions are wrong for pdx or pdy in init-plcgrid~%")))
-    (t pdx)))  ; if the user has set the ptr-fn to something else we just pass this through
-               ; on the assumption that they know what they are doing
+	     (setf ny (array-dimension pdx 1)))
+	   (values tmp 'matrix-p))
+	 (progn
+	   (format t "Matrix dimensions are wrong for pdx or pdy in init-plcgrid~%")
+	   (values nil nil))))
+    ; this has fewer safeguards...
+    (t (cond
+	 ((and (vectorp pdx)
+	       (vectorp pdy))
+	  (let ((tmp (foreign-alloc 'plcgrid)))
+	    (with-foreign-slots ((x y nx ny) tmp plcgrid)
+	      (setf x (make-ptr pdx 'plflt #'(lambda(x) (coerce x 'double-float))))
+	      (setf y (make-ptr pdy 'plflt #'(lambda(x) (coerce x 'double-float))))
+	      (setf nx (length pdx))
+	      (setf ny (length pdy)))
+	    (values tmp 'vector-p)))
+	 ((and (arrayp pdx)
+	       (arrayp pdy))
+	  (let ((tmp (foreign-alloc 'plcgrid)))
+	    (with-foreign-slots ((x y nx ny) tmp plcgrid)
+	      (setf x (make-matrix pdx))
+	      (setf y (make-matrix pdy))
+	      (setf nx (array-dimension pdx 0))
+	      (setf ny (array-dimension pdy 0)))
+	    (values tmp 'matrix-p)))
+	 ((not pdx)
+	  (values (null-pointer) 'empty-p))
+	 (t
+	  (values pdx 'user-p))))))
 
-(defun free-plcgrid (p-grid)
+(defun free-plcgrid (p-grid type)
   "frees the plcgrid structure, if necessary"
   (cond
-    ((equal (pl-get-pltr-fn) #'pltr0)
-     (foreign-free p-grid))
-    ((equal (pl-get-pltr-fn) #'pltr1)
+    ((equal type 'vector-p)
      (progn
        (with-foreign-slots ((x y) p-grid plcgrid)
 	 (foreign-free x)
 	 (foreign-free y))
        (foreign-free p-grid)))
-    ((equal (pl-get-pltr-fn) #'pltr2)
+    ((equal type 'matrix-p)
      (progn
        (with-foreign-slots ((x y nx ny) p-grid plcgrid)
 	 (let ((dims (list nx ny)))
 	   (free-matrix x dims)
 	   (free-matrix y dims)))
-       (foreign-free p-grid)))))
+       (foreign-free p-grid)))
+    (t nil)))
 
-(defmacro with-plcgrid ((pdx pdy mx my) &body body)
-  `(let ((plcgrid (init-plcgrid ,pdx ,pdy ,mx ,my)))
-     (when plcgrid
-       ,@body
-       (free-plcgrid plcgrid))))
+(defmacro with-plcgrid ((plc-grid pdx pdy mx my) &body body)
+  (let ((type (gensym)))
+    `(multiple-value-bind (,plc-grid ,type) (init-plcgrid ,pdx ,pdy ,mx ,my)
+       (when ,plc-grid
+	 ,@body
+	 (free-plcgrid ,plc-grid ,type)))))
 
 
 ;;;
