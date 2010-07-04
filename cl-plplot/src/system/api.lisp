@@ -589,8 +589,8 @@
 
 (pl-defcfun ("c_plpat" plpat) :void 
 	    (nlin plint)
-	    (inc *plint nlin)
-	    (del *plint nlin))
+	    (inc *plint n)
+	    (del *plint n))
 
 (pl-defcfun ("c_plpath" plpath) :void
 	    (n plint)
@@ -824,10 +824,15 @@
 	    (style plint)
 	    (weight plint))
 
+;;
 ;; Note that for these functions you have no choice when it comes to the fill function,
 ;; as this is what the plplot docs suggest. You can set a user defined exclude function 
 ;; and a user defined contour function by setting my-defined-fn or my-pltr-fn inside
 ;; their respective closures.
+;;
+;; Note also that left, right, bottom and top are ignored as it is (as currently arranged)
+;; impossible to set the pltr-fn to null due to the fact that it is a callback.
+;;
 
 ;; use the no exclusion function or set your own with this closure
 
