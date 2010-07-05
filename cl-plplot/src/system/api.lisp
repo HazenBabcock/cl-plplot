@@ -1001,6 +1001,13 @@
 	    (xoff plint)
 	    (yoff plint))
 
+(pl-defcfun ("c_plspal0" plspal0) :void
+	    (filename plstr))
+
+(pl-defcfun ("c_plspal1" plspal1) :void
+	    (filename plstr)
+	    (interpolate plbool))
+
 (pl-defcfun ("c_plspause" plspause) :void 
 	    (pause plbool))
 
