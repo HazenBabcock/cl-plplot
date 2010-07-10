@@ -95,6 +95,10 @@
 	(pl-plimagefr lena 0 width 0 height 0.0 0.0 (+ img-min (* 0.25 img-max)) (- img-max (* img-max 0.25)) (pl-null-pointer))
       
       ; demo5
+      ;
+      ; Note that for images the user defined grid needs to be
+      ; +1 larger in x and y dimensions than the image or you
+      ; will get a memory fault.
 	(plenv 0 width 0 height 1 -1)
 	(pllab "" "" "Distorted image example")
 	(let ((stretch (make-stretch :xmin 0
