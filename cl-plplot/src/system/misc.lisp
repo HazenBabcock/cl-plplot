@@ -43,8 +43,10 @@
 
 (defun check-size (a mx my)
   "checks that p-d has the right dimensions"
-  (and (= (array-dimension a 0) mx)
-       (= (array-dimension a 1) my)))
+  (and (or (= (array-dimension a 0) mx)
+	   (= (array-dimension a 0) (1+ mx)))
+       (or (= (array-dimension a 1) my)
+	   (= (array-dimension a 1) (1+ my)))))
 
 (defun init-plcgrid (pdx pdy mx my)
   "initializes plcgrid given user supplied pdx & pdy, if necessary"

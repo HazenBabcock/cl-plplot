@@ -1109,7 +1109,7 @@
 (pl-defcfun ("c_plstripd" plstripd) :void 
 	    (id plint))
 
-(pl-defcfun ("c_plimagefr" plimagefr) :void 
+(pl-defcfun ("c_plimagefr" pl-plimagefr) :void 
 	    (idata **plflt (nx ny))
 	    (nx plint)
 	    (ny plint)
@@ -1124,7 +1124,13 @@
 	    (pltr-fn plfunc)
 	    (pltr-data plpointer))
 
-(pl-defcfun ("plimage" plimage) :void 
+(defun plimagefr (idata xmin xmax ymin ymax zmin zmax valuemin valuemax &optional (gridx nil) (gridy nil))
+  (with-plcgrid (plc-grid gridx gridy (array-dimension idata 0) (array-dimension idata 1))
+    (pl-plimagefr idata xmin xmax ymin ymax zmin zmax valuemin valuemax plc-grid)))
+
+(export 'plimagefr (package-name *package*))
+
+(pl-defcfun ("c_plimage" plimage) :void 
 	    (data **plflt (nx ny))
 	    (nx plint)
 	    (ny plint)
