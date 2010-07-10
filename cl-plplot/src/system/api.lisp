@@ -936,8 +936,14 @@
 ;(pl-defcfun ("c_plsfam" plsfam) :void 
 
 (pl-defcfun ("c_plslabelfunc" plslabelfunc) :void 
-	    (label-func plfunc)
+	    (label-fn plfunc)
 	    (label-data plpointer))
+
+(callback-closure label-fn #'(lambda(axis value label length data)
+			       (declare (ignore axis value data))
+			       (lisp-string-to-foreign "not set" label length))					
+		  :void 
+		  (axis plint) (value plflt) (label plstr) (length plint) (data plpointer))
 
 ;;
 ;; plsmem is broken into three parts:
@@ -1032,8 +1038,22 @@
 	    (ny plint))
 
 (pl-defcfun ("c_plstransform" plstransform) :void 
-	    (transform-fun plfunc)
+	    (transform-fn plfunc)
 	    (data plpointer))
+
+(callback-closure transform-fn #'(lambda (x y tx ty pltr-data)
+				   (declare (ignore pltr-data))
+				   (setf (mem-aref tx :double) (coerce x 'double-float)
+					 (mem-aref ty :double) (coerce y 'double-float)))
+		  :void 
+		  (x plflt) (y plflt) (tx *plflt) (ty *plflt) (pltr-data plpointer))
+
+;; This is a lame hack to make it easier for the user to reset
+;; PLplots universal coordinate transform function.
+(defun pl-reset-transform ()
+  (c-plstransform (null-pointer) (null-pointer)))
+
+(export 'pl-reset-transform (package-name *package*))
 
 (pl-defcfun ("c_plstripa" plstripa) :void 
 	    (id plint)
