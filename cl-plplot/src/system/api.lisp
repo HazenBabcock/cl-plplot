@@ -839,8 +839,10 @@
 (callback-closure defined-fn #'(lambda(x y) (declare (ignore x y)) 1) plint (x plflt) (y plflt))
 
 (defun plshade (a left right bottom top shade-min shade-max sh-cmap sh-color sh-width min-color min-width max-color max-width rectangular &optional (gridx nil) (gridy nil))
-  (with-plcgrid (plc-grid gridx gridy (array-dimension a 0) (array-dimension a 1))
-    (pl-plshade a left right bottom top shade-min shade-max sh-cmap sh-color sh-width min-color min-width max-color max-width rectangular plc-grid)))
+  (if (and gridx gridy)
+      (with-plcgrid (plc-grid gridx gridy (array-dimension a 0) (array-dimension a 1))
+	(pl-plshade a left right bottom top shade-min shade-max sh-cmap sh-color sh-width min-color min-width max-color max-width rectangular plc-grid))
+      (pl-plshade-simple a left right bottom top shade-min shade-max sh-cmap sh-color sh-width min-color min-width max-color max-width rectangular (null-pointer) (null-pointer))))
 
 (export 'plshade (package-name *package*))
 
@@ -867,12 +869,37 @@
 	    (pltr-fn plfunc)
 	    (pltr-data plpointer))
 
+(pl-defcfun ("c_plshade" pl-plshade-simple) :void
+	    (a **plflt (nx ny))
+	    (nx plint)
+	    (ny plint)
+	    (defined-fn plfunc)
+	    (left plflt)
+	    (right plflt)
+	    (bottom plflt)
+	    (top plflt)
+	    (shade-min plflt)
+	    (shade-max plflt)
+	    (sh-cmap plint)
+	    (sh-color plflt)
+	    (sh-width plint)
+	    (min-color plint)
+	    (min-width plint)
+	    (max-color plint)
+	    (max-width plint)
+	    (plfill-fn plfunc)
+	    (rectangular plbool)
+	    (pltr-fn plpointer)
+	    (pltr-data plpointer))
+
 (defun plshades (a xmin xmax ymin ymax clevel fill-width cont-color cont-width rectangular &optional (gridx nil) (gridy nil))
-  (with-plcgrid (plc-grid gridx gridy (array-dimension a 0) (array-dimension a 1))
-    (pl-plshades a xmin xmax ymin ymax clevel fill-width cont-color cont-width rectangular plc-grid)))
+  (if (and gridx gridy)
+      (with-plcgrid (plc-grid gridx gridy (array-dimension a 0) (array-dimension a 1))
+	(pl-plshades a xmin xmax ymin ymax clevel fill-width cont-color cont-width rectangular plc-grid))
+      (pl-plshades-simple a xmin xmax ymin ymax clevel fill-width cont-color cont-width rectangular (null-pointer) (null-pointer))))
 
 (export 'plshades (package-name *package*))
-    
+
 (pl-defcfun ("c_plshades" pl-plshades) :void
 	    (a **plflt (nx ny))
 	    (nx plint)
@@ -892,6 +919,24 @@
 	    (pltr-fn plfunc)
 	    (pltr-data plpointer))
 
+(pl-defcfun ("c_plshades" pl-plshades-simple) :void
+	    (a **plflt (nx ny))
+	    (nx plint)
+	    (ny plint)
+	    (defined-fn plfunc)
+	    (xmin plflt)
+	    (xmax plflt)
+	    (ymin plflt)
+	    (ymax plflt)
+	    (clevel *plflt nlevel)
+	    (nlevel plint)
+	    (fill-width plint)
+	    (cont-color plint)
+	    (cont-width plint)
+	    (plfill-fn plfunc)
+	    (rectangular plbool)
+	    (pltr-fn plpointer)
+	    (pltr-data plpointer))
 
 ;; The "friendly" form of this one was deemed to be adequately covered by the above 
 ;; functions, so only the "cffi" version of the function is provided.
