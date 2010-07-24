@@ -129,9 +129,7 @@
 			    (plenv0 xmin xmax ymin ymax 2 0)
 			    (plcol0 15)
 			    (pllab "X" "Y" (aref title alg))
-			    (pl-set-pltr-fn #'pltr1)
-			    (plshades zg xmin zmax ymin ymax clev 1 0 1 t xg yg)
-			    (pl-reset-pltr-fn)
+			    (plshades zg xmin xmax ymin ymax clev 1 0 1 t)
 			    (plcol0 2))
 			  (progn
 			    (plscmap1n 256)
