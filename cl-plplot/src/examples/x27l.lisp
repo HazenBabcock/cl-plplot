@@ -15,7 +15,6 @@
 		    (windings (floor (aref params 3)))
 		    (steps (floor (/ npnt windings)))
 		    (dphi (/ (* 8.0 (acos -1.0)) steps)))
-	       (format t "~A ~A~%" params (1+ (* windings steps)))
 	       (dotimes (i (1+ (* windings steps)))
 		 (let* ((dp (- (aref params 0) (aref params 1)))
 			(phi (* i dphi))
