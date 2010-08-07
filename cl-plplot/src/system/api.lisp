@@ -83,10 +83,19 @@
 	(nysub plint))
 
 (pl-defcfun ("c_plbin" plbin) :void 
-	(nbin plint)
-	(x *plflt nbin)
-	(y *plflt nbin)
-	(opt plint))
+	    (nbin plint)
+	    (x *plflt nbin)
+	    (y *plflt nbin)
+	    (opt plint))
+
+(pl-defcfun ("c_plbtime" plbtime) :void
+	    (year *plint 1)
+	    (month *plint 1)
+	    (day *plint 1)
+	    (hour *plint 1)
+	    (min *plint 1)
+	    (sec *plflt 1)
+	    (ctime plflt))
 
 (pl-defcfun ("c_plbop" plbop) :void)
 
@@ -126,6 +135,19 @@
 
 (pl-defcfun ("c_plcol1" plcol1) :void 
 	    (col1 plflt))
+
+(pl-defcfun ("c_plconfigtime" plconfigtime) :void
+	    (scale plflt)
+	    (offset1 plflt)
+	    (offset2 plflt)
+	    (ccontrol plint)
+	    (ifbtime-offset plbool)
+	    (year plint)
+	    (month plint)
+	    (day plint)
+	    (hour plint)
+	    (min plint)
+	    (sec plflt))
 
 
 ;;
@@ -224,6 +246,15 @@
 (pl-defcfun ("c_plcpstrm" plcpstrm) :void 
 	    (iplsr plint)
 	    (flags plint))
+
+(pl-defcfun ("c_plctime" plctime) :void
+	    (year plint)
+	    (month plint)
+	    (day plint)
+	    (hour plint)
+	    (min plint)
+	    (sec plflt)
+	    (ctime *plflt 1))
 
 (pl-defcfun ("pldid2pc" pldid2pc) :void 
 	(xmin *plflt :in-out)
@@ -989,6 +1020,10 @@
 			       (lisp-string-to-foreign "not set" label length))					
 		  :void 
 		  (axis plint) (value plflt) (label plstr) (length plint) (data plpointer))
+
+(pl-defcfun ("c_plsmaj" plsmaj) :void
+	    (def plflt)
+	    (scale plflt))
 
 ;;
 ;; plsmem is broken into three parts:
