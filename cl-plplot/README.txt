@@ -2,8 +2,19 @@
 ; The Common Lisp / CFFI based interface to the PLplot Scientific Plotting 
 ; Library.
 ;
-; hazen 2/08
+; hazen 08/10
 ;
+
+;;; 08-08-10 
+
+Going forward from release 0.6.0 I'm simply going to be trying to keep the
+Lisp binding in sync with the PLplot library (cl-plplot-system). Due to time 
+constraints, and also because I do not actually use it myself enough to have 
+good ideas about what does and does not work, I'm not planning on any further
+updates to my attempt to make a more Lispish interface to PLplot (cl-plplot).
+
+
+;;; Older
 
 This is in fact two packages, one is a "low-level" package (cl-plplot-system) 
 that contains the interface to the large and hairy plplot API, and the other is
@@ -54,7 +65,8 @@ This is currently 4 files (src/system).
 	be added as desired.
 
 The file system-examples.lisp contains some examples of how you might directly 
-use the functions in cl-plplot-system. Other useful resources are the 
+use the functions in cl-plplot-system. Also, src/examples/ contains Lisp
+versions of all the standard PLplot examples. Other useful resources are the 
 documentation that comes with plplot, the examples that come with plplot, the
 (admittedly somewhat sparse) comments in api.lisp & possibly plplot.h. You 
 should be aware the cl-plplot-system exports lots and lots of symbols 
