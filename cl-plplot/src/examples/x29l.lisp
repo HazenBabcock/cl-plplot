@@ -1,7 +1,7 @@
 ;;;;
 ;;;; PLplot example 29.
 ;;;;
-;;;; Fixme: This example has a problem with floating point 
+;;;; Fixme: This example may have a problem with floating point 
 ;;;; exceptions. I was unsuccesful in my attempts to figure
 ;;;; out why as the numbers that it passes to the PLplot
 ;;;; library are identical with those passed by the C
@@ -187,13 +187,13 @@
 		   (plconfigtime scale offset1 offset2 (if (= if-TAI-time-format 1) #x0 #x2) nil 0 0 0 0 0 0)
 		   (pltimefmt time-format)
 
-		   ; For reasons unclear this throws a floating point exception
-		   ; on every call after the first call.
+		   ; For reasons unclear this sometimes throws a floating 
+		   ; point exception on every call after the first call.
 
 		   (handler-case
 		       (plbox "bcnstd" xlabel-step 0
 			      "bcnstv" 0.0 0)
-		     (t () (format t "plbox problem")))
+		     (error () (format t "plbox problem")))
 		   (plcol0 3)
 		   (pllab xtitle
 			  "TAI-UTC (sec)"
