@@ -1,7 +1,7 @@
 ;;;;
 ;;;; PLplot example 2
 ;;;;
-;;;; hazen 06/10
+;;;; hazen 01/14
 ;;;;
 
 (in-package :plplot-examples)
@@ -19,13 +19,13 @@
 	       (let ((vmin 0.1)
 		     (vmax 0.9))
 		 (dotimes (j 3)
-		   (plwid (+ j 1))
+		   (plwidth (+ j 1))
 		   (plvpor vmin vmax vmin vmax)
 		   (plwind 0.0 1.0 0.0 1.0)
 		   (plbox "bc" 0.0 0 "bc" 0.0 0)
 		   (incf vmin 0.1)
 		   (decf vmax 0.1)))
-	       (plwid 1)
+	       (plwidth 1)
 	       (plptex 0.5 0.5 1.0 0.0 0.5 (write-to-string i)))))
 
     ;; page 1
@@ -60,7 +60,7 @@
   (plend1))
 
 ;;;;
-;;;; Copyright (c) 2010 Hazen P. Babcock
+;;;; Copyright (c) 2014 Hazen P. Babcock
 ;;;;
 ;;;; Permission is hereby granted, free of charge, to any person obtaining a copy 
 ;;;; of this software and associated documentation files (the "Software"), to 

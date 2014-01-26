@@ -1,7 +1,7 @@
 ;;;;
 ;;;; PLplot example 1
 ;;;;
-;;;; hazen 06/10
+;;;; hazen 01/14
 ;;;;
 
 (in-package :plplot-examples)
@@ -47,9 +47,9 @@
     (plcol0 2)
     (pllab "(x)" "sin(x)/x" "#frPLplot Example 1 - Sinc Function")
     (plcol0 3)
-    (plwid 2)
+    (plwidth 2)
     (plline x y)
-    (plwid 1))
+    (plwidth 1))
 
   ;; plot 4
   (let ((x (make-float-array 101))
@@ -78,7 +78,7 @@
   (plend1))
 
 ;;;;
-;;;; Copyright (c) 2010 Hazen P. Babcock
+;;;; Copyright (c) 2014 Hazen P. Babcock
 ;;;;
 ;;;; Permission is hereby granted, free of charge, to any person obtaining a copy 
 ;;;; of this software and associated documentation files (the "Software"), to 
