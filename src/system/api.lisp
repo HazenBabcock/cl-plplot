@@ -5,7 +5,7 @@
 ;;;; cffi calls will be name "c-plfunctionname", they are likely to instead be
 ;;;; "c-pl-plfunctionname".
 ;;;;
-;;;; hazen 3/06
+;;;; hazen 01/14
 ;;;;
 
 (in-package #:cl-plplot-system)
@@ -1341,8 +1341,13 @@
 	    (alt plflt)
 	    (az plflt))
 
-(pl-defcfun ("c_plwid" plwid) :void 
-	    (width plint))
+;; This function no longer exists in plplot.
+;(pl-defcfun ("c_plwid" plwid) :void 
+;	    (width plint))
+
+;; It has been replaces with this one.
+(pl-defcfun ("c_plwidth" plwidth) :void
+	    (width plflt))
 
 (pl-defcfun ("c_plwind" plwind) :void 
 	    (xmin plflt)
@@ -1780,7 +1785,7 @@
 
 
 ;;;;
-;;;; Copyright (c) 2006 Hazen P. Babcock
+;;;; Copyright (c) 2014 Hazen P. Babcock
 ;;;;
 ;;;; Permission is hereby granted, free of charge, to any person obtaining a copy 
 ;;;; of this software and associated documentation files (the "Software"), to 
