@@ -96,7 +96,7 @@
   (when (> (line-width a-plot) 0)
     (when (range-check (line-style a-plot) 1 8)
       (pllsty (line-style a-plot)))
-    (plwid (line-width a-plot)))
+    (plwidth (line-width a-plot)))
   (let ((parsed-options
 	 (+ (cond
 	      ((equal (grid-type a-plot) :grid-x) 1)

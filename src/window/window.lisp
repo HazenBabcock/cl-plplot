@@ -225,7 +225,7 @@
 	 ;; title, axis & axis labels
 	 (set-foreground-color (foreground-color a-window))
 	 (pllsty 1)
-	 (plwid (window-line-width a-window))
+	 (plwidth (window-line-width a-window))
 	 (plschr 0 (window-font-size a-window))
 	 (plbox (get-axis-properties (x-axis a-window)) (major-tick-interval (x-axis a-window)) (minor-tick-number (x-axis a-window))
 		(get-axis-properties (y-axis a-window)) (major-tick-interval (y-axis a-window)) (minor-tick-number (y-axis a-window)))

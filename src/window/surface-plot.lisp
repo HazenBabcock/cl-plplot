@@ -63,7 +63,7 @@
   (when (> (line-width a-plot) 0)
     (when (range-check (line-style a-plot) 1 8)
       (pllsty (line-style a-plot)))
-    (plwid (line-width a-plot)))
+    (plwidth (line-width a-plot)))
   (let ((parsed-options
 	 (if (listp (surface-options a-plot))
 	     (apply #'+

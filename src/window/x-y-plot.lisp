@@ -119,7 +119,7 @@
   (when (> (line-width a-plot) 0)
     (when (range-check (line-style a-plot) 1 8)
       (pllsty (line-style a-plot)))
-    (plwid (line-width a-plot))
+    (plwidth (line-width a-plot))
     (plline (data-x a-plot) (data-y a-plot)))
   (when (> (symbol-size a-plot) 0)
     (plssym 0 (symbol-size a-plot))

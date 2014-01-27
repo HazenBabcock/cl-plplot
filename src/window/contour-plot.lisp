@@ -254,7 +254,7 @@
     ; draw the contours next
     (set-foreground-color (line-color a-plot))
     (when (> (line-width a-plot) 0)
-      (plwid (line-width a-plot))
+      (plwidth (line-width a-plot))
       (plcont (data a-plot) 1 (array-dimension (data a-plot) 0) 1 (array-dimension (data a-plot) 1)
 	      (contour-levels a-plot) (x-mapping a-plot) (y-mapping a-plot)))
 

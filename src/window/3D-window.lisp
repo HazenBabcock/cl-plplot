@@ -117,7 +117,7 @@
 	 ;; axis & axis labels
 	 (set-foreground-color (foreground-color a-window))
 	 (pllsty 1)
-	 (plwid (window-line-width a-window))
+	 (plwidth (window-line-width a-window))
 	 (plschr 0 (window-font-size a-window))
 	 (plbox3 (get-axis-properties (x-axis a-window)) "" ; x-axis
 		 (major-tick-interval (x-axis a-window))
