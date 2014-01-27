@@ -37,7 +37,7 @@
 (defsystem #:cl-plplot
   :name "cl-plplot"
   :author "Hazen Babcock <hbabcock@mac.com>"
-  :version "0.5.0"
+  :version "0.7.0"
   :licence "MIT"
   :description "Interface to the PLplot Scientific Plotting Library"
   :components 
