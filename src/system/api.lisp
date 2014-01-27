@@ -1349,6 +1349,15 @@
 (pl-defcfun ("c_plwidth" plwidth) :void
 	    (width plflt))
 
+;; Don't break legacy code, at least for the time being,
+;; but provide a warning.
+(defun plwid (width)
+  (progn
+    (format t "plwid() is deprecated, use plwidth() instead.")
+    (plwidth width)))
+
+(export 'plwid (package-name *package*))
+
 (pl-defcfun ("c_plwind" plwind) :void 
 	    (xmin plflt)
 	    (xmax plflt)
