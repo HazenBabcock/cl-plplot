@@ -1,6 +1,6 @@
 ;;;;
 ;;;; Defines the cl-plot package.
-;;;; Loads the plplot library (libplplotd) and the standard C library (libc).
+;;;; Loads the plplot library (libplplotd).
 ;;;;
 ;;;; hazen 3/06
 ;;;;
