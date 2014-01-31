@@ -1,27 +1,16 @@
-;
-; The Common Lisp / CFFI based interface to the PLplot Scientific Plotting 
-; Library.
-;
-; hazen 08/10
-;
+#cl-plplot#
+This is a repository of code developed in the [Zhuang Lab](http://zhuang.harvard.edu) for the acquisition of STORM movies.
 
-;;; 08-08-10 
+The Common Lisp / CFFI based interface to the [PLplot](http://common-lisp.net/project/cl-plplot/) Scientific Plotting Library.
 
-Going forward from release 0.6.0 I'm simply going to be trying to keep the
-Lisp binding in sync with the PLplot library (cl-plplot-system). Due to time 
-constraints, and also because I do not actually use it myself enough to have 
-good ideas about what does and does not work, I'm not planning on any further
-updates to my attempt to make a more Lispish interface to PLplot (cl-plplot).
+#Notes#
+
+*08-08-10 - Going forward from release 0.6.0 I'm simply going to be trying to keep theLisp binding in sync with the PLplot library (cl-plplot-system). Due to time constraints, and also because I do not actually use it myself enough to have good ideas about what does and does not work, I'm not planning on any further updates to my attempt to make a more Lispish interface to PLplot (cl-plplot).
 
 
-;;; Older
+*Older -This is in fact two packages, one is a "low-level" package (cl-plplot-system) that contains the interface to the large and hairy plplot API, and the other is a (hopefully) easy to use front end (cl-plplot). It was written and tested with CFFI-0.9.0 and SBCL-0.9.9 on OS-X 10.4. I have also verified that it works on debian (2.6.15) with CFFI-0.9.1 and SBCL-0.9.12. It should all be Common Lisp & ASDF installable, but let me know if you find otherwise.
 
-This is in fact two packages, one is a "low-level" package (cl-plplot-system) 
-that contains the interface to the large and hairy plplot API, and the other is
-a (hopefully) easy to use front end (cl-plplot). It was written and tested
-with CFFI-0.9.0 and SBCL-0.9.9 on OS-X 10.4. I have also verified that it works
-on debian (2.6.15) with CFFI-0.9.1 and SBCL-0.9.12. It should all be Common
-Lisp & ASDF installable, but let me know if you find otherwise.
+#Layout#
 
 cl-plplot:
 This is currently 18 files (in src/window).
