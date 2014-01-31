@@ -35,10 +35,10 @@ cl-plplot to generate different 2D plots.
 
 ####cl-plplot-system####
 This is currently 4 files (src/system).
-1. loadlib.lisp defines the package and loads the PLplot library.
-2. defcfun.lisp defines the macro that is used to facilitate wrapping all the CFFI calls.
-3. misc.lisp contains some helper functions and macros.
-4. api.lisp contains all the plplot library / CFFI interface calls. Not every function in the plplot API is available, though all the ones that are associated with drawing/graphing should be. Others can of course be added as desired.
+* loadlib.lisp defines the package and loads the PLplot library.
+* defcfun.lisp defines the macro that is used to facilitate wrapping all the CFFI calls.
+* misc.lisp contains some helper functions and macros.
+* api.lisp contains all the plplot library / CFFI interface calls. Not every function in the plplot API is available, though all the ones that are associated with drawing/graphing should be. Others can of course be added as desired.
 
 The file system-examples.lisp contains some examples of how you might directly use the functions in cl-plplot-system. Also, src/examples/ contains Lisp versions of all the standard PLplot examples. Other useful resources are the documentation that comes with plplot, the examples that come with plplot, the (admittedly somewhat sparse) comments in api.lisp & possibly plplot.h. You 
 should be aware the cl-plplot-system exports lots and lots of symbols (approximately 2 for every plplot function). These will generally be of the form "c-pl*" or "pl*", so if you like function names that begin with these characters then watch out! 
