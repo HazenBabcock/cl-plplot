@@ -8,32 +8,32 @@ Going forward from release 0.6.0 I'm simply going to be trying to keep theLisp b
 
 #Layout#
 
-##cl-plplot##
+####cl-plplot####
 This is currently 18 files (in src/window).
-1. axis-label.lisp handles the axis-label and 3D-axis-label object.
-2. axis.lisp handles the axis object.
-3. bar-graph.lisp handles the bar-graph object.
-4. classes.lisp specifies all the cl-plplot classes.
-5. color-table.lisp handles plplot cmap0 color.
-6. contour-plot.lisp handles the contour-plot object.
-7. extended-color-table.lisp handles plplot cmap1 color.
-8. macros.lisp contains the important macros.
-9. package.lisp defines the package & the global variables.
-10. plot.lisp defines the plot object as well as providing an interface whereby the user can define their own custom plot objects.
-11. surface-plot.lisp handles the surface-plot object.
-12. text-item.lisp handles the text-item object.
-13. text-label.lisp handles the text-label and 3D-text-label object.
-14. utility-functions.lisp is a collection of low-level functions.
-15. window.lisp handles the window object.
-16. x-y-plot.lisp handles the x-y-plot object.
-17. 3D-mesh.lisp handles the 3D-mesh object.
-18. 3D-window.lisp handles the 3D-window object.
+* axis-label.lisp handles the axis-label and 3D-axis-label object.
+* axis.lisp handles the axis object.
+* bar-graph.lisp handles the bar-graph object.
+* classes.lisp specifies all the cl-plplot classes.
+* color-table.lisp handles plplot cmap0 color.
+* contour-plot.lisp handles the contour-plot object.
+* extended-color-table.lisp handles plplot cmap1 color.
+* macros.lisp contains the important macros.
+* package.lisp defines the package & the global variables.
+* plot.lisp defines the plot object as well as providing an interface whereby the user can define their own custom plot objects.
+* surface-plot.lisp handles the surface-plot object.
+* text-item.lisp handles the text-item object.
+* text-label.lisp handles the text-label and 3D-text-label object.
+* utility-functions.lisp is a collection of low-level functions.
+* window.lisp handles the window object.
+* x-y-plot.lisp handles the x-y-plot object.
+* 3D-mesh.lisp handles the 3D-mesh object.
+* 3D-window.lisp handles the 3D-window object.
  
 The file src/examples/window-examples.lisp contains examples of how to use 
 cl-plplot to generate different 2D plots.
 
 
-##cl-plplot-system##
+####cl-plplot-system####
 This is currently 4 files (src/system).
 1. loadlib.lisp defines the package and loads the PLplot library.
 2. defcfun.lisp defines the macro that is used to facilitate wrapping all the CFFI calls.
