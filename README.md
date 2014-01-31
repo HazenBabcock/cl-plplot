@@ -4,7 +4,7 @@ The Common Lisp / CFFI based interface to the [PLplot](http://plplot.sourceforge
 #Notes#
 
 ####08-08-10####
-Going forward from release 0.6.0 I'm simply going to be trying to keep theLisp binding in sync with the PLplot library (cl-plplot-system). Due to time constraints, and also because I do not actually use it myself enough to have good ideas about what does and does not work, I'm not planning on any further updates to my attempt to make a more Lispish interface to PLplot (cl-plplot).
+Going forward from release 0.6.0 I'm simply going to be trying to keep the Lisp binding in sync with the PLplot library (cl-plplot-system). Due to time constraints, and also because I do not actually use it myself enough to have good ideas about what does and does not work, I'm not planning on any further updates to my attempt to make a more Lispish interface to PLplot (cl-plplot).
 
 #Layout#
 
