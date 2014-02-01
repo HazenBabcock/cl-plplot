@@ -27,23 +27,29 @@
 
 (defmethod free-translated-object (c-array (instance pl-pointer) param)
   (declare (ignore param))
-  (foreign-free c-array))
+  (when (> (size instance) 0)
+    (foreign-free c-array)))
 
 (defmethod translate-from-foreign (c-array (instance pl-pointer))
-  (let ((lisp-array (make-array (size instance) :element-type (lisp-type instance))))
-    (dotimes (i (size instance))
-      (setf (aref lisp-array i) 
-	    (funcall (conversion-function instance) (mem-aref c-array (c-type instance) i))))
-    lisp-array))
+  (when (> (size instance) 0)
+      (let ((lisp-array (make-array (size instance) :element-type (lisp-type instance))))
+	(dotimes (i (size instance))
+	  (setf (aref lisp-array i) 
+		(funcall (conversion-function instance) (mem-aref c-array (c-type instance) i))))
+	lisp-array)))
 
 (defmethod translate-to-foreign (lisp-array (instance pl-pointer))
-  (let* ((len (length lisp-array))
-	 (c-array (foreign-alloc (c-type instance) :count len)))
-    (setf (size instance) len)
-    (dotimes (i len)
-      (setf (mem-aref c-array (c-type instance) i) 
-	    (funcall (conversion-function instance) (aref lisp-array i))))
-    c-array))
+  (if lisp-array
+      (let* ((len (length lisp-array))
+	     (c-array (foreign-alloc (c-type instance) :count len)))
+	(setf (size instance) len)
+	(dotimes (i len)
+	  (setf (mem-aref c-array (c-type instance) i) 
+		(funcall (conversion-function instance) (aref lisp-array i))))
+	c-array)
+      (progn
+	(setf (size instance) 0)
+	(null-pointer))))
 
 ;; integer array type
 (define-foreign-type pl-integer-pointer (pl-pointer)
