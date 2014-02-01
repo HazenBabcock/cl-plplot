@@ -10,7 +10,7 @@
 ;;; Simple types
 
 (defctype plbool :boolean "PLplot boolean type")
-(defctype plchar :char "PLplot character type"
+(defctype plchar :char "PLplot character type")
 (defctype plflt :double "PLplot floating point type")
 (defctype plint :int "PLplot fixed point type")
 (defctype plunicode :uint32 "PLplot unicode character type")
@@ -30,7 +30,7 @@
   (foreign-free c-array))
 
 (defmethod translate-from-foreign (c-array (instance pl-pointer))
-  (let ((lisp-array (make-array (instance size) :element-type (instance lisp-type))))
+  (let ((lisp-array (make-array (size instance) :element-type (lisp-type instance))))
     (dotimes (i (size instance))
       (setf (aref lisp-array i) 
 	    (funcall (conversion-function instance) (mem-aref c-array (c-type instance) i))))
@@ -45,8 +45,25 @@
 	    (funcall (conversion-function instance) (aref lisp-array i))))
     c-array))
 
+;; integer array type
+(define-foreign-type pl-integer-pointer (pl-pointer)
+  ((c-type
+    :initform :int
+    :reader c-type)
+   (conversion-function 
+    :initform #'(lambda (x) (round x))
+    :reader conversion-function)
+   (lisp-type
+    :initform 'fixnum
+    :reader lisp-type))
+  (:actual-type :pointer))
+
+(define-parse-method *plint ()
+  (make-instance 'pl-integer-pointer))
+
+
 ;; floating point array type
-(define-foreign-type plflt-ptr-type (pl-pointer)
+(define-foreign-type pl-float-pointer (pl-pointer)
   ((c-type
     :initform :double
     :reader c-type)
@@ -58,8 +75,8 @@
     :reader lisp-type))
   (:actual-type :pointer))
 
-(define-parse-method plflt-ptr ()
-  (make-instance 'plflt-ptr-type))
+(define-parse-method *plflt ()
+  (make-instance 'pl-float-pointer))
 
 
 ;;;;
