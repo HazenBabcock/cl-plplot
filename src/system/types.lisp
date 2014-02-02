@@ -6,7 +6,7 @@
 
 (in-package #:cl-plplot-system)
 
-(defmacro pl-define-simple-type (pl-name lisp-to-c c-to-lisp cffi-type)
+(defmacro pl-define-simple-type (pl-name &key lisp-to-c c-to-lisp cffi-type)
   (let ((lisp-name (read-from-string (concatenate 'string "pl-var-" (string pl-name)))))
     `(progn
        (define-foreign-type ,lisp-name (pl-var)
@@ -39,30 +39,30 @@
 
 ;; boolean type
 (pl-define-simple-type plbool
-		       #'(lambda (x) (if x 1 0))
-		       #'(lambda (x) (if (= x 0) nil t))
-		       :boolean)
+		       :lisp-to-c #'(lambda (x) (if x 1 0))
+		       :c-to-lisp #'(lambda (x) (if (= x 0) nil t))
+		       :cffi-type boolean)
 
 
 ;; char type
 (pl-define-simple-type plchar
-		       #'(lambda (x) (char-code x))
-		       #'(lambda (x) (code-char x))
-		       :char)
+		       :lisp-to-c #'(lambda (x) (char-code x))
+		       :c-to-lisp #'(lambda (x) (code-char x))
+		       :cffi-type :char)
 
 
 ;; floating point type
 (pl-define-simple-type plflt
-		       #'(lambda (x) (coerce x 'double-float))
-		       #'(lambda (x) (coerce x 'double-float))
-		       :double)
+		       :lisp-to-c #'(lambda (x) (coerce x 'double-float))
+		       :c-to-lisp #'(lambda (x) (coerce x 'double-float))
+		       :cffi-type :double)
 
 
 ;; integer type
 (pl-define-simple-type plint
-		       #'(lambda (x) (round x))
-		       #'(lambda (x) (round x))
-		       :int)
+		       :lisp-to-c #'(lambda (x) (round x))
+		       :c-to-lisp #'(lambda (x) (round x))
+		       :cffi-type :int)
 
 
 ;; unicode-type
@@ -72,6 +72,7 @@
 
 (define-parse-method plunicode ()
   (make-instance 'pl-var-plunicode))
+
 
 ;;; Array types
 
