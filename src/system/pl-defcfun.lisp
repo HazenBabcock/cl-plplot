@@ -44,11 +44,18 @@
 (in-package #:cl-plplot-system)
 
 (defun make-defcfun-args (args)
-  "Returns the args list in a format suitable for calling the function created by defcfun."
+  "Returns the args list in a form suitable for use with defcfun."
   (let ((defcfun-args nil))
     (dolist (arg args)
       (push (list (car arg) (cadr arg)) defcfun-args))
     (nreverse defcfun-args)))
+
+(defun make-defcfun-call-args (args)
+  "Returns the args list in a form suitable for calling the function created by defcfun."
+  (let ((defcfun-call-args nil))
+    (dolist (arg args)
+      (push (car arg) defcfun-call-args))
+    (nreverse defcfun-call-args)))
 
 (defun make-wrapper-args (args)
   "Returns the args list as they will appear in the wrapper function."
@@ -97,25 +104,27 @@
   "Function creation macro, wraps defcfun to handle most styles of function call in the plplot library"
   (let ((c-name (car name))
 	(lisp-name (cadr name)))
-    (export lisp-name)
     (if (should-wrap? args)
-	(let ((wrapped-name (list (car name)
-				  (read-from-string (concatenate 'string "c-" (string lisp-name))))))
-	  `(defun ,lisp-name ,(make-wrapper-args args)
-	     (let ,(make-wrapper-vars args)
-	       (if ,(make-wrapper-check args)
-		   (progn
-		     (defcfun ,wrapped-name ,returns ,@(make-defcfun-args args))
-		     (values ,@(make-wrapper-return args)))
-		   (format t "Input array sizes do not match!~%")))))
-	`(defcfun (,c-name ,lisp-name) ,returns ,@args))))
+	(let ((wrapped-name (read-from-string (concatenate 'string "c-" (string lisp-name)))))
+	  `(progn
+	     (defcfun (,c-name ,wrapped-name) ,returns 
+	       ,@(make-defcfun-args args))
+	     (defun ,lisp-name ,(make-wrapper-args args)
+	       (let ,(make-wrapper-vars args)
+		 (if ,(make-wrapper-check args)
+		     (let ((return-value (,wrapped-name ,@(make-defcfun-call-args args))))
+		       (declare (ignore return-value))
+		       (values ,@(make-wrapper-return args)))
+		     (format t "Input array sizes do not match!~%"))))
+	     (export (quote ,lisp-name))))
+	`(progn
+	   (defcfun (,c-name ,lisp-name) ,returns ,@args)
+	   (export (quote ,lisp-name))))))
 
 (defun should-wrap? (args)
   "Based on the argument list, determines if the function is complicated enough to need a wrapper."
-  (format t "sw~%")
   (dolist (arg args)
     (when (> (length arg) 2)
-      (format t "swt~%")
       (return t))))
 
 ;;;;
