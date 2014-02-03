@@ -6,146 +6,150 @@
 
 (in-package #:cl-plplot-system)
 
-(defmacro pl-define-simple-type (pl-name &key lisp-to-c c-to-lisp cffi-type)
-  (let ((lisp-name (read-from-string (concatenate 'string "pl-var-" (string pl-name)))))
-    `(progn
-       (define-foreign-type ,lisp-name (pl-var)
-	 ((lisp-to-c
-	   :initform ,lisp-to-c
-	   :reader lisp-to-c)
-	  (c-to-lisp
-	   :initform ,c-to-lisp
-	   :reader c-to-lisp))
-	 (:actual-type ,cffi-type))
-       (define-parse-method ,pl-name ()
-	 (make-instance (quote ,lisp-name))))))
-
-;;; Simple types
 ;(defctype plbool :boolean "PLplot boolean type")
 ;(defctype plchar :char "PLplot character type")
 ;(defctype plflt :double "PLplot floating point type")
 ;(defctype plint :int "PLplot fixed point type")
 ;(defctype plunicode :uint32 "PLplot unicode character type")
 
-;; base simple type
-(define-foreign-type pl-var () ())
 
-(defmethod translate-to-foreign (lisp-var (instance pl-var))
-  (funcall (lisp-to-c instance) lisp-var))
+;;; helper functions and macros.
 
-(defmethod translate-from-foreign (c-var (instance pl-var))
-  (funcall (c-to-lisp instance) c-var))
+(defun pl-defctype-fn-name (pl-type name)
+  (read-from-string (concatenate 'string (string pl-type) "-" name)))
 
+(defmacro pl-defctype (pl-type cffi-type &key from-c to-c)
+  (let ((from-c-fn-name (pl-defctype-fn-name pl-type "from-c"))
+	(to-c-fn-name (pl-defctype-fn-name pl-type "to-c")))
+    `(progn
+       (defun ,from-c-fn-name (x)
+	 ,from-c)
+       (defun ,to-c-fn-name (x)
+	 ,to-c)
+       (defctype ,pl-type (:wrapper
+			   ,cffi-type
+			   :from-c ,from-c-fn-name
+			   :to-c ,to-c-fn-name)))))
+
+
+;;; types
 
 ;; boolean type
-(pl-define-simple-type plbool
-		       :lisp-to-c #'(lambda (x) (if x 1 0))
-		       :c-to-lisp #'(lambda (x) (if (= x 0) nil t))
-		       :cffi-type boolean)
-
+(pl-defctype plbool :int
+	     :from-c (not (zerop x))
+	     :to-c (if x 1 0))
 
 ;; char type
-(pl-define-simple-type plchar
-		       :lisp-to-c #'(lambda (x) (char-code x))
-		       :c-to-lisp #'(lambda (x) (code-char x))
-		       :cffi-type :char)
-
+(pl-defctype plchar :char
+	     :from-c (char-code x)
+	     :to-c (code-char x))
 
 ;; floating point type
-(pl-define-simple-type plflt
-		       :lisp-to-c #'(lambda (x) (coerce x 'double-float))
-		       :c-to-lisp #'(lambda (x) (coerce x 'double-float))
-		       :cffi-type :double)
-
+(pl-defctype plflt :double
+	     :from-c (coerce x 'double-float)
+	     :to-c (coerce x 'double-float))
 
 ;; integer type
-(pl-define-simple-type plint
-		       :lisp-to-c #'(lambda (x) (round x))
-		       :c-to-lisp #'(lambda (x) (round x))
-		       :cffi-type :int)
+(pl-defctype plint :int
+	     :from-c (round x)
+	     :to-c (round x))
 
+;; string type
+(defctype plstr :string)
 
 ;; unicode-type
-(define-foreign-type pl-var-plunicode (pl-var-plint)
-  ()
-  (:actual-type :uint32))
-
-(define-parse-method plunicode ()
-  (make-instance 'pl-var-plunicode))
+(pl-defctype plunicode :uint32
+	     :from-c (round x)
+	     :to-c (round x))
 
 
 ;;; Array types
 
 ;; base array type
-(define-foreign-type pl-pointer ()
-  ((size
+(defclass pl-pointer ()
+  ((c-pointer
+    :initform nil
+    :accessor c-pointer)
+   (size
     :initform 0
-    :accessor size))
-  (:actual-type :pointer))
+    :accessor size)))
 
-(defmethod free-translated-object (c-array (instance pl-pointer) param)
-  (declare (ignore param))
+(defgeneric pl-foreign-free (instance))
+(defmethod pl-foreign-free ((instance pl-pointer))
+  "Free the c-pointer of a pl-pointer instance."
   (when (> (size instance) 0)
-    (foreign-free c-array)))
+    (foreign-free (c-pointer instance))))
 
-(defmethod translate-from-foreign (c-array (instance pl-pointer))
+(defgeneric pl-from-foreign (instance))
+(defmethod pl-from-foreign ((instance pl-pointer))
+  "Convert the c-pointer of a pl-pointer to lisp array of value."
   (cond
     ((> (size instance) 1)
-     (let ((lisp-array (make-array (size instance) :element-type (lisp-type instance))))
+     (let ((lisp-array (make-array (size instance) :element-type (lisp-type instance)))
+	   (c-pointer (c-pointer instance))
+	   (c-type (c-type instance)))
        (dotimes (i (size instance))
-	 (setf (aref lisp-array i) 
-	       (funcall (conversion-function instance) (mem-aref c-array (c-type instance) i))))
+	 (setf (aref lisp-array i)
+	       (convert-from-foreign (mem-aref c-pointer c-type i) c-type)))
        lisp-array))
     ((= (size instance) 1)
-     (funcall (conversion-function instance) (mem-aref c-array (c-type instance) 1)))))
+     (convert-from-foreign (mem-aref (c-pointer instance) (c-type instance)) (c-type instance)))))
 
-(defmethod translate-to-foreign (lisp-array (instance pl-pointer))
-  (if lisp-array
-      (let* ((len (length lisp-array))
-	     (c-array (foreign-alloc (c-type instance) :count len)))
-	(setf (size instance) len)
-	(dotimes (i len)
-	  (setf (mem-aref c-array (c-type instance) i) 
-		(funcall (conversion-function instance) (aref lisp-array i))))
-	c-array)
+(defgeneric pl-to-foreign (array-or-integer instance))
+(defmethod pl-to-foreign (array-or-integer (instance pl-pointer))
+  "Convert a lisp array or integer to a pl-pointer.
+     1. Array - A foreign version of the array is created and stored in c-pointer.
+     2. Integer - A empty foreign array is created with a size of integer."
+  (if array-or-integer
+      (cond
+	((arrayp array-or-integer)
+	 (let ((len (length array-or-integer))
+	       (c-type (c-type instance)))
+	   (setf (size instance) len)
+	   (setf (c-pointer instance) (foreign-alloc c-type :count len))
+	   (let ((c-pointer (c-pointer instance)))
+	     (dotimes (i len)
+	       (setf (mem-aref c-pointer c-type i) 
+		     (convert-to-foreign (aref array-or-integer i) c-type))))))
+	((integerp array-or-integer)
+	 (setf (size instance) array-or-integer)
+	 (setf (c-pointer instance) (foreign-alloc (c-type instance) :count array-or-integer)))
+	(t
+	 (format t "Invalid type for pl-to-foreign ~a~%" (type-of array-or-integer))))
       (progn
 	(setf (size instance) 0)
-	(null-pointer))))
+	(setf (c-pointer instance) (null-pointer))))
+  instance)
 
 
 ;; floating point array type
-(define-foreign-type pl-pointer-float (pl-pointer)
+(defctype *plflt :pointer)
+
+(defclass pl-pointer-float (pl-pointer)
   ((c-type
-    :initform :double
+    :initform 'plflt
     :reader c-type)
-   (conversion-function 
-    :initform #'(lambda (x) (coerce x 'double-float))
-    :reader conversion-function)
    (lisp-type
     :initform 'double-float
-    :reader lisp-type))
-  (:actual-type :pointer))
+    :reader lisp-type)))
 
-(define-parse-method *plflt ()
-  (make-instance 'pl-pointer-float))
+(defun make-*plflt (array-or-integer)
+  (pl-to-foreign array-or-integer (make-instance 'pl-pointer-float)))
 
 
 ;; integer array type
-(define-foreign-type pl-pointer-integer (pl-pointer)
+(defctype *plint :pointer)
+
+(defclass pl-pointer-integer (pl-pointer)
   ((c-type
-    :initform :int
+    :initform 'plint
     :reader c-type)
-   (conversion-function 
-    :initform #'(lambda (x) (round x))
-    :reader conversion-function)
    (lisp-type
     :initform 'fixnum
-    :reader lisp-type))
-  (:actual-type :pointer))
+    :reader lisp-type)))
 
-(define-parse-method *plint ()
-  (make-instance 'pl-pointer-integer))
-
+(defun make-*plint (array-or-integer)
+  (pl-to-foreign array-or-integer (make-instance 'pl-pointer-integer)))
 
 
 ;;;;
