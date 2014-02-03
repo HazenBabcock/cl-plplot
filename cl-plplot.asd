@@ -1,29 +1,7 @@
 ;;;;
-;;;; Copyright (c) 2010 Hazen P. Babcock
-;;;;
-;;;; Permission is hereby granted, free of charge, to any person obtaining a copy 
-;;;; of this software and associated documentation files (the "Software"), to 
-;;;; deal in the Software without restriction, including without limitation the 
-;;;; rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
-;;;; sell copies of the Software, and to permit persons to whom the Software is 
-;;;; furnished to do so, subject to the following conditions:
-;;;;
-;;;; The above copyright notice and this permission notice shall be included in 
-;;;; all copies or substantial portions of the Software.
-;;;;
-;;;; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
-;;;; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-;;;; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
-;;;; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-;;;; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
-;;;; FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
-;;;; IN THE SOFTWARE.
-;;;;
-;;;;
-;;;;
 ;;;; cl-plplot system declaration
 ;;;;
-;;;; hazen 6/10
+;;;; hazen 2/14
 ;;;;
 
 (in-package #:cl-user)
@@ -44,30 +22,31 @@
   ((:module
     :src/system
     :components ((:file "loadlib")
-                 (:file "defcfun" :depends-on ("loadlib"))
-                 (:file "misc" :depends-on ("defcfun"))
-                 (:file "api" :depends-on ("misc"))))
-   (:module
-    :src/window 
-    :components ((:file "package")
-                 (:file "utility-functions" :depends-on ("package"))
-    		 (:file "macros" :depends-on ("package"))
-		 (:file "classes" :depends-on ("macros"))
-		 (:file "color-table" :depends-on ("classes"))
-                 (:file "extended-color-table" :depends-on ("classes"))
-		 (:file "text-item" :depends-on ("classes"))
-		 (:file "text-label" :depends-on ("text-item"))
-		 (:file "axis-label" :depends-on ("text-item"))
-		 (:file "axis" :depends-on ("axis-label"))
-		 (:file "plot" :depends-on ("classes"))
-		 (:file "x-y-plot" :depends-on ("plot"))
-		 (:file "bar-graph" :depends-on ("plot"))
-    		 (:file "contour-plot" :depends-on ("plot"))
-                 (:file "3D-mesh" :depends-on ("plot"))
-                 (:file "surface-plot" :depends-on ("3D-mesh"))
-		 (:file "window" :depends-on ("plot" "axis" "color-table" "extended-color-table"))
-		 (:file "3D-window" :depends-on ("window")))
-    :depends-on (:src/system)))
+		 (:file "types" :depends-on ("loadlib"))
+                 (:file "pl-defcfun" :depends-on ("types"))
+                 (:file "misc" :depends-on ("pl-defcfun"))
+                 (:file "api" :depends-on ("misc")))))
+;   (:module
+;    :src/window 
+;    :components ((:file "package")
+;                 (:file "utility-functions" :depends-on ("package"))
+;    		 (:file "macros" :depends-on ("package"))
+;		 (:file "classes" :depends-on ("macros"))
+;		 (:file "color-table" :depends-on ("classes"))
+;                 (:file "extended-color-table" :depends-on ("classes"))
+;		 (:file "text-item" :depends-on ("classes"))
+;		 (:file "text-label" :depends-on ("text-item"))
+;		 (:file "axis-label" :depends-on ("text-item"))
+;		 (:file "axis" :depends-on ("axis-label"))
+;		 (:file "plot" :depends-on ("classes"))
+;		 (:file "x-y-plot" :depends-on ("plot"))
+;		 (:file "bar-graph" :depends-on ("plot"))
+;    		 (:file "contour-plot" :depends-on ("plot"))
+;                 (:file "3D-mesh" :depends-on ("plot"))
+;                 (:file "surface-plot" :depends-on ("3D-mesh"))
+;		 (:file "window" :depends-on ("plot" "axis" "color-table" "extended-color-table"))
+;		 (:file "3D-window" :depends-on ("window")))
+;    :depends-on (:src/system)))
   :depends-on (:cffi))
 
 (defsystem #:plplot-examples
@@ -114,3 +93,24 @@
                  (:file "x32l" :depends-on ("plplot-examples")))))
   :depends-on (:cl-plplot))
 
+;;;;
+;;;; Copyright (c) 2014 Hazen P. Babcock
+;;;;
+;;;; Permission is hereby granted, free of charge, to any person obtaining a copy 
+;;;; of this software and associated documentation files (the "Software"), to 
+;;;; deal in the Software without restriction, including without limitation the 
+;;;; rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
+;;;; sell copies of the Software, and to permit persons to whom the Software is 
+;;;; furnished to do so, subject to the following conditions:
+;;;;
+;;;; The above copyright notice and this permission notice shall be included in 
+;;;; all copies or substantial portions of the Software.
+;;;;
+;;;; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+;;;; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+;;;; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+;;;; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+;;;; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+;;;; FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
+;;;; IN THE SOFTWARE.
+;;;;
