@@ -12,7 +12,7 @@
 
 (in-package :plplot-examples)
 
-(defparameter default-dev "xcairo")
+(defparameter default-dev "xwin")
 
 (defun make-float-array (length)
   (make-array length :element-type 'float :initial-element 0.0))
