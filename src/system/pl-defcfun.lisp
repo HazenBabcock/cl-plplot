@@ -98,12 +98,15 @@
     :initform (gensym)
     :reader r-name)))
 
+(defmethod defcfun-call-arg ((instance pointer-arg))
+  `(c-pointer ,(c-name instance)))
+
 (defmethod wrapper-arg ((instance pointer-arg))
   (when (eql (in/out instance) :in)
     (call-next-method instance)))
 
 (defmethod wrapper-free ((instance pointer-arg))
-  `(pl-foreign-free ,(c-var-name (name instance))))
+  `(pl-foreign-free ,(c-name instance)))
 
 (defmethod wrapper-from-foreign ((instance pointer-arg))
   (when (eql (in/out instance) :out)
@@ -123,14 +126,16 @@
 ; Size of pointer / array argument.
 (defclass size-arg (arg) ())
 
-(defmethod wrapper-arg ((instance size-arg)))
+(defmethod wrapper-arg ((instance size-arg))
+  (when (not (elt (form instance) 2))
+    (call-next-method instance)))
 
 (defmethod wrapper-check ((instance size-arg))
-  (let ((ck-list (list '=))
-	(elt-2 (elt (form instance) 2)))
-    (dotimes (i (1- (length elt-2)))
-      (push `,(substitute (elt elt-2 (1+ i)) 'x (car elt-2)) ck-list))
-    (nreverse ck-list)))
+  `,(elt (form instance) 3))
+
+(defmethod wrapper-vars ((instance size-arg))
+  (when (elt (form instance) 2)
+  `(,(name instance) ,(elt (form instance) 2))))
 
 
 ;;; Argument and argument list processing functions.
@@ -146,7 +151,7 @@
 		      :form form
 		      :name arg-name
 		      :in/out (if (= len 3) :out :in)))
-      ((and (eql arg-type 'plint) (= len 3))
+      ((and (eql arg-type 'plint) (= len 4))
        (make-instance 'size-arg
 		      :form form
 		      :name arg-name))
@@ -170,72 +175,19 @@
 	(push (funcall accessor arg) defcfun-args)))
     defcfun-args))
 
-;(defun make-defcfun-args (arg-list)
-;  "Returns the args list in a form suitable for use with defcfun."
-;  (let ((defcfun-args nil))
-;    (dolist (arg arg-list)
-;      (push (defcfun-arg arg) defcfun-args))
-;    defcfun-args))
 
-;(defun make-defcfun-call-args (arg-list)
-;  "Returns the args list in a form suitable for calling the function created by defcfun."
-;  (let ((defcfun-call-args nil))
-;    (dolist (arg arg-list)
-;      (push (defcfun-call-arg arg) defcfun-call-args))
-;    defcfun-call-args))
+;;; The pl-defcfun macro.
 
-;(defun make-wrapper-args (args)
-;  "Returns the args list as they will appear in the wrapper function."
-;  (let ((wrapper-args nil))
-;    (dolist (arg args)
-;      (when (= (length arg) 2)
-;	(push (car arg) wrapper-args)))
-;    (nreverse wrapper-args)))
-
-;(defun make-wrapper-check (args)
-;  "Parse args list to determine what checks need to be made on array lengths."
-;  (let ((wrapper-check (list 'and)))
-;    (dolist (arg args)
-;      (when (= (length arg) 3)
-;	(let ((elt-2 (elt arg 2)))
-;	  (when (listp elt-2)
-;	    (let ((ck-list (list '=)))
-;	      (dotimes (i (1- (length elt-2)))
-;		(push `,(substitute (elt elt-2 (1+ i)) 'x (car elt-2)) ck-list))
-;	      (push (nreverse ck-list) wrapper-check))))))
-;    (nreverse wrapper-check)))
-
-;(defun make-wrapper-free (args)
-;  "Parse args list to free foreign storage of local variables."
-;  (let ((wrapper-free nil))
-;    (dolist (arg args)
-;      t)))
-
-;(defun make-wrapper-return (args)
-;  "Parse args list to make local variables that will be returned."
-;  (let ((wrapper-return nil))
-;    (dolist (arg args)
-;      (when (and (= (length arg) 3)
-;		 (numberp (elt arg 2)))
-;	(push (car arg) wrapper-return)))
-;    (nreverse wrapper-return)))
-
-;(defun make-wrapper-vars (args)
-;  "Parse args list to make local variables needed in the wrapper function."
-;  (let ((wrapper-vars nil))
-;    (dolist (arg args)
-;      (when (= (length arg) 3)
-;	(let ((elt-2 (elt arg 2)))
-;	  (cond
-;	    ((numberp elt-2)
-;	     (push (list (car arg) `(make-array ,elt-2)) wrapper-vars))
-;	    ((listp elt-2)
-;	     (push (list (car arg) `,(substitute (elt elt-2 1) 'x (car elt-2))) wrapper-vars))))))
-;    (nreverse wrapper-vars)))
+(defun should-wrap? (args)
+  "Based on the argument list, determines if the function is complicated enough to need a special wrapper."
+  (dolist (arg args)
+    (when (> (length arg) 2)
+      (return t))))
 
 (defmacro pl-defcfun (name returns doc-string &body args)
   "Function creation macro, wraps defcfun to handle most styles of function call in the plplot library"
-  (let* ((c-name (car name))
+  (let* ((arg-list (make-args args))
+	 (c-name (car name))
 	 (lisp-name (cadr name))
 	 (wrapped-name (read-from-string (concatenate 'string "c-" (string lisp-name)))))
     (if (should-wrap? args)
@@ -244,16 +196,18 @@
 	;
 	`(progn
 	   (defcfun (,c-name ,wrapped-name) ,returns 
-	     ,@(make-defcfun-args args))
-	   (defun ,lisp-name ,(make-wrapper-args args)
+	     ,@(make-forms arg-list #'defcfun-arg))
+	   (defun ,lisp-name ,(make-forms arg-list #'wrapper-arg)
 	     ,doc-string
-	     (let ,(make-wrapper-vars args)
-	       (if ,(make-wrapper-check args)
-		   (let ((return-value (,wrapped-name ,@(make-defcfun-call-args args))))
-		     (declare (ignore return-value))
+	     (let ,(make-forms arg-list #'wrapper-vars)
+	       (if (and ,@(make-forms arg-list #'wrapper-check))
+		   (unwind-protect 
+			(let ((return-value (,wrapped-name ,@(make-forms arg-list #'defcfun-call-arg))))
+			  (declare (ignore return-value))
+			  (let ,(make-forms arg-list #'wrapper-from-foreign)
+			    (values ,@(make-forms arg-list #'wrapper-return))))
 		     (progn
-		       ,@(free-wrapper-vars args))
-		     (values ,@(make-wrapper-return args)))
+		       ,@(make-forms arg-list #'wrapper-free)))
 		   (format t "Input array sizes do not match!~%"))))
 	   (export (quote ,lisp-name)))
 	;
@@ -261,16 +215,11 @@
 	;
 	`(progn
 	   (defcfun (,c-name ,wrapped-name) ,returns ,@args)
-	   (defun ,lisp-name ,(make-wrapper-args args)
+	   (defun ,lisp-name ,(make-forms arg-list #'wrapper-arg)
 	     ,doc-string
-	     (,wrapped-name ,@(make-defcfun-call-args args)))
+	     (,wrapped-name ,@(make-forms arg-list #'defcfun-call-arg)))
 	   (export (quote ,lisp-name))))))
 
-(defun should-wrap? (args)
-  "Based on the argument list, determines if the function is complicated enough to need a special wrapper."
-  (dolist (arg args)
-    (when (> (length arg) 2)
-      (return t))))
 
 ;;;;
 ;;;; Copyright (c) 2014 Hazen P. Babcock

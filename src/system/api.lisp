@@ -102,14 +102,14 @@
 
 (pl-defcfun ("c_plline" plline) :void
     "Draw a line."
-  (n plint ((length x) x y))
+  (n plint (length x) (= (length x) (length y)))
   (x *plflt)
   (y *plflt))
 
 
 (pl-defcfun ("c_plpoin" plpoin) :void
     "Plot a glyph at the specified points."
-  (n plint ((length x) x y))
+  (n plint (length x) (= (length x) (length y)))
   (x *plflt)
   (y *plflt)
   (code plint))
@@ -148,19 +148,11 @@
   (ny plint))
 
 
-(defcfun ("c_plstyl" c-plstyl) :void
-  (nms plint)
+(pl-defcfun ("c_plstyl" plstyl) :void
+    "Set line style."
+  (nms plint nil (and (<= nms (length mark)) (<= nms (length space))))
   (mark *plint)
   (space *plint))
-
-(defun plstyl (nms mark space)
-  "Set line style."
-  (if (and (<= nms (length mark))
-	   (<= nms (length space)))
-      (c-plstyl nms mark space)
-      (format t "nms must be <= length of mark, space")))
-
-(export 'plstyl)
 
 
 (pl-defcfun ("c_plvpor" plvpor) :void

@@ -12,11 +12,10 @@
 ;(defctype plint :int "PLplot fixed point type")
 ;(defctype plunicode :uint32 "PLplot unicode character type")
 
-
 ;;; helper functions and macros.
-
-(defun pl-defctype-fn-name (pl-type name)
-  (read-from-string (concatenate 'string (string pl-type) "-" name)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defun pl-defctype-fn-name (pl-type name)
+    (read-from-string (concatenate 'string (string pl-type) "-" name))))
 
 (defmacro pl-defctype (pl-type cffi-type &key from-c to-c)
   (let ((from-c-fn-name (pl-defctype-fn-name pl-type "from-c"))
