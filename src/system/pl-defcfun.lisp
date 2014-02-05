@@ -146,7 +146,7 @@
 	(arg-type (elt form 1))
 	(len (length form)))
     (cond
-      ((or (eql arg-type '*plint) (eql arg-type '*plflt))
+      ((member arg-type array-types)
        (make-instance 'pointer-arg 
 		      :form form
 		      :name arg-name
@@ -208,7 +208,7 @@
 			    (values ,@(make-forms arg-list #'wrapper-return))))
 		     (progn
 		       ,@(make-forms arg-list #'wrapper-free)))
-		   (format t "Input array sizes do not match!~%"))))
+		   (format t "Input array sizes do not match in ~a!~%" (string (quote ,lisp-name))))))
 	   (export (quote ,lisp-name)))
 	;
 	; This also wraps the function, but only so that we can include a doc-string.

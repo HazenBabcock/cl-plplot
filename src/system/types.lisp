@@ -63,8 +63,9 @@
 
 
 ;;; Array types
+(defparameter array-types ())
 
-;; base array type
+;; base one-dimensional array type
 (defclass pl-pointer ()
   ((c-pointer
     :initform nil
@@ -98,7 +99,8 @@
 (defmethod pl-to-foreign (array-or-integer (instance pl-pointer))
   "Convert a lisp array or integer to a pl-pointer.
      1. Array - A foreign version of the array is created and stored in c-pointer.
-     2. Integer - A empty foreign array is created with a size of integer."
+     2. Integer - A empty foreign array is created with a size of integer.
+     3. Nil - A null pointer."
   (if array-or-integer
       (cond
 	((arrayp array-or-integer)
@@ -111,8 +113,14 @@
 	       (setf (mem-aref c-pointer c-type i) 
 		     (convert-to-foreign (aref array-or-integer i) c-type))))))
 	((integerp array-or-integer)
-	 (setf (size instance) array-or-integer)
-	 (setf (c-pointer instance) (foreign-alloc (c-type instance) :count array-or-integer)))
+	 (progn
+	   (setf (size instance) array-or-integer)
+	   (setf (c-pointer instance) (foreign-alloc (c-type instance) :count array-or-integer))))
+	((eql array-or-integer 'null)
+	 (progn
+	   (format t "'null as pointer is deprecated, use nil instead.~%")
+	   (setf (size instance) 0)
+	   (setf (c-pointer instance) (null-pointer))))
 	(t
 	 (format t "Invalid type for pl-to-foreign ~a~%" (type-of array-or-integer))))
       (progn
@@ -121,8 +129,25 @@
   instance)
 
 
+;; boolean array type
+(defctype *plbool :pointer)
+(pushnew '*plbool array-types)
+
+(defclass pl-pointer-float (pl-pointer)
+  ((c-type
+    :initform 'plbool
+    :reader c-type)
+   (lisp-type
+    :initform 'boolean
+    :reader lisp-type)))
+
+(defun make-*plbool (array-or-integer)
+  (pl-to-foreign array-or-integer (make-instance 'pl-pointer-float)))
+
+
 ;; floating point array type
 (defctype *plflt :pointer)
+(pushnew '*plflt array-types)
 
 (defclass pl-pointer-float (pl-pointer)
   ((c-type
@@ -138,6 +163,7 @@
 
 ;; integer array type
 (defctype *plint :pointer)
+(pushnew '*plint array-types)
 
 (defclass pl-pointer-integer (pl-pointer)
   ((c-type
@@ -149,6 +175,101 @@
 
 (defun make-*plint (array-or-integer)
   (pl-to-foreign array-or-integer (make-instance 'pl-pointer-integer)))
+
+
+;; base two-dimensional array type
+(defclass pl-ptr-ptr ()
+  ((c-pointer
+    :initform nil
+    :accessor c-pointer)
+   (size-x
+    :initform 0
+    :accessor size-x)
+   (size-y
+    :initform 0
+    :accessor size-y)))
+
+
+(defmethod pl-foreign-free ((instance pl-ptr-ptr))
+  "Free the c-pointer of a pl-pointer instance."
+  (when (and (> (size-x instance) 0) (> (size-y instance) 0))
+    (dotimes (i (size-x instance))
+      (foreign-free (mem-aref (c-pointer instance) :pointer i)))
+    (foreign-free (c-pointer instance))))
+
+(defmethod pl-from-foreign ((instance pl-ptr-ptr))
+  "Convert the c-pointer of a pl-pointer to lisp array of value."
+  (cond
+    ((or (> (size-x instance) 1) (> (size-y instance) 1))
+     (let ((lisp-array (make-array (list (size-x instance) (size-y instance)) :element-type (lisp-type instance)))
+	   (c-type (c-type instance)))
+       (dotimes (i (size-x instance))
+	 (let ((temp-pointer (mem-aref (c-pointer instance) :pointer i)))
+	   (dotimes (j (size-y instance))
+	     (setf (aref lisp-array i j)
+		   (convert-from-foreign (mem-aref temp-pointer c-type j) c-type)))))
+       lisp-array))
+    ((and (= (size-x instance) 1) (= (size-y instance) 1))
+     (convert-from-foreign 
+      (mem-aref (mem-aref (c-pointer instance) :pointer) (c-type instance)) (c-type instance)))))
+
+(defmethod pl-to-foreign (array-or-list (instance pl-ptr-ptr))
+  "Convert a lisp array or integer to a pl-pointer.
+     1. Array - A foreign version of the array is created and stored in c-pointer.
+     2. List - A empty foreign array is created with size given by list.
+     3. Nil - A null pointer is created."
+  (if array-or-list
+      (cond
+	((arrayp array-or-list)
+	 (let ((size-x (array-dimension array-or-list 0))
+	       (size-y (array-dimension array-or-list 1))
+	       (c-type (c-type instance)))
+	   (setf (size-x instance) size-x)
+	   (setf (size-y instance) size-y)
+	   (setf (c-pointer instance) (foreign-alloc :pointer :count size-x))
+	   (dotimes (i size-x)
+	     (let ((temp-pointer (foreign-alloc c-type :count size-y)))
+	       (setf (mem-aref (c-pointer instance) :pointer i) temp-pointer)
+	       (dotimes (j size-y)
+		 (setf (mem-aref temp-pointer c-type i) 
+		       (convert-to-foreign (aref array-or-list i j) c-type)))))))
+	((listp array-or-list)
+	 (progn
+	   (setf (size-x instance) (elt array-or-list 0))
+	   (setf (size-y instance) (elt array-or-list 1))
+	   (setf (c-pointer instance) (foreign-alloc :pointer :count (size-x instance)))
+	   (dotimes (i (size-x instance))
+	     (setf (mem-aref (c-pointer instance) :pointer i)
+		   (foreign-alloc (c-type instance) :count (size-y instance))))))
+	((eql array-or-list 'null)
+	 (progn
+	   (format t "'null as pointer is deprecated, use nil instead.~%")
+	   (setf (size-x instance) 0)
+	   (setf (size-y instance) 0)
+	   (setf (c-pointer instance) (null-pointer))))
+	(t
+	 (format t "Invalid type for pl-to-foreign ~a~%" (type-of array-or-list))))
+      (progn
+	(setf (size-x instance) 0)
+	(setf (size-y instance) 0)
+	(setf (c-pointer instance) (null-pointer))))
+  instance)
+
+
+;; two-dimensional floating point array type
+(defctype **plflt :pointer)
+(pushnew '**plflt array-types)
+
+(defclass pl-ptr-ptr-float (pl-ptr-ptr)
+  ((c-type
+    :initform 'plflt
+    :reader c-type)
+   (lisp-type
+    :initform 'double-float
+    :reader lisp-type)))
+
+(defun make-**plflt (array-or-list)
+  (pl-to-foreign array-or-list (make-instance 'pl-ptr-ptr-float)))
 
 
 ;;;;
