@@ -21,6 +21,17 @@
   (page plint))
 
 
+(pl-defcfun ("c_plarc" plarc) :void
+    "Draw a circular or elliptical arc."
+  (x plflt)
+  (y plflt)
+  (a plflt)
+  (b plflt)
+  (angle1 plflt)
+  (angle2 plflt)
+  (fill plbool))
+
+
 (pl-defcfun ("c_plbop" plbop) :void
     "Begin a new page.")
 
@@ -67,6 +78,19 @@
   (ifont plint))
 
 
+(pl-defcfun ("c_plfontld" plfontld) :void 
+    "Load character font"
+  (fnt plint))
+
+
+(pl-defcfun ("c_plgcol0" plgcol0) :void 
+    "Returns 8-bit RGB values for given color from color map0."
+  (icol0 plint)
+  (r *plint 1)
+  (g *plint 1)
+  (b *plint 1))
+
+
 (defcfun ("c_plgver" c-plgver) :void
   (p_ver :pointer))
 
@@ -77,6 +101,16 @@
     (foreign-string-to-lisp version-string)))
 
 (export 'plgver)
+
+
+(pl-defcfun ("c_plhist" plhist) :void
+    "Plot a histogram from unbinned data."
+  (n plint (length data) nil)
+  (data *plflt)
+  (datmin plflt)
+  (datmax plflt)
+  (nbin plint)
+  (opt plint))
 
 
 (pl-defcfun ("c_plhlsrgb" plhlsrgb) :void
@@ -93,6 +127,14 @@
     "Initialize PLplot.")
 
 
+(pl-defcfun ("c_pljoin" pljoin) :void
+    "Draw a line between two points."
+  (x1 plflt)
+  (y1 plflt)
+  (x2 plflt)
+  (y2 plflt))
+
+
 (pl-defcfun ("c_pllab" pllab) :void 
     "Simple routine to write labels."
   (xlabel plstr)
@@ -105,6 +147,33 @@
   (n plint (length x) (= (length x) (length y)))
   (x *plflt)
   (y *plflt))
+
+
+(pl-defcfun ("plMinMax2dGrid" plminmax2dgrid) :void
+    "Find the minimum and maximum of a 2d grid allocated using plAlloc2dGrid."
+  (f **plflt)
+  (nx plint (array-dimension f 0) nil)
+  (ny plint (array-dimension f 1) nil)
+  (fmax *plflt 1)
+  (fmin *plflt 1))
+
+
+(pl-defcfun ("c_plmtex" plmtex) :void
+    "Write text relative to viewport boundaries."
+  (side plstr)
+  (disp plflt)
+  (pos plflt)
+  (just plflt)
+  (text plstr))
+
+
+(pl-defcfun ("c_plmtex3" plmtex3) :void
+    "Write text relative to viewport boundaries in 3D plots."
+  (side plstr)
+  (disp plflt)
+  (pos plflt)
+  (just plflt)
+  (text plstr))
 
 
 (pl-defcfun ("c_plpoin" plpoin) :void
@@ -131,9 +200,38 @@
   (scale plflt))
 
 
+(pl-defcfun ("c_plscmap0" plscmap0) :void 
+    "Set color map0 colors by 8-bit RGB values."
+  (r *plint)
+  (g *plint)
+  (b *plint)
+  (ncol0 plint (length r) (= (length r) (length g) (length b))))
+
+
+(pl-defcfun ("c_plscmap1l" plscmap1l) :void
+    "Set color map1 colors using a piece-wise linear relationship."
+  (itype plbool)
+  (npts plint (length intensity) (= (length intensity) (length coord1) (length coord2) (length coord3) (length rev)))
+  (intensity *plflt)
+  (coord1 *plflt)
+  (coord2 *plflt)
+  (coord3 *plflt)
+  (rev *plbool))
+
+
+(pl-defcfun ("c_plscmap1n" plscmap1n) :void 
+    "Set color map1 colors using a piece-wise linear relationship."
+  (ncol1 plint))
+
+
 (pl-defcfun ("c_plsdev" plsdev) :void 
     "Set the device (keyword) name."
   (dev plstr))
+
+
+(pl-defcfun ("c_plsori" plsori) :void
+    "Set orientation."
+  (ori plint))
 
 
 (pl-defcfun ("c_plssub" plssub) :void
@@ -146,6 +244,14 @@
     "Initialization."
   (nx plint)
   (ny plint))
+
+
+(pl-defcfun ("c_plsym" plsym) :void 
+    "Plot a glyph at the specified points."
+  (n plint (length x) (= (length x) (length y)))
+  (x *plflt)
+  (y *plflt)
+  (code plint))
 
 
 (pl-defcfun ("c_plstyl" plstyl) :void
