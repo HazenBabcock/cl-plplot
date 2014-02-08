@@ -46,6 +46,22 @@
   (nysub plint))
 
 
+(pl-defcfun ("c_plbox3" plbox3) :void 
+    "Draw a box with axes, etc, in 3-d."
+  (xopt plstr)
+  (xlabel plstr)
+  (xtick plflt)
+  (nsubx plint)
+  (yopt plstr)
+  (ylabel plstr)
+  (ytick plflt)
+  (nsuby plint)
+  (zopt plstr)
+  (zlabel plstr)
+  (ztick plflt)
+  (nsubz plint))
+
+
 (pl-defcfun ("c_plcol0" plcol0) :void
     "Set color, map0."
   (icol0 plint))
@@ -73,6 +89,21 @@
     "Eject current page.")
 
 
+;; These are helper functions for plf... functions, they
+;; return a pointer to a "zops" function.
+(defcfun "plf2ops_c" :pointer)
+(export 'plf2ops-c)
+
+(defcfun "plf2ops_grid_c" :pointer)
+(export 'plf2ops-grid-c)
+
+(defcfun "plf2ops_grid_row_major" :pointer)
+(export 'plf2ops-grid-row-major)
+
+(defcfun "plf2ops_grid_col_major" :pointer)
+(export 'plf2ops-grid-col-major)
+
+
 (pl-defcfun ("c_plfont" plfont) :void 
     "Set character font."
   (ifont plint))
@@ -81,6 +112,20 @@
 (pl-defcfun ("c_plfontld" plfontld) :void 
     "Load character font"
   (fnt plint))
+
+
+;; See x08l.lisp for an example of how to use this function.
+(pl-defcfun ("plfsurf3d" plfsurf3d) :void
+    "Plot shaded 3-d surface plot"
+  (x *plflt)
+  (y *plflt)
+  (zops :pointer)
+  (zp :pointer)
+  (nx plint (length x) nil)
+  (ny plint (length y) nil)
+  (opt plint)
+  (clevel *plflt)
+  (nlevel plint (pl-length clevel) nil))
 
 
 (pl-defcfun ("c_plgcol0" plgcol0) :void 
@@ -140,6 +185,13 @@
   (xlabel plstr)
   (ylabel plstr)
   (tlabel plstr))
+
+
+(pl-defcfun ("c_pllightsource" pllightsource) :void 
+    "Sets the 3D position of the light source."
+  (x plflt)
+  (y plflt)
+  (z plflt))
 
 
 (pl-defcfun ("c_plline" plline) :void
@@ -211,8 +263,8 @@
 (pl-defcfun ("c_plscmap1l" plscmap1l) :void
     "Set color map1 colors using a piece-wise linear relationship."
   (itype plbool)
-  (npts plint (length intensity) (= (length intensity) (length coord1) (length coord2) (length coord3) (length rev)))
-  (intensity *plflt)
+  (npts plint (length pos) (= (length pos) (length coord1) (length coord2) (length coord3)))
+  (pos *plflt)
   (coord1 *plflt)
   (coord2 *plflt)
   (coord3 *plflt)
@@ -246,6 +298,18 @@
   (ny plint))
 
 
+(pl-defcfun ("c_plsurf3d" plsurf3d) :void 
+    "Plot shaded 3-d surface plot."
+  (x *plflt)
+  (y *plflt)
+  (z **plflt)
+  (nx plint (length x) nil)
+  (ny plint (length y) nil)
+  (opt plint)
+  (clevel *plflt)
+  (nlevel plint (pl-length clevel) nil))
+
+
 (pl-defcfun ("c_plsym" plsym) :void 
     "Plot a glyph at the specified points."
   (n plint (length x) (= (length x) (length y)))
@@ -271,6 +335,21 @@
 
 (pl-defcfun ("c_plvsta" plvsta) :void
     "Select standard viewport.")
+
+
+(pl-defcfun ("c_plw3d" plw3d) :void 
+    "Set up window for 3-d plotting."
+  (basex plflt)
+  (basey plflt)
+  (height plflt)
+  (xmin0 plflt)
+  (xmax0 plflt)
+  (ymin0 plflt)
+  (ymax0 plflt)
+  (zmin0 plflt)
+  (zmax0 plflt)
+  (alt plflt)
+  (az plflt))
 
 
 (pl-defcfun ("c_plwidth" plwidth) :void
