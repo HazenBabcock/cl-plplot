@@ -24,9 +24,8 @@
     :components ((:file "loadlib")
 		 (:file "types" :depends-on ("loadlib"))
                  (:file "pl-defcfun" :depends-on ("types"))
-                 (:file "api" :depends-on ("pl-defcfun")))))
-                 ;(:file "misc" :depends-on ("pl-defcfun"))
-                 ;(:file "api" :depends-on ("misc")))))
+                 (:file "misc" :depends-on ("pl-defcfun"))
+                 (:file "api" :depends-on ("misc")))))
 ;   (:module
 ;    :src/window 
 ;    :components ((:file "package")
@@ -67,7 +66,7 @@
                  (:file "x05l" :depends-on ("plplot-examples"))
                  (:file "x06l" :depends-on ("plplot-examples"))
                  (:file "x07l" :depends-on ("plplot-examples"))
-;                 (:file "x08l" :depends-on ("plplot-examples"))
+                 (:file "x08l" :depends-on ("plplot-examples"))
 ;                 (:file "x09l" :depends-on ("plplot-examples"))
 ;                 (:file "x10l" :depends-on ("plplot-examples"))
 ;                 (:file "x11l" :depends-on ("plplot-examples"))
