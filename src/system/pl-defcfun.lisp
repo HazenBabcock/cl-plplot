@@ -4,37 +4,7 @@
 ;;;; 
 ;;;; The goal of all this macrology is to have :
 ;;;;
-;;;; (pl-defcfun ("foo" foo) :void
-;;;; 	         "The PLplot foo function."
-;;;;	         (x plint)
-;;;;	         (y *plint)
-;;;;	         (z *plflt)
-;;;;	         (n plint ((length x) y z)))
-;;;;
-;;;; Expand into (progn statements removed) :
-;;;;
-;;;; (DEFCFUN ("foo" C-FOO) :VOID
-;;;;   (X PLINT)
-;;;;   (Y *PLINT)
-;;;;   (Z *PLFLT)
-;;;;   (N PLINT))
-;;;;
-;;;; (DEFUN FOO (X Y Z)
-;;;;   "The PLplot foo function."
-;;;;   (LET ((N (LENGTH Y)))
-;;;;     (IF (AND (= (LENGTH Y) (LENGTH Z)))
-;;;;         (LET ((RETURN-VALUE (C-FOO X Y Z N)))
-;;;;           (DECLARE (IGNORE RETURN-VALUE))
-;;;;           (VALUES))
-;;;;         (FORMAT T "Input array sizes do not match!~%"))))
-;;;;
-;;;; (EXPORT 'FOO))
-;;;; (pl-defcfun ("foo" foo) :int 
-;;;;             (x plint)
-;;;;             (y *plint) 
-;;;;             (z *plflt) 
-;;;;             (n plint 
-;;;;
+;;;; ...
 ;;;;
 ;;;; More complicated function definitions with different type are also supported.
 ;;;;
@@ -201,7 +171,7 @@
 	     ,doc-string
 	     (let ,(make-forms arg-list #'wrapper-vars)
 	       (if (and ,@(make-forms arg-list #'wrapper-check))
-		   (unwind-protect 
+		   (unwind-protect
 			(let ((return-value (,wrapped-name ,@(make-forms arg-list #'defcfun-call-arg))))
 			  (declare (ignore return-value))
 			  (let ,(make-forms arg-list #'wrapper-from-foreign)
