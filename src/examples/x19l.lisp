@@ -1,107 +1,107 @@
 ;;;;
 ;;;; PLplot example 19
 ;;;;
-;;;; hazen 07/10
+;;;; hazen 02/14
 ;;;;
 
 (in-package :plplot-examples)
 
+(defun x19-map-transform (x y)
+  (let ((radius (- 90.0 y)))
+    (values (* radius (cos (/ (* x 3.14159) 180.0)))
+	    (* radius (sin (/ (* x 3.14159) 180.0))))))
+
+(defun x19-normalize-longitude (lon)
+  (if (and (>= lon -180.0) (<= lon 180.0))
+      lon
+      (let ((times (floor (/ (+ (abs lon) 180.0) 360.0))))
+	(if (< lon 0.0)
+	    (+ lon (* 360.0 times))
+	    (- lon (* 360.0 times))))))
+
+(cffi:defcallback x19-map-fn :void ((x plflt) (y plflt) (tx *plflt) (ty *plflt) (pltr-data :pointer))
+  (declare (ignore pltr-data))
+  (multiple-value-bind (v1 v2) (x19-map-transform x y)
+    (setf (cffi:mem-aref tx 'plflt) (cffi:convert-to-foreign v1 'plflt)
+	  (cffi:mem-aref ty 'plflt) (cffi:convert-to-foreign v2 'plflt))))
+
+(cffi:defcallback x19-mapform19 :void ((n plint) (ax *plflt) (ay *plflt))
+  (dotimes (i n)
+    (multiple-value-bind (v1 v2) 
+	(x19-map-transform (cffi:mem-aref ax 'plflt i) 
+			   (cffi:mem-aref ay 'plflt i))
+      (setf (cffi:mem-aref ax 'plflt i) (cffi:convert-to-foreign v1 'plflt)
+	    (cffi:mem-aref ay 'plflt i) (cffi:convert-to-foreign v2 'plflt)))))
+
+(cffi:defcallback x19-geolocation-labeler :void ((axis plint) (value plflt) (label-text :pointer) (length plint) (label-data pldata))
+  (declare (ignore label-data))
+  (let* ((label-val value)
+	 (direction-label (if (= axis 2)
+			      (cond
+				((> label-val 0.0) " N")
+				((< label-val 0.0) " S")
+				(t "Eq"))
+			      (progn
+				(setf label-val (x19-normalize-longitude value))
+				(cond
+				  ((> label-val 0.0) " E")
+				  ((< label-val 0.0) " W")
+				  (t ""))))))
+    (cffi:lisp-string-to-foreign (if (and (= axis 2) (= value 0.0))
+				     direction-label
+				     (format nil "~,0f~a" (abs label-val) direction-label))
+				 label-text
+				 length)))
+
+
 (defun example19 (&optional (dev default-dev))
   (plsdev dev)
-  (labels ((map-transform (x y)
-	     (let ((radius (- 90.0 y)))
-	       (values (* radius (cos (/ (* x 3.14159) 180.0)))
-		       (* radius (sin (/ (* x 3.14159) 180.0))))))
-	   (map-fn (x y xt yt data)
-	     (declare (ignore data))
-	     (multiple-value-bind (v1 v2) (map-transform x y)
-	       (setf (cffi:mem-aref xt :double) (coerce v1 'double-float)
-		     (cffi:mem-aref yt :double) (coerce v2 'double-float))))
-	   (mapform19 (n ax ay)
-	     (dotimes (i n)
-	       (multiple-value-bind (v1 v2) 
-		   (map-transform (cffi:mem-aref ax :double i) 
-				  (cffi:mem-aref ay :double i))
-		 (setf (cffi:mem-aref ax :double i) (coerce v1 'double-float)
-		       (cffi:mem-aref ay :double i) (coerce v2 'double-float)))))
-	   (normalize-longitude (lon)
-	     (if (and (>= lon -180.0) (<= lon 180.0))
-		 lon
-		 (let ((times (floor (/ (+ (abs lon) 180.0) 360.0))))
-		   (if (< lon 0.0)
-		       (+ lon (* 360.0 times))
-		       (- lon (* 360.0 times))))))
-	   (geolocation-labeler (axis value label length data)
-	     (declare (ignore data))
-	     (let* ((label-val value)
-		    (direction-label (if (= axis 2)
-					 (cond
-					   ((> label-val 0.0) " N")
-					   ((< label-val 0.0) " S")
-					   (t "Eq"))
-					 (progn
-					   (setf label-val (normalize-longitude value))
-					   (cond
-					     ((> label-val 0.0) " E")
-					     ((< label-val 0.0) " W")
-					     (t ""))))))
-	       (cffi:lisp-string-to-foreign (if (and (= axis 2) (= value 0.0))
-						direction-label
-						(format nil "~,0f~a" (abs label-val) direction-label))
-					    label
-					    length))))
+  (plinit)
+  (plcol0 1)
+  (plslabelfunc 'x19-geolocation-labeler nil)
+  
+  (let ((miny -70)
+	(maxy 80))
+    ; Most of the world
+    (let ((minx 190)
+	  (maxx (+ 190 360)))
+      (plenv minx maxx miny maxy 1 70)
+      (plmap nil "usaglobe" minx maxx miny maxy))
 
-    (plinit)
-    (plcol0 1)
-    (pl-set-label-fn #'geolocation-labeler)
-    (plslabelfunc (pl-null-pointer))
+    ; The Americas
+    (let ((minx 190)
+	  (maxx 340))
+      (plcol0 1)
+      (plenv minx maxx miny maxy 1 70)
+      (plmap nil "usaglobe" minx maxx miny maxy))
+    
+    ; Polar, Northern hemisphere
+    (let ((minx 0)
+	  (maxx 360))
+      (plenv -75.0 75.0 -75.0 75.0 1 -1)
+      (plmap 'x19-mapform19 "globe" minx maxx miny maxy)
+      (pllsty 2)
+      (plmeridians 'x19-mapform19 10.0 10.0 0.0 360.0 -10.0 80.0))
 
-    (let ((miny -70)
-	  (maxy 80))
-      ; Most of the world
-      (let ((minx 190)
-	    (maxx (+ 190 360)))
-	(plenv minx maxx miny maxy 1 70)
-	(plmap "usaglobe" minx maxx miny maxy))
-
-      ; The Americas
-      (let ((minx 190)
-	    (maxx 340))
-	(plcol0 1)
-	(plenv minx maxx miny maxy 1 70)
-	(plmap "usaglobe" minx maxx miny maxy))
-	
-      ; Polar, Northern hemisphere
-      (let ((minx 0)
-	    (maxx 360))
-	(plenv -75.0 75.0 -75.0 75.0 1 -1)
-	(pl-set-map-fn #'mapform19)
-	(plmap "globe" minx maxx miny maxy)
-	(pllsty 2)
-	(plmeridians 10.0 10.0 0.0 360.0 -10.0 80.0))
-	(pl-reset-map-fn)
-
-      ; Polar, Northern hemisphere w/ PLplot-wide transform
-      (let ((minx 0)
-	    (maxx 360))
-	(pl-set-transform-fn #'map-fn)
-	(plstransform (pl-null-pointer))
-	(pllsty 1)
-	(plenv -75.0 75.0 -75.0 75.0 1 -1)
-	(plmap "globe" minx maxx miny maxy)
-	(pllsty 2)
-	(plmeridians 10.0 10.0 0.0 360.0 -10.0 80.0)
-	(plcol0 2)
-	(plssym 0.0 2.0)
-	(plpoin (vector -76.6125) (vector 39.2902778) 18)
-	(plssym 0.0 1.0)
-	(plptex -76.6125 43.0 0.0 0.0 0.0 "Baltimore, MD")
-	(pl-reset-transform))))
-
+    ; Polar, Northern hemisphere w/ PLplot-wide transform
+    (let ((minx 0)
+	  (maxx 360))
+      (plstransform 'x19-map-fn nil)
+      (pllsty 1)
+      (plenv -75.0 75.0 -75.0 75.0 1 -1)
+      (plmap nil "globe" minx maxx miny maxy)
+      (pllsty 2)
+      (plmeridians nil 10.0 10.0 0.0 360.0 -10.0 80.0)
+      (plcol0 2)
+      (plssym 0.0 2.0)
+      (plpoin (vector -76.6125) (vector 39.2902778) 18)
+      (plssym 0.0 1.0)
+      (plptex -76.6125 43.0 0.0 0.0 0.0 "Baltimore, MD")))
+  
   (plend1))
 
 ;;;;
-;;;; Copyright (c) 2010 Hazen P. Babcock
+;;;; Copyright (c) 2014 Hazen P. Babcock
 ;;;;
 ;;;; Permission is hereby granted, free of charge, to any person obtaining a copy 
 ;;;; of this software and associated documentation files (the "Software"), to 

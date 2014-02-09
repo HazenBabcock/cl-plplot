@@ -277,6 +277,27 @@
   (lin plint))
 
 
+(pl-defcfun ("c_plmap" plmap) :void
+    "Plot continental outline in world coordinates."
+  (map-form plfunc)
+  (type plstr)
+  (minlong plflt)
+  (maxlong plflt)
+  (minlat plflt)
+  (maxlat plflt))
+
+
+(pl-defcfun ("c_plmeridians" plmeridians) :void
+    "Plot latitude and longitude lines."
+  (map-form plfunc)
+  (dlong plflt)
+  (dlat plflt)
+  (minlong plflt)
+  (maxlong plflt)
+  (minlat plflt)
+  (maxlat plflt))
+
+
 (pl-defcfun ("c_plmesh" plmesh) :void
     "Plot surface mesh."
   (x *plflt)
@@ -519,6 +540,12 @@
   (pltr-data pldata))
 
 
+(pl-defcfun ("c_plslabelfunc" plslabelfunc) :void
+    "Assign a function to use for generating custom axis labels."
+  (label-func plfunc)
+  (label-data pldata))
+
+
 (pl-defcfun ("c_plsori" plsori) :void
     "Set orientation."
   (ori plint))
@@ -551,10 +578,22 @@
   (ny plint))
 
 
+(pl-defcfun ("c_plssym" plssym) :void 
+    "Set symbol size."
+  (def plflt)
+  (scale plflt))
+
+
 (pl-defcfun ("c_plstar" plstar) :void 
     "Initialization."
   (nx plint)
   (ny plint))
+
+
+(pl-defcfun ("c_plstransform" plstransform) :void
+    "Set a global coordinate transform function."
+  (transform-fun plfunc)
+  (data pldata))
 
 
 (pl-defcfun ("c_plstripa" plstripa) :void
