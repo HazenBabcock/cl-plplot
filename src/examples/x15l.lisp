@@ -39,22 +39,16 @@
 		 (plvpor 0.1 0.9 0.1 0.9)
 		 (plwind -1.0 1.0 -1.0 1.0)
 		 (plpsty 8)
-		 (format t "1~%")
 		 (plshade z
-					;'x15-defined-fn-callback
-			  nil
+			  'x15-defined-fn-callback
 			  -1.0 1.0 -1.0 1.0
 			  (+ zmin (* (- zmax zmin) 0.4)) 
 			  (+ zmin (* (- zmax zmin) 0.6))
 			  0 7 2 
 			  9 2 2 2
-			  ;'plfill-callback
-			  nil
+			  'plfill-callback
 			  t
 			  nil nil)
-			  ;'pltr0-callback
-			  ;nil)
-		 (format t "2~%")
 		 (plcol0 1)
 		 (plbox "bcnst" 0.0 0 "bcnstv" 0.0 0)
 		 (plcol0 2)
