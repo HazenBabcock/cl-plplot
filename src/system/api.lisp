@@ -142,17 +142,10 @@
   (x *plflt)
   (y *plflt))
 
-(defcallback plfill-callback :void ((n plint) (x *plflt) (y *plflt))
-  (format t "size ~a~%" n)
-  (c-plfill n x y)
-  (format t "done~%"))
-
-(export 'plfill-callback)
-
-;(pl-callback (c-plfill plfill-callback) :void
-;  (n plint)
-;  (x *plflt)
-;  (y *plflt))
+(pl-callback (c-plfill plfill-callback) :void
+  (n plint)
+  (x *plflt)
+  (y *plflt))
 
 
 (pl-defcfun ("c_plfill3" plfill3) :void
@@ -427,7 +420,7 @@
   (a **plflt)
   (nx plint (array-dimension a 0) nil)
   (ny plint (array-dimension a 1) nil)
-  (defined-fn plfunc)
+  (defined plfunc)
   (left plflt)
   (right plflt)
   (bottom plflt)
@@ -436,14 +429,14 @@
   (shade-max plflt)
   (sh-cmap plint)
   (sh-color plflt)
-  (sh-width plint)
+  (sh-width plflt)
   (min-color plint)
-  (min-width plint)
+  (min-width plflt)
   (max-color plint)
-  (max-width plint)
-  (plfill-fn plfunc)
+  (max-width plflt)
+  (plfill plfunc)
   (rectangular plbool)
-  (pltr-fn plfunc)
+  (pltr plfunc)
   (pltr-data pldata))
 
 
@@ -457,7 +450,7 @@
   (a *plflt)
   (nx plint (array-dimension a 0) nil)
   (ny plint (array-dimension a 1) nil)
-  (defined-fn plfunc)
+  (defined plfunc)
   (left plflt)
   (right plflt)
   (bottom plflt)
@@ -466,14 +459,14 @@
   (shade-max plflt)
   (sh-cmap plint)
   (sh-color plflt)
-  (sh-width plint)
+  (sh-width plflt)
   (min-color plint)
-  (min-width plint)
+  (min-width plflt)
   (max-color plint)
-  (max-width plint)
-  (plfill-fn plfunc)
+  (max-width plflt)
+  (plfill plfunc)
   (rectangular plbool)
-  (pltr-fn plfunc)
+  (pltr plfunc)
   (pltr-data pldata))
 
 
