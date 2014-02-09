@@ -75,7 +75,7 @@
                  (:file "x14l" :depends-on ("plplot-examples"))
                  (:file "x15l" :depends-on ("plplot-examples"))
                  (:file "x16l" :depends-on ("plplot-examples"))
-;                 (:file "x17l" :depends-on ("plplot-examples"))
+                 (:file "x17l" :depends-on ("plplot-examples"))
 ;                 (:file "x18l" :depends-on ("plplot-examples"))
 ;                 (:file "x19l" :depends-on ("plplot-examples"))
 ;;                 (:file "x20l" :depends-on ("plplot-examples")) ; Requires cl-png

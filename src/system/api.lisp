@@ -367,6 +367,10 @@
   (text plstr))
 
 
+(pl-defcfun ("c_plrandd" plrandd) :double
+    "Random number generator returning a real random number in the range [0,1].")
+
+
 (pl-defcfun ("c_plschr" plschr) :void
     "Set character size."
   (def plflt)
@@ -532,6 +536,67 @@
     "Initialization."
   (nx plint)
   (ny plint))
+
+
+(pl-defcfun ("c_plstripa" plstripa) :void
+    "Add a point to a strip chart."
+  (id plint)
+  (pen plint)
+  (x plflt)
+  (y plflt))
+
+
+;;
+;; Expects colline, styline & legline to 4 element lists containing the
+;; appropriate color, style and name for each pen
+;;
+(defun plstripc (xspec yspec xmin xmax xjump ymin ymax xlpos ylpos y_ascl acc colbox collab colline styline legline labx laby labtop)
+  "Create a 4-pen strip chart."
+  (let ((c-col (foreign-alloc 'plint :count 4))
+	(c-sty (foreign-alloc 'plint :count 4))
+	(c-leg (foreign-alloc :pointer :count 4)))
+    (dotimes (i 4)
+      (setf (mem-aref c-col 'plint i) (round (elt colline i)))
+      (setf (mem-aref c-sty 'plint i) (round (elt styline i)))
+      (setf (mem-aref c-leg :pointer i) (foreign-string-alloc (elt legline i))))
+    (unwind-protect
+	 (pl-plstripc xspec yspec xmin xmax xjump ymin ymax xlpos ylpos y_ascl acc colbox collab c-col c-sty c-leg labx laby labtop)
+      (progn
+	(foreign-free c-col)
+	(foreign-free c-sty)
+	(dotimes (i 4)
+	  (foreign-string-free (mem-aref c-leg :pointer i)))
+	(foreign-free c-leg)))))
+
+(export 'plstripc (package-name *package*))
+
+(pl-defcfun ("c_plstripc" pl-plstripc) :void
+    "Create a 4-pen strip chart."
+  (id *plint 1)
+  (xspec plstr)
+  (yspec plstr)
+  (xmin plflt)
+  (xmax plflt)
+  (xjump plflt)
+  (ymin plflt)
+  (ymax plflt)
+  (xlpos plflt)
+  (ylpos plflt)
+  (y_ascl plbool)
+  (acc plbool)
+  (colbox plint)
+  (collab plint)
+  (colline :pointer)
+  (styline :pointer)
+  (legline :pointer)
+  (labx plstr)
+  (laby plstr)
+  (labtop plstr))
+
+
+(pl-defcfun ("c_plstripd" plstripd) :void
+    "Deletes and releases memory used by a strip chart."
+  (id plint))
 
 
 (pl-defcfun ("c_plstyl" plstyl) :void
