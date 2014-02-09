@@ -1,10 +1,16 @@
 ;;;;
 ;;;; PLplot example 15
 ;;;;
-;;;; hazen 07/10
+;;;; hazen 02/14
 ;;;;
 
 (in-package :plplot-examples)
+
+; This doesn't actually do anything, you could all use nil in the call to plshade, 
+; but it is provided as an example of how you might use a callback in plshade.
+(cffi:defcallback x15-defined-fn-callback plint ((x plflt) (y plflt))
+  (declare (ignore x y))
+  1)
 
 (defun example15 (&optional (dev default-dev))
   (plsdev dev)
@@ -33,10 +39,22 @@
 		 (plvpor 0.1 0.9 0.1 0.9)
 		 (plwind -1.0 1.0 -1.0 1.0)
 		 (plpsty 8)
-		 (plshade z -1.0 1.0 -1.0 1.0
-			  (+ zmin (* (- zmax zmin) 0.4))
+		 (format t "1~%")
+		 (plshade z
+					;'x15-defined-fn-callback
+			  nil
+			  -1.0 1.0 -1.0 1.0
+			  (+ zmin (* (- zmax zmin) 0.4)) 
 			  (+ zmin (* (- zmax zmin) 0.6))
-			  0 7 2 9 2 2 2 t)
+			  0 7 2 
+			  9 2 2 2
+			  ;'plfill-callback
+			  nil
+			  t
+			  nil nil)
+			  ;'pltr0-callback
+			  ;nil)
+		 (format t "2~%")
 		 (plcol0 1)
 		 (plbox "bcnst" 0.0 0 "bcnstv" 0.0 0)
 		 (plcol0 2)
@@ -54,13 +72,22 @@
 		   (plvpor 0.1 0.9 0.1 0.9)
 		   (plwind -1.0 1.0 -1.0 1.0)
 		   (dotimes (i 10)
-		     (plpat (aref nlin i)
-			    (vector (aref inc1 i) (aref inc2 i))
-			    (vector (aref del1 i) (aref del2 i)))
-		     (plshade z -1.0 1.0 -1.0 1.0
-			      (+ zmin (* (- zmax zmin) (/ i 10.0)))
-			      (+ zmin (* (- zmax zmin) (/ (+ i 1.0) 10.0)))
-			      0 (+ i 6) 2 0 0 0 0 t))
+		     (plpat (if (= (aref nlin i) 1) 
+				(vector (aref inc1 i))
+				(vector (aref inc1 i) (aref inc2 i)))
+			    (if (= (aref nlin i) 1)
+				(vector (aref del1 i))
+				(vector (aref del1 i) (aref del2 i))))
+		     (plshade1 z
+			       nil
+			       -1.0 1.0 -1.0 1.0
+			       (+ zmin (* (- zmax zmin) (/ i 10.0)))
+			       (+ zmin (* (- zmax zmin) (/ (+ i 1.0) 10.0)))
+			       0 (+ i 6)
+			       2 0 0 0 0 
+			       'plfill-callback 
+			       t
+			       nil nil))
 		   (plcol0 1)
 		   (plbox "bcnst" 0.0 0 "bcnstv" 0.0 0)
 		   (plcol0 2)
@@ -95,7 +122,7 @@
 		   (vector 260 260 20 20)
 		   (vector 0.6 0.0 0.0 0.6)
 		   (vector 1 0.5 0.5 1)
-		   'null)
+		   nil)
 	(plot1)
 	(plot2)
 	(plot3))))
@@ -103,7 +130,7 @@
   (plend1))
 
 ;;;;
-;;;; Copyright (c) 2010 Hazen P. Babcock
+;;;; Copyright (c) 2014 Hazen P. Babcock
 ;;;;
 ;;;; Permission is hereby granted, free of charge, to any person obtaining a copy 
 ;;;; of this software and associated documentation files (the "Software"), to 
