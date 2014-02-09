@@ -20,7 +20,7 @@
     (plbox "bc" 1.0 0 "bcnv" 10.0 0)
     (plcol0 2)
     (pllab "Year" "Widget Sales (millions)" "#frPLplot Example 12")
-    (plscmap1l t pos red green blue 'null)
+    (plscmap1l t pos red green blue nil)
     (labels ((plfbox (x0 y0)
 	       (let ((x (vector x0 x0 (+ x0 1.0) (+ x0 1.0)))
 		     (y (vector 0.0 y0 y0 0.0)))
