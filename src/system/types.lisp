@@ -115,7 +115,6 @@
 	     ; one dimensional array
 	     (let ((len (length array-or-integer))
 		   (c-type (c-type instance)))
-	       (format t "one-dimensional array. ~a~%" len)
 	       (setf (size instance) len)
 	       (setf (c-pointer instance) (foreign-alloc c-type :count len))
 	       (let ((temp-ptr (c-pointer instance)))
@@ -127,7 +126,6 @@
 		    (sy (array-dimension array-or-integer 1))
 		    (len (* sx sy))
 		    (c-type (c-type instance)))
-	       (format t "two-dimensional array.~a ~a~%" sx sy)
 	       (setf (size instance) len)
 	       (setf (c-pointer instance) (foreign-alloc c-type :count len))
 	       (let ((temp-ptr (c-pointer instance)))
