@@ -1,10 +1,28 @@
 ;;;;
 ;;;; PLplot example 14
 ;;;;
-;;;; hazen 07/10
+;;;; hazen 02/14
 ;;;;
 
 (in-package :plplot-examples)
+
+(let ((tr))
+  (defun x14-pltr (x y tx ty)
+    (let ((tmpx (+ (* (aref tr 0) x)
+		   (* (aref tr 1) y)
+		   (aref tr 2)))
+	  (tmpy (+ (* (aref tr 3) x)
+		   (* (aref tr 4) y)
+		   (aref tr 5))))
+      (setf (cffi:mem-aref tx 'plflt) (cffi:convert-to-foreign tmpx 'plflt)
+	    (cffi:mem-aref ty 'plflt) (cffi:convert-to-foreign tmpy 'plflt))))
+  (defun x14-set-tr (new-tr)
+    (setf tr new-tr)))
+
+(cffi:defcallback x14-pltr-callback :void ((x plflt) (y plflt) (tx *plflt) (ty *plflt) (pltr-data :pointer))
+  (declare (ignore pltr-data))
+  (x14-pltr x y tx ty))
+
 
 (defun example14 (&optional (dev default-dev))
   (labels ((plot1 (xoff xscale yoff yscale)
@@ -128,25 +146,14 @@
 			     (aref w i j) (* 2.0 xx yy))))))
 	       (plenv -1.0 1.0 -1.0 1.0 0 0)
 	       (plcol0 2)
-	       (labels ((mypltr (x y tx ty pltr-data)
-			  (declare (ignore pltr-data))
-			  (let ((tmpx (+ (* (aref tr 0) x)
-					 (* (aref tr 1) y)
-					 (aref tr 2)))
-				(tmpy (+ (* (aref tr 3) x)
-					 (* (aref tr 4) y)
-					 (aref tr 5))))
-			    (setf (cffi:mem-aref tx :double) (coerce tmpx 'double-float)
-				  (cffi:mem-aref ty :double) (coerce tmpy 'double-float)))))
-		 (pl-set-pltr-fn #'mypltr)
-		 (plcont z 1 xpts 1 ypts clevel)
-		 (plstyl 1 mark space)
-		 (plcol0 3)
-		 (plcont w 1 xpts 1 ypts clevel)
-		 (plcol0 1)
-		 (pllab "X Coordinate" "Y Coordinate" "Streamlines of flow")
-		 (pl-reset-pltr-fn)
-		 (plflush)))))
+	       (x14-set-tr tr)
+	       (plcont z 1 xpts 1 ypts clevel 'x14-pltr-callback nil)
+	       (plstyl 1 mark space)
+	       (plcol0 3)
+	       (plcont w 1 xpts 1 ypts clevel 'x14-pltr-callback nil)
+	       (plcol0 1)
+	       (pllab "X Coordinate" "Y Coordinate" "Streamlines of flow")
+	       (plflush))))
 
     ;;main
     (plsdev dev)
@@ -195,7 +202,7 @@
   (plend1))
 
 ;;;;
-;;;; Copyright (c) 2010 Hazen P. Babcock
+;;;; Copyright (c) 2014 Hazen P. Babcock
 ;;;;
 ;;;; Permission is hereby granted, free of charge, to any person obtaining a copy 
 ;;;; of this software and associated documentation files (the "Software"), to 
