@@ -52,7 +52,7 @@
 ;; function callback type
 (pl-defctype plfunc :pointer
 	     :from-c (declare (ignore x))
-	     :to-c (get-callback x))
+	     :to-c (if x (get-callback x) (null-pointer)))
 
 ;; integer type
 (pl-defctype plint :int
@@ -111,14 +111,30 @@
   (if array-or-integer
       (cond
 	((arrayp array-or-integer)
-	 (let ((len (length array-or-integer))
-	       (c-type (c-type instance)))
-	   (setf (size instance) len)
-	   (setf (c-pointer instance) (foreign-alloc c-type :count len))
-	   (let ((c-pointer (c-pointer instance)))
-	     (dotimes (i len)
-	       (setf (mem-aref c-pointer c-type i) 
-		     (convert-to-foreign (aref array-or-integer i) c-type))))))
+	 (if (= (length (array-dimensions array-or-integer)) 1)
+	     ; one dimensional array
+	     (let ((len (length array-or-integer))
+		   (c-type (c-type instance)))
+	       (format t "one-dimensional array. ~a~%" len)
+	       (setf (size instance) len)
+	       (setf (c-pointer instance) (foreign-alloc c-type :count len))
+	       (let ((temp-ptr (c-pointer instance)))
+		 (dotimes (i len)
+		   (setf (mem-aref temp-ptr c-type i) 
+			 (convert-to-foreign (aref array-or-integer i) c-type)))))
+	     ; two-dimensional array
+	     (let* ((sx (array-dimension array-or-integer 0))
+		    (sy (array-dimension array-or-integer 1))
+		    (len (* sx sy))
+		    (c-type (c-type instance)))
+	       (format t "two-dimensional array.~a ~a~%" sx sy)
+	       (setf (size instance) len)
+	       (setf (c-pointer instance) (foreign-alloc c-type :count len))
+	       (let ((temp-ptr (c-pointer instance)))
+		 (dotimes (i sx)
+		   (dotimes (j sy)
+		     (setf (mem-aref temp-ptr c-type (+ (* i sy) j))
+			   (convert-to-foreign (aref array-or-integer i j) c-type))))))))
 	((integerp array-or-integer)
 	 (progn
 	   (setf (size instance) array-or-integer)
