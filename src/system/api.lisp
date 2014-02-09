@@ -1,9 +1,5 @@
 ;;;;
-;;;; Calls to the plplot API. An attempt was made to have the pl-defcfun macro
-;;;; handle as many as these as possible, but eventually I gave up and just wrote 
-;;;; out some of the less conventional ones. As a consequence, not all the 'raw'
-;;;; cffi calls will be name "c-plfunctionname", they are likely to instead be
-;;;; "c-pl-plfunctionname".
+;;;; Calls to the plplot API.
 ;;;;
 ;;;; Doc-strings are from the api.xml file in PLplot.
 ;;;;
@@ -82,6 +78,11 @@
   (icol0 plint))
 
 
+(pl-defcfun ("c_plcol1" plcol1) :void
+    "Set color, map1."
+  (col1 plflt))
+
+
 (pl-defcfun ("c_plcont" plcont) :void
     "Contour plot."
   (z **plflt)
@@ -134,6 +135,38 @@
 (export 'plf2ops-grid-col-major)
 
 
+(pl-defcfun ("c_plfill" plfill) :void
+    "Draw filled polygon.
+     Also available as a callback (plfill-callback)."
+  (n plint (length x) (= (length x) (length y)))
+  (x *plflt)
+  (y *plflt))
+
+(defcallback plfill-callback :void ((n plint) (x *plflt) (y *plflt))
+  (format t "size ~a~%" n)
+  (c-plfill n x y)
+  (format t "done~%"))
+
+(export 'plfill-callback)
+
+;(pl-callback (c-plfill plfill-callback) :void
+;  (n plint)
+;  (x *plflt)
+;  (y *plflt))
+
+
+(pl-defcfun ("c_plfill3" plfill3) :void
+    "Draw filled polygon in 3D."
+  (n plint (length x) (= (length x) (length y) (length z)))
+  (x *plflt)
+  (y *plflt)
+  (z *plflt))
+
+
+(pl-defcfun ("c_plflush" plflush) :void
+    "Flushes the output stream.")
+
+
 (pl-defcfun ("c_plfont" plfont) :void 
     "Set character font."
   (ifont plint))
@@ -164,6 +197,13 @@
   (r *plint 1)
   (g *plint 1)
   (b *plint 1))
+
+
+(pl-defcfun ("c_plgfam" plgfam) :void 
+    "Get family file parameters."
+  (p_fam *plint 1)
+  (p_num *plint 1)
+  (p_bmax *plint 1))
 
 
 (defcfun ("c_plgver" c-plgver) :void
@@ -231,9 +271,39 @@
   (y *plflt))
 
 
+(pl-defcfun ("c_plline3" plline3) :void
+    "Draw a line in 3 space."
+  (n plint (length x) (= (length x) (length y) (length z)))
+  (x *plflt)
+  (y *plflt)
+  (z *plflt))
+
+
 (pl-defcfun ("c_pllsty" pllsty) :void
     "Select line style."
   (lin plint))
+
+
+(pl-defcfun ("c_plmesh" plmesh) :void
+    "Plot surface mesh."
+  (x *plflt)
+  (y *plflt)
+  (z **plflt)
+  (nx plint (length x) (= (length x) (array-dimension z 0)))
+  (ny plint (length y) (= (length y) (array-dimension z 1)))
+  (opt plint))
+
+
+(pl-defcfun ("c_plmeshc" plmeshc) :void
+    "Magnitude colored plot surface mesh with contour."
+  (x *plflt)
+  (y *plflt)
+  (z **plflt)
+  (nx plint (length x) (= (length x) (array-dimension z 0)))
+  (ny plint (length y) (= (length y) (array-dimension z 1)))
+  (opt plint)
+  (clevel *plflt)
+  (nlevel plint (pl-length clevel) nil))
 
 
 (pl-defcfun ("plMinMax2dGrid" plminmax2dgrid) :void
@@ -263,12 +333,35 @@
   (text plstr))
 
 
+(pl-defcfun ("c_plot3d" plot3d) :void
+    "Plot 3-d surface plot."
+  (x *plflt)
+  (y *plflt)
+  (z **plflt)
+  (nx plint (length x) (= (length x) (array-dimension z 0)))
+  (ny plint (length y) (= (length y) (array-dimension z 1)))
+  (opt plint)
+  (side plint))
+
+
+(pl-defcfun ("c_plpat" plpat) :void
+    "Set area fill pattern."
+  (nlin plint (length inc) (= (length inc) (length del)))
+  (inc *plint)
+  (del *plint))
+
+
 (pl-defcfun ("c_plpoin" plpoin) :void
     "Plot a glyph at the specified points."
   (n plint (length x) (= (length x) (length y)))
   (x *plflt)
   (y *plflt)
   (code plint))
+
+
+(pl-defcfun ("c_plpsty" plpsty) :void
+    "Select area fill pattern."
+  (patt plint))
 
 
 (pl-defcfun ("c_plptex" plptex) :void
@@ -316,9 +409,87 @@
   (dev plstr))
 
 
+(pl-defcfun ("c_plsetopt" plsetopt) :int
+    "Set any command-line option."
+  (opt plstr)
+  (optarg plstr))
+
+
+(pl-defcfun ("c_plsfam" plsfam) :void
+    "Set family file parameters."
+  (fam plint)
+  (num plint)
+  (bmax plint))
+
+
+(pl-defcfun ("c_plshade" plshade) :void
+    "Shade individual region on the basis of value."
+  (a **plflt)
+  (nx plint (array-dimension a 0) nil)
+  (ny plint (array-dimension a 1) nil)
+  (defined-fn plfunc)
+  (left plflt)
+  (right plflt)
+  (bottom plflt)
+  (top plflt)
+  (shade-min plflt)
+  (shade-max plflt)
+  (sh-cmap plint)
+  (sh-color plflt)
+  (sh-width plint)
+  (min-color plint)
+  (min-width plint)
+  (max-color plint)
+  (max-width plint)
+  (plfill-fn plfunc)
+  (rectangular plbool)
+  (pltr-fn plfunc)
+  (pltr-data pldata))
+
+
+;;
+;; From the perspective of Lisp this function is identical to the plshade.
+;; From a C perspective it is different as the 2D lisp array comes is
+;; passed as 1D C array.
+;;
+(pl-defcfun ("c_plshade1" plshade1) :void
+    "Shade individual region on the basis of value."
+  (a *plflt)
+  (nx plint (array-dimension a 0) nil)
+  (ny plint (array-dimension a 1) nil)
+  (defined-fn plfunc)
+  (left plflt)
+  (right plflt)
+  (bottom plflt)
+  (top plflt)
+  (shade-min plflt)
+  (shade-max plflt)
+  (sh-cmap plint)
+  (sh-color plflt)
+  (sh-width plint)
+  (min-color plint)
+  (min-width plint)
+  (max-color plint)
+  (max-width plint)
+  (plfill-fn plfunc)
+  (rectangular plbool)
+  (pltr-fn plfunc)
+  (pltr-data pldata))
+
+
 (pl-defcfun ("c_plsori" plsori) :void
     "Set orientation."
   (ori plint))
+
+
+(pl-defcfun ("c_plspause" plspause) :void
+    "Set the pause (on end-of-page) status."
+  (pause plbool))
+
+
+(pl-defcfun ("c_plsstrm" plsstrm) :void
+    "Set current output stream."
+  (strm plint))
 
 
 (pl-defcfun ("c_plssub" plssub) :void
@@ -333,6 +504,13 @@
   (ny plint))
 
 
+(pl-defcfun ("c_plstyl" plstyl) :void
+    "Set line style."
+  (nms plint nil (and (<= nms (length mark)) (<= nms (length space))))
+  (mark *plint)
+  (space *plint))
+
+
 (pl-defcfun ("c_plsurf3d" plsurf3d) :void 
     "Plot shaded 3-d surface plot."
   (x *plflt)
@@ -345,6 +523,20 @@
   (nlevel plint (pl-length clevel) nil))
 
 
+(pl-defcfun ("c_plsvpa" plsvpa) :void
+    "Specify viewport in absolute coordinates."
+  (xmin plflt)
+  (xmax plflt)
+  (ymin plflt)
+  (ymax plflt))
+
+
+(pl-defcfun ("c_plsyax" plsyax) :void
+    "Set y axis parameters."
+  (digmax plint)
+  (digits plint))
+
+
 (pl-defcfun ("c_plsym" plsym) :void 
     "Plot a glyph at the specified points."
   (n plint (length x) (= (length x) (length y)))
@@ -353,12 +545,6 @@
   (code plint))
 
 
-(pl-defcfun ("c_plstyl" plstyl) :void
-    "Set line style."
-  (nms plint nil (and (<= nms (length mark)) (<= nms (length space))))
-  (mark *plint)
-  (space *plint))
-
 
 ;; The pltr series functions are designed to be passed as callback arguments to other plplot 
 ;; functions like the shade functions. pltr1 & pltr2 let you interpolate your data onto other
@@ -366,38 +552,71 @@
 ;; pltr_data pointer or they will exit & take down lisp in the process. They are used
 ;; in example9.lisp.
 
-(pl-callback ("pltr0" pltr0) :void
-    "Identity transformation for grid to world mapping (callback)."
+(pl-defcfun ("pltr0" pltr0) :void
+    "Identity transformation for grid to world mapping.
+     Also available as a callback (pltr0-callback)."
   (x plflt)
   (y plflt)
   (tx *plflt)
   (ty *plflt)
   (pltr-data :pointer))
 
-(pl-callback ("pltr1" pltr1) :void 
-    "Linear interpolation for grid to world mapping using singly dimensioned coordinate arrays (callback)."
+(pl-callback (pltr0 pltr0-callback) :void
   (x plflt)
   (y plflt)
   (tx *plflt)
   (ty *plflt)
   (pltr-data :pointer))
 
-(pl-callback ("pltr2" pltr2) :void
-    "Linear interpolation for grid to world mapping using doubly dimensioned coordinate arrays (column dominant, as per normal C 2d arrays) (callback)."
+
+(pl-defcfun ("pltr1" pltr1) :void 
+    "Linear interpolation for grid to world mapping using singly dimensioned coordinate arrays.
+     Also available as a callback (pltr1-callback)."
   (x plflt)
   (y plflt)
   (tx *plflt)
   (ty *plflt)
   (pltr-data :pointer))
+
+(pl-callback (pltr1 pltr1-callback) :void
+  (x plflt)
+  (y plflt)
+  (tx *plflt)
+  (ty *plflt)
+  (pltr-data :pointer))
+
+
+(pl-defcfun ("pltr2" pltr2) :void
+    "Linear interpolation for grid to world mapping using doubly dimensioned coordinate arrays 
+     (column dominant, as per normal C 2d arrays).
+     Also available as a callback (pltr2-callback)."
+  (x plflt)
+  (y plflt)
+  (tx *plflt)
+  (ty *plflt)
+  (pltr-data :pointer))
+
+(pl-callback (pltr2 pltr2-callback) :void
+  (x plflt)
+  (y plflt)
+  (tx *plflt)
+  (ty *plflt)
+  (pltr-data :pointer))
+
 
 ; This in plplot.h but is not documented.
-(pl-callback ("pltr2p" pltr2p) :void
+(pl-defcfun ("pltr2p" pltr2p) :void
     "Undocumented."
   (x plflt)
   (y plflt)
   (tx *plflt)
   (ty *plflt)
   (pltr-data :pointer))
+
+
+(pl-defcfun ("c_plvasp" plvasp) :void
+    "Specify viewport using aspect ratio only."
+  (aspect plflt))
 
 
 (pl-defcfun ("c_plvpas" plvpas) :void
