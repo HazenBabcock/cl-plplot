@@ -352,6 +352,25 @@
   (code plint))
 
 
+(pl-defcfun ("c_plpoin3" plpoin3) :void 
+    "Plot a glyph at the specified 3D points."
+  (n plint (length x) (= (length x) (length y) (length z)))
+  (x *plflt)
+  (y *plflt)
+  (z *plflt)
+  (code plint))
+
+
+(pl-defcfun ("c_plpoly3" plpoly3) :void
+    "Draw a polygon in 3 space."
+  (n plint (length x) (= (length x) (length y) (length z) (1+ (length draw))))
+  (x *plflt)
+  (y *plflt)
+  (z *plflt)
+  (draw *plint)
+  (ifcc plbool))
+
+
 (pl-defcfun ("c_plpsty" plpsty) :void
     "Select area fill pattern."
   (patt plint))
