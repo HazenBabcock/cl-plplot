@@ -1,26 +1,27 @@
 ;;;;
 ;;;; PLplot example 9
 ;;;;
-;;;; hazen 06/10
+;;;; hazen 02/14
 ;;;;
 
 (in-package :plplot-examples)
 
 (let ((xspa)
       (yspa))
-  (defun my-pltr (x y)
+  (defun x9-pltr (x y)
     (values (+ (* x xspa) (* y 0.0) -1.0)
 	    (+ (* x 0.0) (* y yspa) -1.0)))
-  (defun set-xspa (new-xspa)
+  (defun x9-set-xspa (new-xspa)
     (setf xspa new-xspa))
-  (defun set-yspa (new-yspa)
+  (defun x9-set-yspa (new-yspa)
     (setf yspa new-yspa)))
 
-(cffi:defcallback my-pltr-callback :void ((x plflt) (y plflt) (tx *plflt) (ty *plflt) (pltr-data :pointer))
+(cffi:defcallback x9-pltr-callback :void ((x plflt) (y plflt) (tx *plflt) (ty *plflt) (pltr-data :pointer))
   (declare (ignore pltr-data))
-  (multiple-value-bind (mx my) (my-pltr x y)
-    (setf (cffi:mem-aref tx :double) (coerce mx 'double-float)
-	  (cffi:mem-aref ty :double) (coerce my 'double-float))))
+  (multiple-value-bind (mx my) (x9-pltr x y)
+    (setf (cffi:mem-aref tx 'plflt) (cffi:convert-to-foreign mx 'plflt)
+	  (cffi:mem-aref ty 'plflt) (cffi:convert-to-foreign my 'plflt))))
+
 
 (defun example9 (&optional (dev default-dev))
   (plsdev dev)
@@ -28,8 +29,8 @@
   (let ((xpts 35)
 	(ypts 46)
 	(clevel (vector -1.0 -0.8 -0.6 -0.4 -0.2 0.0 0.2 0.4 0.6 0.8 1.0)))
-    (set-xspa (/ 2.0 (- xpts 1.0)))
-    (set-yspa (/ 2.0 (- ypts 1.0)))
+    (x9-set-xspa (/ 2.0 (- xpts 1.0)))
+    (x9-set-yspa (/ 2.0 (- ypts 1.0)))
     (labels (
 	     ; polar plot
 	     (polar ()
@@ -175,7 +176,7 @@
 		      (aref w i j) (* 2 xx yy))))))
 	(dotimes (i xpts)
 	  (dotimes (j ypts)
-	    (multiple-value-bind (xx yy) (my-pltr i j)
+	    (multiple-value-bind (xx yy) (x9-pltr i j)
 	      (let ((argx (/ (* xx 3.14159) 2.0))
 		    (argy (/ (* yy 3.14159) 2.0))
 		    (distort 0.4))
@@ -189,10 +190,10 @@
 	(pl-setcontlabelparam 0.006 0.3 0.1 1)
 	(plenv -1.0 1.0 -1.0 1.0 0 0)
 	(plcol0 2)
-	(plcont z 1 xpts 1 ypts clevel 'my-pltr-callback nil)
+	(plcont z 1 xpts 1 ypts clevel 'x9-pltr-callback nil)
 	(plstyl 1 mark space)
 	(plcol0 3)
-	(plcont w 1 xpts 1 ypts clevel 'my-pltr-callback nil)
+	(plcont w 1 xpts 1 ypts clevel 'x9-pltr-callback nil)
 	(plstyl 0 mark space)
 	(plcol0 1)
 	(pllab "X Coordinate" "Y Coordinate" "Streamlines of flow")
@@ -232,11 +233,10 @@
 	(pl-setcontlabelparam 0.006 0.3 0.1 0)
 	(potential))))
 
-  ;(pl-reset-pltr-fn))))
   (plend1))
 
 ;;;;
-;;;; Copyright (c) 2010 Hazen P. Babcock
+;;;; Copyright (c) 2014 Hazen P. Babcock
 ;;;;
 ;;;; Permission is hereby granted, free of charge, to any person obtaining a copy 
 ;;;; of this software and associated documentation files (the "Software"), to 
