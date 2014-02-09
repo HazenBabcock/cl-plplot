@@ -1,7 +1,7 @@
 ;;;;
 ;;;; PLplot example 16
 ;;;;
-;;;; hazen 07/10
+;;;; hazen 02/14
 ;;;;
 
 (in-package :plplot-examples)
@@ -67,7 +67,13 @@
       (plvpor 0.1 0.9 0.1 0.9)
       (plwind -1.0 1.0 -1.0 1.0)
       (plpsty 0)
-      (plshades z -1.0 1.0 -1.0 1.0 shedge 2 0 0 t)
+      (plshades z
+		nil
+		-1.0 1.0 -1.0 1.0 
+		shedge 2 0 0
+		'plfill-callback
+		t 
+		nil nil)
       (plcol0 1)
       (plbox "bcnst" 0.0 0 "bcnstv" 0.0 0)
       (plcol0 2)
@@ -81,8 +87,16 @@
       (plvpor 0.1 0.9 0.1 0.9)
       (plwind -1.0 1.0 -1.0 1.0)
       (plpsty 0)
-      (pl-set-pltr-fn #'pltr1)
-      (plshades z -1.0 1.0 -1.0 1.0 shedge 2 0 0 t cgrid1-x cgrid1-y)
+      (with-pltr-data (pltr-data cgrid1-x cgrid1-y :z-vals z)
+	(plshades z 
+		  nil
+		  -1.0 1.0 -1.0 1.0 
+		  shedge 2 0 0
+		  'plfill-callback
+		  t
+		  'pltr1-callback 
+		  pltr-data))
+      ;cgrid1-x cgrid1-y)
       (plcol0 1)
       (plbox "bcnst" 0.0 0 "bcnstv" 0.0 0)
       (plcol0 2)
@@ -96,13 +110,20 @@
       (plvpor 0.1 0.9 0.1 0.9)
       (plwind -1.0 1.0 -1.0 1.0)
       (plpsty 0)
-      (pl-set-pltr-fn #'pltr2)
-      (plshades z -1.0 1.0 -1.0 1.0 shedge 2 0 0 t cgrid2-x cgrid2-y)
-      (plcol0 1)
-      (plbox "bcnst" 0.0 0 "bcnstv" 0.0 0)
-      (plcol0 2)
-      (plcont w 1 nx 1 ny clevel cgrid2-x cgrid2-y)
-      (pllab "distance" "altitude" "Bogon density, with streamlines")
+      (with-pltr-data (pltr-data cgrid2-x cgrid2-y :z-vals z)
+	(plshades z 
+		  nil
+		  -1.0 1.0 -1.0 1.0 
+		  shedge 2 0 0
+		  'plfill-callback
+		  t
+		  'pltr2-callback 
+		  pltr-data)
+	(plcol0 1)
+	(plbox "bcnst" 0.0 0 "bcnstv" 0.0 0)
+	(plcol0 2)
+	(plcont w 1 nx 1 ny clevel 'pltr2-callback pltr-data)
+	(pllab "distance" "altitude" "Bogon density, with streamlines"))
 
       ; plot4
       (plspal0 "")
@@ -112,8 +133,15 @@
       (plvpor 0.1 0.9 0.1 0.9)
       (plwind -1.0 1.0 -1.0 1.0)
       (plpsty 0)
-      (pl-set-pltr-fn #'pltr2)
-      (plshades z -1.0 1.0 -1.0 1.0 shedge 2 2 3 t cgrid2-x cgrid2-y)
+      (with-pltr-data (pltr-data cgrid2-x cgrid2-y :z-vals z)
+	(plshades z 
+		  nil
+		  -1.0 1.0 -1.0 1.0 
+		  shedge 2 2 3 
+		  'plfill-callback
+		  t
+		  'pltr2-callback
+		  pltr-data))
       (plcol0 1)
       (plbox "bcnst" 0.0 0 "bcnstv" 0.0 0)
       (plcol0 2)
@@ -139,8 +167,15 @@
       (multiple-value-bind (zmin zmax) (min-max z)
 	(dotimes (i (1+ ns))
 	  (setf (aref shedge i) (+ zmin (/ (* (- zmax zmin) i) ns)))))
-      (pl-set-pltr-fn #'pltr2)
-      (plshades z -1.0 1.0 -1.0 1.0 shedge 2 0 0 t cgrid2-x cgrid2-y)
+      (with-pltr-data (pltr-data cgrid2-x cgrid2-y :z-vals z)
+	(plshades z
+		  nil
+		  -1.0 1.0 -1.0 1.0 
+		  shedge 2 0 0 
+		  'plfill-callback
+		  t
+		  'pltr2-callback
+		  pltr-data))
       (let* ((ppts 100)
 	     (px (make-float-array ppts))
 	     (py (make-float-array ppts)))
@@ -156,7 +191,7 @@
   (plend1))
 
 ;;;;
-;;;; Copyright (c) 2010 Hazen P. Babcock
+;;;; Copyright (c) 2014 Hazen P. Babcock
 ;;;;
 ;;;; Permission is hereby granted, free of charge, to any person obtaining a copy 
 ;;;; of this software and associated documentation files (the "Software"), to 

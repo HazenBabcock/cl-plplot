@@ -392,6 +392,11 @@
   (rev *plbool))
 
 
+(pl-defcfun ("c_plscmap0n" plscmap0n) :void
+    "Set number of colors in color map0."
+  (ncol0 plint))
+
+
 (pl-defcfun ("c_plscmap1n" plscmap1n) :void 
     "Set color map1 colors using a piece-wise linear relationship."
   (ncol1 plint))
@@ -413,6 +418,27 @@
   (fam plint)
   (num plint)
   (bmax plint))
+
+
+(pl-defcfun ("c_plshades" plshades) :void
+    "Shade regions on the basis of value."
+  (a **plflt)
+  (nx plint (array-dimension a 0) nil)
+  (ny plint (array-dimension a 1) nil)
+  (defined plfunc)
+  (xmin plflt)
+  (xmax plflt)
+  (ymin plflt)
+  (ymax plflt)
+  (clevel *plflt)
+  (nlevel plint (pl-length clevel) nil)
+  (fill-width plflt)
+  (cont-color plint)
+  (cont-width plflt)
+  (plfill plfunc)
+  (rectangular plbool)
+  (pltr plfunc)
+  (pltr-data pldata))
 
 
 (pl-defcfun ("c_plshade" plshade) :void
@@ -473,6 +499,17 @@
 (pl-defcfun ("c_plsori" plsori) :void
     "Set orientation."
   (ori plint))
+
+
+(pl-defcfun ("c_plspal0" plspal0) :void
+    "Set the colors for color table 0 from a cmap0 file."
+  (filename plstr))
+
+
+(pl-defcfun ("c_plspal1" plspal1) :void
+    "Set the colors for color table 1 from a cmap1 file."
+  (filename plstr)
+  (interpolate plbool))
 
 
 (pl-defcfun ("c_plspause" plspause) :void
