@@ -13,6 +13,7 @@
       0
       (length array-or-null)))
 
+
 ;;;
 ;;; These are for dealing with pltr-data structures, which are passed to
 ;;; various coordinate transformation functions (i.e. pltr0, pltr1 & pltr2).
@@ -38,7 +39,7 @@
 
 (defun make-pl-pltr-data (gridx gridy &key pltr-fn z-vals)
   (flet ((ndims (x)
-	   (length (array-dimensions x))))
+	   (if x (length (array-dimensions x)) 0)))
     ; check that the grid arguments match the callback functions.
     (when pltr-fn
       (cond
@@ -93,7 +94,8 @@
 	(setf ny (if gridy
 		     (if (= (ndims gridy) 1)
 			 (length gridy)
-			 (array-dimension gridy 1)))))
+			 (array-dimension gridy 1))
+		     0)))
       (setf (c-pointer instance) ptr)
       instance)))
 	    
@@ -111,17 +113,12 @@
 
 
 ;;;
-;;; Creates an additional callback version of a function in the PLplot library.
-;;; The name of the callback function is the function name with -callback appended,
-;;; i.e. my-fn -> my-fn-callback.
+;;; Creates a callback version of a function in the PLplot library.
 ;;;
 
-(defmacro pl-callback (name returns docstring &body args)
-  (let ((arg-list (mapcar #'(lambda (x) (car x)) args))
-	(function-name (cadr name))
-	(callback-name (read-from-string (concatenate 'string (string (cadr name)) "-callback"))))
+(defmacro pl-callback ((function-name callback-name) returns &body args)
+  (let ((arg-list (mapcar #'(lambda (x) (car x)) args)))
     `(progn
-       (pl-defcfun ,name ,returns ,docstring ,@args)
        (defcallback ,callback-name ,returns ,args
 	 (,function-name ,@arg-list))
        (export (quote ,callback-name)))))
