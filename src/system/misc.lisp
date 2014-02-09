@@ -7,146 +7,124 @@
 (in-package #:cl-plplot-system)
 
 
-(defun pl-length (list-or-null)
+(defun pl-length (array-or-null)
   "Deals with legacy code where the user might have used 'null instead of nil."
-  (if (symbolp list-or-null)
+  (if (symbolp array-or-null)
       0
-      (length list-or-null)))
+      (length array-or-null)))
 
-;      (progn
-;	(format t " length is ~a~%" (length list-or-null))
-;	(length list-or-null))
- ;     (progn
-;	(format t " null~%")
-;	0)))
+;;;
+;;; These are for dealing with pltr-data structures, which are passed to
+;;; various coordinate transformation functions (i.e. pltr0, pltr1 & pltr2).
+;;;
+
+(defcstruct pltr-data
+  (x :pointer)
+  (y :pointer)
+  (z :pointer)
+  (nx plint)
+  (ny plint)
+  (nz plint))
+
+(defclass pl-pltr-data ()
+  ((c-pointer
+    :accessor c-pointer)
+   (gridx
+    :initarg :gridx
+    :accessor gridx)
+   (gridy
+    :initarg :gridy
+    :accessor gridy)))
+
+(defun make-pl-pltr-data (gridx gridy &key pltr-fn z-vals)
+  (flet ((ndims (x)
+	   (length (array-dimensions x))))
+    ; check that the grid arguments match the callback functions.
+    (when pltr-fn
+      (cond
+	((equal pltr-fn 'pltr1-callback)
+	 (when (or (not (vectorp gridx))
+		   (not (vectorp gridy)))
+	   (format t "Aborting: expected vectors for gridx and gridy when using pltr1-callback.~%")
+	   (return-from make-pl-pltr-data)))
+	((equal pltr-fn 'pltr2-callback)
+	 (when (or (not (arrayp gridx))
+		   (not (arrayp gridy))
+		   (not (= (ndims gridx) 2))
+		   (not (= (ndims gridy) 2)))
+	   (format t "Aborting: expected 2D arrays for gridx and gridy when using pltr2-callback.~%")
+	   (return-from make-pl-pltr-data)))))
+    ; check that the grid arguments are the right size.
+    (when z-vals
+      (if (= (ndims gridx) 1)
+	  (progn
+	    (when (< (length gridx) (array-dimension z-vals 0))
+	      (format t "Aborting: gridx is not the expected size.~%")
+	      (return-from make-pl-pltr-data))
+	    (when (< (length gridy) (array-dimension z-vals 1))
+	      (format t "Aborting: gridy is not the expected size.~%")
+	      (return-from make-pl-pltr-data)))
+	  (progn
+	    (when (or (< (array-dimension gridx 0) (array-dimension z-vals 0))
+		      (< (array-dimension gridx 1) (array-dimension z-vals 1)))
+	      (format t "Aborting: gridx is not the expected size.~%")
+	      (return-from make-pl-pltr-data))
+	    (when (or (< (array-dimension gridy 0) (array-dimension z-vals 0))
+		      (< (array-dimension gridy 1) (array-dimension z-vals 1)))
+	      (format t "Aborting: gridy is not the expected size.~%")
+	      (return-from make-pl-pltr-data)))))
+    (let ((instance
+	   (if (= (ndims gridx) 1)
+	       (make-instance 'pl-pltr-data
+			      :gridx (make-*plflt gridx)
+			      :gridy (make-*plflt gridy))
+	       (make-instance 'pl-pltr-data
+			      :gridx (make-**plflt gridx)
+			      :gridy (make-**plflt gridy))))
+	  (ptr (foreign-alloc '(:struct pltr-data))))
+      (with-foreign-slots ((x y nx ny) ptr (:struct pltr-data))
+	(setf x (c-pointer (gridx instance)))
+	(setf y (c-pointer (gridy instance)))
+	(setf nx (if gridx
+		     (if (= (ndims gridx) 1)
+			 (length gridx)
+			 (array-dimension gridx 0))
+		     0))
+	(setf ny (if gridy
+		     (if (= (ndims gridy) 1)
+			 (length gridy)
+			 (array-dimension gridy 1)))))
+      (setf (c-pointer instance) ptr)
+      instance)))
+	    
+(defmacro with-pltr-data ((the-pltr-data gridx gridy &key pltr-fn z-vals) &body body)
+  (let ((instance (gensym)))
+    `(let ((,instance (make-pl-pltr-data ,gridx ,gridy :pltr-fn ,pltr-fn :z-vals ,z-vals)))
+       (when ,instance
+	 (let ((,the-pltr-data (c-pointer ,instance)))
+	   ,@body
+	   (pl-foreign-free (gridx ,instance))
+	   (pl-foreign-free (gridy ,instance))
+	   (foreign-free (c-pointer ,instance)))))))
   
-;;;
-;;; These are for dealing with passing in the plcgrid structure, which is then passed 
-;;; to various coordinate transformation functions (i.e. pltr0, pltr1 & pltr2).
-;;;
-
-;(defcstruct plcgrid
-;  (x plpointer)
-;  (y plpointer)
-;  (z plpointer)
-;  (nx plint)
-;  (ny plint)
-;  (nz plint))
-
-;(defun check-size (a mx my)
-;  "checks that p-d has the right dimensions"
-;  (and (or (= (array-dimension a 0) mx)
-;	   (= (array-dimension a 0) (1+ mx)))
-;       (or (= (array-dimension a 1) my)
-;	   (= (array-dimension a 1) (1+ my)))))
-
-;(defun init-plcgrid (pdx pdy mx my)
-;  "initializes plcgrid given user supplied pdx & pdy, if necessary"
-;  (cond 
-;    ((equal (pl-get-pltr-fn) #'pltr0)
-;     (values (null-pointer) 'empty-p))
-;    ((equal (pl-get-pltr-fn) #'pltr1)
-;     (if (and (vectorp pdx)
-;	      (vectorp pdy)
-;	      (= (length pdx) mx)
-;	      (= (length pdy) my))
-;	 (let ((tmp (foreign-alloc 'plcgrid)))
-;	   (with-foreign-slots ((x y nx ny) tmp plcgrid)
-;	     (setf x (make-ptr pdx 'plflt #'(lambda(x) (coerce x 'double-float))))
-;	     (setf y (make-ptr pdy 'plflt #'(lambda(x) (coerce x 'double-float))))
-;	     (setf nx (length pdx))
-;	     (setf ny (length pdy)))
-;	   (values tmp 'vector-p))
-;	 (progn
-;	   (format t "Array dimensions are wrong for pdx or pdy in init-plcgrid~%")
-;	   (values nil nil))))
-;    ((equal (pl-get-pltr-fn) #'pltr2)
-;     (if (and (arrayp pdx)
-;	      (arrayp pdy)
-;	      (check-size pdx mx my)
-;	      (check-size pdy mx my))
-;	 (let ((tmp (foreign-alloc 'plcgrid)))
-;	   (with-foreign-slots ((x y nx ny) tmp plcgrid)
-;	     (setf x (make-matrix pdx))
-;	     (setf y (make-matrix pdy))
-;	     (setf nx (array-dimension pdx 0))
-;	     (setf ny (array-dimension pdx 1)))
-;	   (values tmp 'matrix-p))
-;	 (progn
-;	   (format t "Matrix dimensions are wrong for pdx or pdy in init-plcgrid~%")
-;	   (values nil nil))))
-;    ; this has fewer safeguards...
-;    (t (cond
-;	 ((and (vectorp pdx)
-;	       (vectorp pdy))
-;	  (let ((tmp (foreign-alloc 'plcgrid)))
-;	    (with-foreign-slots ((x y nx ny) tmp plcgrid)
-;	      (setf x (make-ptr pdx 'plflt #'(lambda(x) (coerce x 'double-float))))
-;	      (setf y (make-ptr pdy 'plflt #'(lambda(x) (coerce x 'double-float))))
-;	      (setf nx (length pdx))
-;	      (setf ny (length pdy)))
-;	    (values tmp 'vector-p)))
-;	 ((and (arrayp pdx)
-;	       (arrayp pdy))
-;	  (let ((tmp (foreign-alloc 'plcgrid)))
-;	    (with-foreign-slots ((x y nx ny) tmp plcgrid)
-;	      (setf x (make-matrix pdx))
-;	      (setf y (make-matrix pdy))
-;	      (setf nx (array-dimension pdx 0))
-;	      (setf ny (array-dimension pdy 0)))
-;	    (values tmp 'matrix-p)))
-;	 ((not pdx)
-;	  (values (null-pointer) 'empty-p))
-;	 (t
-;	  (values pdx 'user-p))))))
-;
-;(defun free-plcgrid (p-grid type)
-;  "frees the plcgrid structure, if necessary"
-;  (cond
-;    ((equal type 'vector-p)
-;     (progn
-;       (with-foreign-slots ((x y) p-grid plcgrid)
-;	 (foreign-free x)
-;	 (foreign-free y))
-;       (foreign-free p-grid)))
-;    ((equal type 'matrix-p)
-;     (progn
-;       (with-foreign-slots ((x y nx ny) p-grid plcgrid)
-;	 (let ((dims (list nx ny)))
-;	   (free-matrix x dims)
-;	   (free-matrix y dims)))
-;       (foreign-free p-grid)))
-;    (t nil)))
-;
-;(defmacro with-plcgrid ((plc-grid pdx pdy mx my) &body body)
-;  (let ((type (gensym)))
-;    `(multiple-value-bind (,plc-grid ,type) (init-plcgrid ,pdx ,pdy ,mx ,my)
-;       (when ,plc-grid
-;	 ,@body
-;	 (free-plcgrid ,plc-grid ,type)))))
+(export 'with-pltr-data)
 
 
 ;;;
-;;; Some plplot functions require callbacks. These callbacks are inside closures so that user 
-;;; can more easily provide their own callback functions. This macro is for making the closures.
+;;; Creates an additional callback version of a function in the PLplot library.
+;;; The name of the callback function is the function name with -callback appended,
+;;; i.e. my-fn -> my-fn-callback.
 ;;;
 
-;(defmacro callback-closure (fname default returns &rest variables)
-;  "Encloses a callback function in a closure so that the 
-;   user can substitute the function of their own choosing"
-;  (let ((var-name (name-cat "my-" fname)))
-;    `(let ((,var-name ,default))
-;       (defcallback ,fname ,returns ,variables
-;	 (funcall ,var-name ,@(mapcar #'(lambda(x) (car x)) variables)))
-;       (defun ,(name-cat "pl-set-" fname) (new-fn)
-;	 (setf ,var-name new-fn))
-;       (defun ,(name-cat "pl-reset-" fname) ()
-;	 (setf ,var-name ,default))
-;       (defun ,(name-cat "pl-get-" fname) ()
-;	 ,var-name)
-;       (export ',(name-cat "pl-set-" fname) (package-name *package*))
-;       (export ',(name-cat "pl-reset-" fname) (package-name *package*))
-;       (export ',(name-cat "pl-get-" fname) (package-name *package*)))))
+(defmacro pl-callback (name returns docstring &body args)
+  (let ((arg-list (mapcar #'(lambda (x) (car x)) args))
+	(function-name (cadr name))
+	(callback-name (read-from-string (concatenate 'string (string (cadr name)) "-callback"))))
+    `(progn
+       (pl-defcfun ,name ,returns ,docstring ,@args)
+       (defcallback ,callback-name ,returns ,args
+	 (,function-name ,@arg-list))
+       (export (quote ,callback-name)))))
 
 
 ;;;
@@ -160,6 +138,7 @@
 
 (export 'pl-null-pointer)
 
+
 ;;;
 ;;; These are the structures for interfacing with the plf... functions
 ;;; in PLplot. There are also some macros to make things a little easier.
@@ -167,8 +146,8 @@
 
 (defcstruct plfgrid2
   (f :pointer)
-  (nx :int)
-  (ny :int))
+  (nx plint)
+  (ny plint))
 
 (defun lisp-data-to-foreign (lisp-data)
   (if (= (length (array-dimensions lisp-data)) 2)
@@ -181,13 +160,6 @@
       (setf f c-data)
       (setf nx size-x)
       (setf ny size-y))
-;    (setf (foreign-slot-value ptr '(:struct plfgrid2) 'f) c-data
-;	  (foreign-slot-value ptr '(:struct plfgrid2) 'nx) size-x
-;	  (foreign-slot-value ptr '(:struct plfgrid2) 'ny) size-y)
-;  (let ((ptr (foreign-alloc 'plfgrid2)))
-;    (setf (foreign-slot-value ptr 'plfgrid2 'f) c-data
-;	  (foreign-slot-value ptr 'plfgrid2 'nx) size-x
-;	  (foreign-slot-value ptr 'plfgrid2 'ny) size-y)
     ptr))
   
 (export 'create-grid)

@@ -6,11 +6,6 @@
 
 (in-package #:cl-plplot-system)
 
-;(defctype plbool :boolean "PLplot boolean type")
-;(defctype plchar :char "PLplot character type")
-;(defctype plflt :double "PLplot floating point type")
-;(defctype plint :int "PLplot fixed point type")
-;(defctype plunicode :uint32 "PLplot unicode character type")
 
 ;;; helper functions and macros.
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -28,7 +23,8 @@
        (defctype ,pl-type (:wrapper
 			   ,cffi-type
 			   :from-c ,from-c-fn-name
-			   :to-c ,to-c-fn-name)))))
+			   :to-c ,to-c-fn-name))
+       (export (quote ,pl-type)))))
 
 
 ;;; types
@@ -43,10 +39,20 @@
 	     :from-c (char-code x)
 	     :to-c (code-char x))
 
+;; pldata type (used for pltr-data structures)
+(pl-defctype pldata :pointer
+	     :from-c (declare (ignore x))
+	     :to-c (if x x (null-pointer)))
+
 ;; floating point type
 (pl-defctype plflt :double
 	     :from-c (coerce x 'double-float)
 	     :to-c (coerce x 'double-float))
+
+;; function callback type
+(pl-defctype plfunc :pointer
+	     :from-c (declare (ignore x))
+	     :to-c (get-callback x))
 
 ;; integer type
 (pl-defctype plint :int
@@ -55,6 +61,7 @@
 
 ;; string type
 (defctype plstr :string)
+(export 'plstr)
 
 ;; unicode-type
 (pl-defctype plunicode :uint32
@@ -131,9 +138,10 @@
 
 ;; boolean array type
 (defctype *plbool :pointer)
+(export '*plbool)
 (pushnew '*plbool array-types)
 
-(defclass pl-pointer-float (pl-pointer)
+(defclass pl-pointer-bool (pl-pointer)
   ((c-type
     :initform 'plbool
     :reader c-type)
@@ -147,6 +155,7 @@
 
 ;; floating point array type
 (defctype *plflt :pointer)
+(export '*plflt)
 (pushnew '*plflt array-types)
 
 (defclass pl-pointer-float (pl-pointer)
@@ -163,6 +172,7 @@
 
 ;; integer array type
 (defctype *plint :pointer)
+(export '*plint)
 (pushnew '*plint array-types)
 
 (defclass pl-pointer-integer (pl-pointer)
@@ -258,6 +268,7 @@
 
 ;; two-dimensional floating point array type
 (defctype **plflt :pointer)
+(export '**plflt)
 (pushnew '**plflt array-types)
 
 (defclass pl-ptr-ptr-float (pl-ptr-ptr)

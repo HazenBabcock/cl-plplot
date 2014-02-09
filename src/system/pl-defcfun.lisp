@@ -156,39 +156,40 @@
 
 (defmacro pl-defcfun (name returns doc-string &body args)
   "Function creation macro, wraps defcfun to handle most styles of function call in the plplot library"
-  (let* ((arg-list (make-args args))
-	 (c-name (car name))
+  (let* ((c-name (car name))
 	 (lisp-name (cadr name))
 	 (wrapped-name (read-from-string (concatenate 'string "c-" (string lisp-name)))))
     (if (should-wrap? args)
 	;
 	; Create a wrapped version of the function to make calling it from Lisp more lispy.
 	;
-	`(progn
-	   (defcfun (,c-name ,wrapped-name) ,returns 
-	     ,@(make-forms arg-list #'defcfun-arg))
-	   (defun ,lisp-name ,(make-forms arg-list #'wrapper-arg)
-	     ,doc-string
-	     (let ,(make-forms arg-list #'wrapper-vars)
-	       (if (and ,@(make-forms arg-list #'wrapper-check))
-		   (unwind-protect
-			(let ((return-value (,wrapped-name ,@(make-forms arg-list #'defcfun-call-arg))))
-			  (declare (ignore return-value))
-			  (let ,(make-forms arg-list #'wrapper-from-foreign)
-			    (values ,@(make-forms arg-list #'wrapper-return))))
-		     (progn
-		       ,@(make-forms arg-list #'wrapper-free)))
-		   (format t "Input array sizes do not match in ~a!~%" (string (quote ,lisp-name))))))
-	   (export (quote ,lisp-name)))
+	(let ((arg-list (make-args args)))
+	  `(progn
+	     (defcfun (,c-name ,wrapped-name) ,returns 
+	       ,@(make-forms arg-list #'defcfun-arg))
+	     (defun ,lisp-name ,(make-forms arg-list #'wrapper-arg)
+	       ,doc-string
+	       (let ,(make-forms arg-list #'wrapper-vars)
+		 (if (and ,@(make-forms arg-list #'wrapper-check))
+		     (unwind-protect
+			  (let ((return-value (,wrapped-name ,@(make-forms arg-list #'defcfun-call-arg))))
+			    (declare (ignore return-value))
+			    (let ,(make-forms arg-list #'wrapper-from-foreign)
+			      (values ,@(make-forms arg-list #'wrapper-return))))
+		       (progn
+			 ,@(make-forms arg-list #'wrapper-free)))
+		     (format t "Input array sizes do not match in ~a!~%" (string (quote ,lisp-name))))))
+	     (export (quote ,lisp-name))))
 	;
 	; This also wraps the function, but only so that we can include a doc-string.
 	;
-	`(progn
-	   (defcfun (,c-name ,wrapped-name) ,returns ,@args)
-	   (defun ,lisp-name ,(make-forms arg-list #'wrapper-arg)
-	     ,doc-string
-	     (,wrapped-name ,@(make-forms arg-list #'defcfun-call-arg)))
-	   (export (quote ,lisp-name))))))
+	(let ((arg-list (mapcar #'(lambda(x) (car x)) args)))
+	  `(progn
+	     (defcfun (,c-name ,wrapped-name) ,returns ,@args)
+	     (defun ,lisp-name ,arg-list
+	       ,doc-string
+	       (,wrapped-name ,@arg-list))
+	     (export (quote ,lisp-name)))))))
 
 
 ;;;;

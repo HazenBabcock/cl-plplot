@@ -13,8 +13,23 @@
 (in-package #:cl-plplot-system)
 
 ;;;
-;;; plplot API functions, ordered alphabetically by PLplot function name
+;;; PLplot API functions, ordered alphabetically by PLplot function name, this 
+;;; more or less follows the order that they are documented in the PLplot manual.
 ;;;
+
+(pl-defcfun ("c_pl_setcontlabelformat" pl-setcontlabelformat) :void
+    "Set format of numerical label for contours."
+  (lexp plint)
+  (sigdig plint))
+
+
+(pl-defcfun ("c_pl_setcontlabelparam" pl-setcontlabelparam) :void
+    "Set parameters of contour labelling other than format of numerical label."
+  (offset plflt)
+  (size plflt)
+  (spacing plflt)
+  (active plint))
+
 
 (pl-defcfun ("c_pladv" pladv) :void
     "Advance the (sub-)page."
@@ -65,6 +80,21 @@
 (pl-defcfun ("c_plcol0" plcol0) :void
     "Set color, map0."
   (icol0 plint))
+
+
+(pl-defcfun ("c_plcont" plcont) :void
+    "Contour plot."
+  (z **plflt)
+  (nx plint (array-dimension z 0) nil)
+  (ny plint (array-dimension z 1) nil)
+  (kx plint)
+  (lx plint)
+  (ky plint)
+  (ly plint)
+  (clevel *plflt)
+  (nlevel plint (pl-length clevel) nil)
+  (pltr plfunc)
+  (pltr-data pldata))
 
 
 (pl-defcfun ("c_plend" plend) :void
@@ -201,6 +231,11 @@
   (y *plflt))
 
 
+(pl-defcfun ("c_pllsty" pllsty) :void
+    "Select line style."
+  (lin plint))
+
+
 (pl-defcfun ("plMinMax2dGrid" plminmax2dgrid) :void
     "Find the minimum and maximum of a 2d grid allocated using plAlloc2dGrid."
   (f **plflt)
@@ -325,6 +360,55 @@
   (space *plint))
 
 
+;; The pltr series functions are designed to be passed as callback arguments to other plplot 
+;; functions like the shade functions. pltr1 & pltr2 let you interpolate your data onto other
+;; non-rectangular grids, but you have to pass them the appropriate information via the
+;; pltr_data pointer or they will exit & take down lisp in the process. They are used
+;; in example9.lisp.
+
+(pl-callback ("pltr0" pltr0) :void
+    "Identity transformation for grid to world mapping (callback)."
+  (x plflt)
+  (y plflt)
+  (tx *plflt)
+  (ty *plflt)
+  (pltr-data :pointer))
+
+(pl-callback ("pltr1" pltr1) :void 
+    "Linear interpolation for grid to world mapping using singly dimensioned coordinate arrays (callback)."
+  (x plflt)
+  (y plflt)
+  (tx *plflt)
+  (ty *plflt)
+  (pltr-data :pointer))
+
+(pl-callback ("pltr2" pltr2) :void
+    "Linear interpolation for grid to world mapping using doubly dimensioned coordinate arrays (column dominant, as per normal C 2d arrays) (callback)."
+  (x plflt)
+  (y plflt)
+  (tx *plflt)
+  (ty *plflt)
+  (pltr-data :pointer))
+
+; This in plplot.h but is not documented.
+(pl-callback ("pltr2p" pltr2p) :void
+    "Undocumented."
+  (x plflt)
+  (y plflt)
+  (tx *plflt)
+  (ty *plflt)
+  (pltr-data :pointer))
+
+
+(pl-defcfun ("c_plvpas" plvpas) :void
+    "Specify viewport using coordinates and aspect ratio."
+  (xmin plflt)
+  (xmax plflt)
+  (ymin plflt)
+  (ymax plflt)
+  (aspect plflt))
+
+
 (pl-defcfun ("c_plvpor" plvpor) :void
     "Specify viewport using coordinates."
   (xmin plflt)
@@ -363,6 +447,7 @@
   (xmax plflt)
   (ymin plflt)
   (ymax plflt))
+
 
 ;;;
 ;;; deprecated plplot API functions, also ordered alphabetically.
