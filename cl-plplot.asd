@@ -67,7 +67,7 @@
                  (:file "x06l" :depends-on ("plplot-examples"))
                  (:file "x07l" :depends-on ("plplot-examples"))
                  (:file "x08l" :depends-on ("plplot-examples"))
-;                 (:file "x09l" :depends-on ("plplot-examples"))
+                 (:file "x09l" :depends-on ("plplot-examples"))
 ;                 (:file "x10l" :depends-on ("plplot-examples"))
 ;                 (:file "x11l" :depends-on ("plplot-examples"))
 ;                 (:file "x12l" :depends-on ("plplot-examples"))
