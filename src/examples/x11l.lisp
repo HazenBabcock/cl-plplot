@@ -10,7 +10,7 @@
   (plsdev dev)
   (plinit)
   (plscmap1n 256)
-  (plscmap1l nil (vector 0.0 1.0) (vector 240 0) (vector 0.6 0.6) (vector 0.8 0.8) 'null)
+  (plscmap1l nil (vector 0.0 1.0) (vector 240 0) (vector 0.6 0.6) (vector 0.8 0.8) nil)
 
   (let* ((xpts 35)
 	 (ypts 46)
