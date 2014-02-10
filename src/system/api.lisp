@@ -231,6 +231,40 @@
   (p_b *plflt 1))
 
 
+(pl-defcfun ("c_plimagefr" plimagefr) :void
+    "Plot a 2D matrix using color map1."
+  (idata **plflt)
+  (nx plint (array-dimension idata 0) nil)
+  (ny plint (array-dimension idata 1) nil)
+  (xmin plflt)
+  (xmax plflt)
+  (ymin plflt)
+  (ymax plflt)
+  (zmin plflt)
+  (zmax plflt)
+  (valuemin plflt)
+  (valuemax plflt)
+  (pltr plfunc)
+  (pltr-data pldata))
+
+
+(pl-defcfun ("c_plimage" plimage) :void
+    "Plot a 2D matrix using color map1 with automatic colour adjustment."
+  (data **plflt)
+  (nx plint (array-dimension data 0) nil)
+  (ny plint (array-dimension data 1) nil)
+  (xmin plflt)
+  (xmax plflt)
+  (ymin plflt)
+  (ymax plflt)
+  (zmin plflt)
+  (zmax plflt)
+  (Dxmin plflt)
+  (Dxmax plflt)
+  (Dymin plflt)
+  (Dymax plflt))
+
+
 (pl-defcfun ("c_plinit" plinit) :void
     "Initialize PLplot.")
 
