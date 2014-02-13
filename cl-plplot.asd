@@ -79,8 +79,8 @@
                  (:file "x18l" :depends-on ("plplot-examples"))
                  (:file "x19l" :depends-on ("plplot-examples"))
                  (:file "x20l" :depends-on ("plplot-examples")) ; Requires cl-png
-;                 (:file "x21l" :depends-on ("plplot-examples")) ; SBCL specific NAN handling?
-;                 (:file "x22l" :depends-on ("plplot-examples"))
+                 (:file "x21l" :depends-on ("plplot-examples")) ; SBCL specific NAN handling?
+                 (:file "x22l" :depends-on ("plplot-examples"))
 ;                 (:file "x23l" :depends-on ("plplot-examples"))
 ;                 (:file "x24l" :depends-on ("plplot-examples")) ; Requires unicode handling.
 ;                 (:file "x25l" :depends-on ("plplot-examples"))

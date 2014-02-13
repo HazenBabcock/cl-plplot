@@ -32,6 +32,13 @@
   (page plint))
 
 
+(pl-defcfun ("plAlloc2dGrid" plalloc2dgrid) :void 
+    "Allocate a block of memory for use as a 2-d grid of type PLFLT."
+  (f :pointer)
+  (nx plint)
+  (ny plint))
+
+
 (pl-defcfun ("c_plarc" plarc) :void
     "Draw a circular or elliptical arc."
   (x plflt)
@@ -116,6 +123,16 @@
   (axis plint))
 
 
+(pl-defcfun ("c_plenv0" plenv0) :void
+    "Same as plenv but if in multiplot mode does not advance the subpage, instead clears it."
+  (xmin plflt)
+  (xmax plflt)
+  (ymin plflt)
+  (ymax plflt)
+  (just plint)
+  (axis plint))
+
+
 (pl-defcfun ("c_pleop" pleop) :void
     "Eject current page.")
 
@@ -170,7 +187,16 @@
   (fnt plint))
 
 
+(pl-defcfun ("plFree2dGrid" plfree2dgrid) :void
+    "Free the memory associated with a 2-d grid allocated using plAlloc2dGrid."
+  (f :pointer)
+  (nx plint)
+  (ny plint))
+
+
+;;
 ;; See x08l.lisp for an example of how to use this function.
+;;
 (pl-defcfun ("plfsurf3d" plfsurf3d) :void
     "Plot shaded 3-d surface plot"
   (x *plflt)
@@ -197,6 +223,42 @@
   (p_fam *plint 1)
   (p_num *plint 1)
   (p_bmax *plint 1))
+
+
+;;
+;; A wrapper to make the PLplot function of the same name easier to use from Lisp.
+;;
+(defun plgriddata (x y z xg yg type data)
+  "Grid data from irregularly sampled data."
+  (let ((sx (length x))
+	(sy (length y))
+	(f (foreign-alloc :pointer)))
+    (plalloc2dgrid f sx sy)
+    (let ((zg (mem-aref f :pointer)))
+      (pl-plgriddata x y z xg yg zg type data)
+      (let ((lisp-mat (make-array (list (length xg) (length yg)) :initial-element 0.0d0 :element-type 'double-float)))
+	(dotimes (x (length xg))
+	  (dotimes (y (length yg))
+	    (setf (aref lisp-mat x y) (mem-aref (mem-aref zg :pointer x) 'plflt y))))
+	(plfree2dgrid zg sx sy)
+	(foreign-free f)
+	lisp-mat))))
+
+(export 'plgriddata (package-name *package*))
+    
+(pl-defcfun ("c_plgriddata" pl-plgriddata) :void 
+  "Grid data from irregularly sampled data (unwrapped version)."
+  (x *plflt)
+  (y *plflt)
+  (z *plflt)
+  (npts plint (length x) (= (length x) (length y) (length z)))
+  (xg *plflt)
+  (nptsx plint (length xg) nil)
+  (yg *plflt)
+  (nptsy plint (length yg) nil)
+  (zg :pointer)
+  (type plint)
+  (data plflt))
 
 
 (defcfun ("c_plgver" c-plgver) :void
@@ -392,6 +454,18 @@
   (side plint))
 
 
+(pl-defcfun ("c_plot3dc" plot3dc) :void
+    "Magnitude colored plot surface with contour."
+  (x *plflt)
+  (y *plflt)
+  (z **plflt)
+  (nx plint (length x) (= (length x) (array-dimension z 0)))
+  (ny plint (length y) (= (length y) (array-dimension z 1)))
+  (opt plint)
+  (clevel *plflt)
+  (nlevel plint (length clevel) nil))
+
+
 (pl-defcfun ("c_plpat" plpat) :void
     "Set area fill pattern."
   (nlin plint (length inc) (= (length inc) (length del)))
@@ -490,6 +564,9 @@
   (opt plstr)
   (optarg plstr))
 
+(pl-defcfun ("c_plseed" plseed) :void
+    "Set seed for internal random number generator."
+  (seed plint))
 
 (pl-defcfun ("c_plsfam" plsfam) :void
     "Set family file parameters."
@@ -546,8 +623,8 @@
 
 ;;
 ;; From the perspective of Lisp this function is identical to the plshade.
-;; From a C perspective it is different as the 2D lisp array comes is
-;; passed as 1D C array.
+;; From a C perspective it is different as the 2D lisp array is passed
+;; in as a 1D C array.
 ;;
 (pl-defcfun ("c_plshade1" plshade1) :void
     "Shade individual region on the basis of value."
@@ -710,6 +787,14 @@
   (nlevel plint (pl-length clevel) nil))
 
 
+(pl-defcfun ("c_plsvect" plsvect) :void
+    "Set arrow style for vector plots."
+  (arrowx *plflt)
+  (arrowy *plflt)
+  (npts plint (length arrowx) (= (length arrowx) (length arrowy)))
+  (fill plint))
+
+
 (pl-defcfun ("c_plsvpa" plsvpa) :void
     "Specify viewport in absolute coordinates."
   (xmin plflt)
@@ -804,6 +889,17 @@
 (pl-defcfun ("c_plvasp" plvasp) :void
     "Specify viewport using aspect ratio only."
   (aspect plflt))
+
+
+(pl-defcfun ("c_plvect" plvect) :void
+    "Vector plot."
+  (u **plflt)
+  (v **plflt)
+  (nx plint (array-dimension u 0) (= (array-dimension u 0) (array-dimension v 0)))
+  (ny plint (array-dimension u 1) (= (array-dimension u 1) (array-dimension v 1)))
+  (scale plflt)
+  (pltr plfunc)
+  (pltr-data pldata))
 
 
 (pl-defcfun ("c_plvpas" plvpas) :void
