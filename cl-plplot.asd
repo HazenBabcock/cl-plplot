@@ -81,13 +81,13 @@
                  (:file "x20l" :depends-on ("plplot-examples")) ; Requires cl-png
                  (:file "x21l" :depends-on ("plplot-examples")) ; SBCL specific NAN handling?
                  (:file "x22l" :depends-on ("plplot-examples"))
-;                 (:file "x23l" :depends-on ("plplot-examples"))
-;                 (:file "x24l" :depends-on ("plplot-examples")) ; Requires unicode handling.
-;                 (:file "x25l" :depends-on ("plplot-examples"))
-;                 (:file "x26l" :depends-on ("plplot-examples"))
-;                 (:file "x27l" :depends-on ("plplot-examples"))
-;                 (:file "x28l" :depends-on ("plplot-examples"))
-;                 (:file "x29l" :depends-on ("plplot-examples")) ; Can trigger floating point exceptions.
+                 (:file "x23l" :depends-on ("plplot-examples"))
+                 (:file "x24l" :depends-on ("plplot-examples")) ; Requires unicode handling.
+                 (:file "x25l" :depends-on ("plplot-examples"))
+                 (:file "x26l" :depends-on ("plplot-examples"))
+                 (:file "x27l" :depends-on ("plplot-examples"))
+                 (:file "x28l" :depends-on ("plplot-examples"))
+                 (:file "x29l" :depends-on ("plplot-examples")) ; Can trigger floating point exceptions.
 ;                 (:file "x30l" :depends-on ("plplot-examples"))
 ;                 (:file "x31l" :depends-on ("plplot-examples"))
 ;                 (:file "x32l" :depends-on ("plplot-examples"))

@@ -80,6 +80,17 @@
   (nsubz plint))
 
 
+(pl-defcfun ("c_plbtime" plbtime) :void
+    "Calculate broken-down time from continuous time for the current stream."
+  (year *plint 1)
+  (month *plint 1)
+  (day *plint 1)
+  (hour *plint 1)
+  (min *plint 1)
+  (sec *plflt 1)
+  (ctime plflt))
+
+
 (pl-defcfun ("c_plcol0" plcol0) :void
     "Set color, map0."
   (icol0 plint))
@@ -88,6 +99,21 @@
 (pl-defcfun ("c_plcol1" plcol1) :void
     "Set color, map1."
   (col1 plflt))
+
+
+(pl-defcfun ("c_plconfigtime" plconfigtime) :void
+    "Configure the transformation between continuous and broken-down time for the current stream."
+  (scale plflt)
+  (offset1 plflt)
+  (offset2 plflt)
+  (ccontrol plint)
+  (ifbtime-offset plbool)
+  (year plint)
+  (month plint)
+  (day plint)
+  (hour plint)
+  (min plint)
+  (sec plflt))
 
 
 (pl-defcfun ("c_plcont" plcont) :void
@@ -103,6 +129,17 @@
   (nlevel plint (pl-length clevel) nil)
   (pltr plfunc)
   (pltr-data pldata))
+
+
+(pl-defcfun ("c_plctime" plctime) :void
+    "Calculate continuous time from broken-down time for the current stream."
+  (year plint)
+  (month plint)
+  (day plint)
+  (hour plint)
+  (min plint)
+  (sec plflt)
+  (ctime *plflt 1))
 
 
 (pl-defcfun ("c_plend" plend) :void
@@ -135,6 +172,22 @@
 
 (pl-defcfun ("c_pleop" pleop) :void
     "Eject current page.")
+
+
+(pl-defcfun ("c_plerrx" plerrx) :void
+    "Draw x error bar."
+  (n plint (length xmin) (= (length xmin) (length xmax) (length y)))
+  (xmin *plflt)
+  (xmax *plflt)
+  (y *plflt))
+
+
+(pl-defcfun ("c_plerry" plerry) :void
+    "Draw y error bar."
+  (n plint (length x) (= (length x) (length ymin) (length ymax)))
+  (x *plflt)
+  (ymin *plflt)
+  (ymax *plflt))
 
 
 ;; These are helper functions for plf... functions, they
@@ -210,6 +263,12 @@
   (nlevel plint (pl-length clevel) nil))
 
 
+(pl-defcfun ("c_plgchr" plgchr) :void
+    "Get character default height and current (scaled) height."
+  (p_def *plflt 1)
+  (p_ht *plflt 1))
+
+
 (pl-defcfun ("c_plgcol0" plgcol0) :void 
     "Returns 8-bit RGB values for given color from color map0."
   (icol0 plint)
@@ -223,6 +282,26 @@
   (p_fam *plint 1)
   (p_num *plint 1)
   (p_bmax *plint 1))
+
+
+(pl-defcfun ("c_plgfci" plgfci) :void
+    "Get FCI (font characterization integer)."
+  (pfci *plunicode 1))
+
+
+(pl-defcfun ("c_plgfont" plgfont) :void
+    "Get family, style and weight of the current font."
+  (p_family *plint 1)
+  (p_style *plint 1)
+  (p_weight *plint 1))
+
+
+(pl-defcfun ("c_plgradient" plgradient) :void
+    "Draw linear gradient inside polygon."
+  (n plint (length x) (= (length x) (length y)))
+  (x *plflt)
+  (y *plflt)
+  (angle plflt))
 
 
 ;;
@@ -259,6 +338,14 @@
   (zg :pointer)
   (type plint)
   (data plflt))
+
+
+(pl-defcfun ("c_plgspa" plgspa) :void
+    "Get current subpage parameters."
+  (xmin *plflt 1)
+  (xmax *plflt 1)
+  (ymin *plflt 1)
+  (ymax *plflt 1))
 
 
 (defcfun ("c_plgver" c-plgver) :void
@@ -500,6 +587,12 @@
   (ifcc plbool))
 
 
+(pl-defcfun ("c_plprec" plprec) :void
+    "Set precision in numeric labels."
+  (setp plint)
+  (prec plint))
+
+
 (pl-defcfun ("c_plpsty" plpsty) :void
     "Select area fill pattern."
   (patt plint))
@@ -511,6 +604,21 @@
   (y plflt)
   (dx plflt)
   (dy plflt)
+  (just plflt)
+  (text plstr))
+
+
+(pl-defcfun ("c_plptex3" plptex3) :void
+    "Write text inside the viewport of a 3D plot."
+  (x plflt)
+  (y plflt)
+  (z plflt)
+  (dx plflt)
+  (dy plflt)
+  (dz plflt)
+  (sx plflt)
+  (sy plflt)
+  (sz plflt)
   (just plflt)
   (text plstr))
 
@@ -559,6 +667,11 @@
   (dev plstr))
 
 
+(pl-defcfun ("c_plsesc" plsesc) :void
+    "Set the escape character for text strings."
+  (esc plchar))
+
+
 (pl-defcfun ("c_plsetopt" plsetopt) :int
     "Set any command-line option."
   (opt plstr)
@@ -573,6 +686,18 @@
   (fam plint)
   (num plint)
   (bmax plint))
+
+
+(pl-defcfun ("c_plsfci" plsfci) :void
+    "Set FCI (font characterization integer)."
+  (fci plunicode))
+
+
+(pl-defcfun ("c_plsfont" plsfont) :void 
+    "Set family, style and weight of the current font."
+  (family plint)
+  (style plint)
+  (weight plint))
 
 
 (pl-defcfun ("c_plshades" plshades) :void
@@ -655,6 +780,18 @@
     "Assign a function to use for generating custom axis labels."
   (label-func plfunc)
   (label-data pldata))
+
+
+(pl-defcfun ("c_plsmaj" plsmaj) :void
+    "Set length of major ticks."
+  (def plflt)
+  (scale plflt))
+
+
+(pl-defcfun ("c_plsmin" plsmin) :void
+    "Set length of minor ticks."
+  (def plflt)
+  (scale plflt))
 
 
 (pl-defcfun ("c_plsori" plsori) :void
@@ -816,6 +953,10 @@
   (y *plflt)
   (code plint))
 
+
+(pl-defcfun ("c_pltimefmt" pltimefmt) :void
+    "Set format for date / time labels."
+  (fmt plstr))
 
 
 ;; The pltr series functions are designed to be passed as callback arguments to other plplot 

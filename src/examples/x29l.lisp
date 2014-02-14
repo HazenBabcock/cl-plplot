@@ -193,7 +193,7 @@
 		   (handler-case
 		       (plbox "bcnstd" xlabel-step 0
 			      "bcnstv" 0.0 0)
-		     (error () (format t "plbox problem")))
+		     (error () (format t "plbox problem~%")))
 		   (plcol0 3)
 		   (pllab xtitle
 			  "TAI-UTC (sec)"

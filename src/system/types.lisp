@@ -36,8 +36,8 @@
 
 ;; char type
 (pl-defctype plchar :char
-	     :from-c (char-code x)
-	     :to-c (code-char x))
+	     :from-c (code-char x)
+	     :to-c (char-code x))
 
 ;; pldata type (used for pltr-data structures)
 (pl-defctype pldata :pointer
@@ -199,6 +199,23 @@
 
 (defun make-*plint (array-or-integer)
   (pl-to-foreign array-or-integer (make-instance 'pl-pointer-integer)))
+
+
+;; unicode array type
+(defctype *plunicode :pointer)
+(export '*plunicode)
+(pushnew '*plunicode array-types)
+
+(defclass pl-pointer-unicode (pl-pointer)
+  ((c-type
+    :initform 'plunicode
+    :reader c-type)
+   (lisp-type
+    :initform 'fixnum
+    :reader lisp-type)))
+
+(defun make-*plunicode (array-or-integer)
+  (pl-to-foreign array-or-integer (make-instance 'pl-pointer-unicode)))
 
 
 ;; base two-dimensional array type
