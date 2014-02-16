@@ -45,7 +45,7 @@
 ;; was not available. When this happens you should be able to specify a different device 
 ;; in the inferior lisp buffer.
 
-(defparameter g-dev "aqt")
+(defparameter g-dev "xwin")
 
 ;;; X-Y-Plots
 
@@ -130,6 +130,8 @@
 ;; location we generate a new graph with the line going through this point
 ;; by taking advantage of the fact that by setting copy to :nil we have told
 ;; x-y-plot to store a reference to the vectors x & y rather then copying x & y.
+;;
+;; Note that once you click you also have to press return..
 
 (defun basic-plot-6 ()
   (let* ((x (my-make-vector 40 #'(lambda(x) (* 0.1 x))))
