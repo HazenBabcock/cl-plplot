@@ -339,6 +339,23 @@
   (p_jy *plflt 1))
 
 
+;; This works in that it seems to return the correct X & Y coordinates of the mouse click (in pixels).
+;; I'm not so sure about subwindow, but maybe I don't get that parameter.
+
+(defun plgetcursor ()
+  "Wait for graphics input event and translate to world coordinates."
+  (with-foreign-object (ptr '(:struct plgraphicsin))
+    (init-plgraphicsin ptr)
+    (pl-plgetcursor ptr)
+    (with-foreign-slots ((state keysym button subwindow pX pY dX dY wX wY) ptr (:struct plgraphicsin))
+      (list state keysym button subwindow pX pY dX dY wX wY))))
+
+(export 'plgetcursor (package-name *package*))
+
+(defcfun ("plGetCursor" pl-plgetcursor) plint
+  (gin :pointer))
+
+
 (pl-defcfun ("c_plgfam" plgfam) :void 
     "Get family file parameters."
   (p_fam *plint 1)
@@ -922,9 +939,24 @@
   (opt plstr)
   (optarg plstr))
 
+
 (pl-defcfun ("c_plseed" plseed) :void
     "Set seed for internal random number generator."
   (seed plint))
+
+
+;; We use plsexit to set our own error handler that will
+;; throw a Lisp side error and keep PLplot from calling exit().
+(defcallback trap-plsexit :int ((message plstr))
+  (error "PLplot error encountered (~A). The current plotting stream is likely corrupted.~%"
+	 (foreign-string-to-lisp message)))
+
+(pl-defcfun ("plsexit" plsexit) :void
+    "Set exit handler."
+  (plsexit-fn plfunc))
+
+(plsexit 'trap-plsexit)
+
 
 (pl-defcfun ("c_plsfam" plsfam) :void
     "Set family file parameters."
@@ -1367,7 +1399,7 @@
 (defun plwid (width)
   "Deprecated, use plwidth()."
   (progn
-    (format t "plwid() is deprecated, use plwidth() instead.")
+    (format t "plwid() is deprecated, use plwidth() instead.~%")
     (plwidth width)))
 
 (export 'plwid)
