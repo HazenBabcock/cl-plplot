@@ -208,7 +208,7 @@
 (defun init-plgraphicsin (ptr)
   (with-foreign-slots ((type state keysym button subwindow pX pY dX dY wX wY) ptr (:struct plgraphicsin))
     (setf type 0)
-    (setf start 0)
+    (setf state 0)
     (setf keysym 0)
     (setf button 0)
     (setf subwindow -1)
