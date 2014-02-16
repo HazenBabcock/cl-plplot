@@ -4,7 +4,36 @@
 ;;;; 
 ;;;; The goal of all this macrology is to have :
 ;;;;
-;;;; ...
+;;;; (pl-defcfun ("c_plsym" plsym) :void 
+;;;;     "Plot a glyph at the specified points."
+;;;;   (n plint (length x) (= (length x) (length y)))
+;;;;   (x *plflt)
+;;;;   (y *plflt)
+;;;;   (code plint))
+;;;;
+;;;; Expand into (progn statements removed):
+;;;;
+;;;; (DEFCFUN ("c_plsym" C-PLSYM)
+;;;;     :VOID
+;;;;   (N PLINT)
+;;;;   (X *PLFLT)
+;;;;   (Y *PLFLT)
+;;;;   (CODE PLINT))
+;;;;
+;;;; (DEFUN PLSYM (X Y CODE)
+;;;;   "Plot a glyph at the specified points."
+;;;;   (LET ((N (LENGTH X)) (#:G946 (MAKE-*PLFLT X)) (#:G948 (MAKE-*PLFLT Y)))
+;;;;     (IF (AND (= (LENGTH X) (LENGTH Y)))
+;;;;         (UNWIND-PROTECT
+;;;;             (LET ((RETURN-VALUE
+;;;;                    (C-PLSYM N (C-POINTER #:G946) (C-POINTER #:G948) CODE)))
+;;;;               (DECLARE (IGNORE RETURN-VALUE))
+;;;;               (LET ()
+;;;;                 (VALUES)))
+;;;;           (PROGN (PL-FOREIGN-FREE #:G946) (PL-FOREIGN-FREE #:G948)))
+;;;;         (FORMAT T "Input array sizes do not match in ~a!~%"
+;;;;                 (STRING 'PLSYM)))))
+;;;; (EXPORT 'PLSYM))
 ;;;;
 ;;;; More complicated function definitions with different type are also supported.
 ;;;;
