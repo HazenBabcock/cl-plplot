@@ -4,9 +4,9 @@
 ;;;; Note: This example requires the cl-png package 
 ;;;; to read in the image data. 
 ;;;;
-;;;; http://www.ljosa.com/~ljosa/software/cl-png/
+;;;; https://github.com/ljosa/cl-png
 ;;;;
-;;;; hazen 07/10
+;;;; hazen 02/14
 ;;;;
 
 (in-package :plplot-examples)
@@ -72,7 +72,7 @@
 	   (width (array-dimension lena 0))
 	   (height (array-dimension lena 1)))
       (plscmap1n 255)
-      (plscmap1l t (vector 0.0 1.0) (vector 0.0 1.0) (vector 0.0 1.0) (vector 0.0 1.0) 'null)
+      (plscmap1l t (vector 0.0 1.0) (vector 0.0 1.0) (vector 0.0 1.0) (vector 0.0 1.0) nil)
 
       ; demo1
       (plenv 1.0 width 1.0 height 1 -1)
@@ -92,7 +92,10 @@
 	(plcol0 2)
 	(plenv 0 width 0 height 1 -1)
 	(pllab "" "" "Reduced dynamic range image example")
-	(pl-plimagefr lena 0 width 0 height 0.0 0.0 (+ img-min (* 0.25 img-max)) (- img-max (* img-max 0.25)) (pl-null-pointer))
+	(plimagefr lena 
+		   0 width 0 height 0.0 0.0 
+		   (+ img-min (* 0.25 img-max)) (- img-max (* img-max 0.25)) 
+		   nil nil)
       
       ; demo5
       ;
@@ -113,14 +116,17 @@
 	      (multiple-value-bind (xx yy) (my-pltr i j stretch)
 		(setf (aref cgrid-x i j) xx
 		      (aref cgrid-y i j) yy))))
-	  (pl-set-pltr-fn #'pltr2)
-	  (plimagefr lena 0 width 0 height 0 0 img-min img-max cgrid-x cgrid-y)
-	  (pl-reset-pltr-fn)))))
+	  (with-pltr-data (pltr-data cgrid-x cgrid-y)
+	    (plimagefr lena 
+		       0 width 0 height 0 0 
+		       img-min img-max 
+		       'pltr2-callback
+		       pltr-data))))))
 
   (plend1))
 
 ;;;;
-;;;; Copyright (c) 2010 Hazen P. Babcock
+;;;; Copyright (c) 2014 Hazen P. Babcock
 ;;;;
 ;;;; Permission is hereby granted, free of charge, to any person obtaining a copy 
 ;;;; of this software and associated documentation files (the "Software"), to 

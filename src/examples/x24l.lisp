@@ -40,7 +40,7 @@
 		    0.625
 		    0.875))
 	(peace (vector "#<0x00>和平"      ;Mandarin
-		       "#<0x20>शांति"     ;Hindi
+		       "#<0x20>शांति"       ;Hindi
 		       "#<0x10>Peace"     ; English
 		       "#<0x10>שלום"      ; Hebrew
 		       "#<0x10>Мир"       ; Russian

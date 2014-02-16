@@ -12,7 +12,7 @@
 
 (in-package :system-examples)
 
-(defparameter gdev "aqt")  ; set this to the appropriate plplot device for your system
+(defparameter gdev "xwin")  ; set this to the appropriate plplot device for your system
 
 
 ;;; Helper functions
@@ -79,7 +79,10 @@
   (plsdev gdev)
   (plinit)
   (plenv 0 34 0 44 0 0)
-  (plcont (example-matrix 35 45 #'example-func-1) 1 35 1 45 (make-levels 20 -1.0 1.0))
+  (plcont (example-matrix 35 45 #'example-func-1) 
+	  1 35 1 45 
+	  (make-levels 20 -1.0 1.0)
+	  'pltr0-callback nil)
   (plcol0 1)
   (plbox "bcnst" 0 0 "bcnstv" 0 0)
   (plcol0 2)
@@ -88,15 +91,19 @@
 
 ;; Contour plot of a function
 
+(cffi:defcallback fn-contour-plot-callback plflt ((ix plint) (iy plint) (plf-data :pointer))
+  (declare (ignore plf-data))
+  (example-func-1 (1- (/ ix 17)) (1- (/ iy 22))))
+;  (coerce (example-func-1 (1- (/ ix 17)) (1- (/ iy 22))) 'double-float))
+
 (defun fn-contour-plot ()
   (plsdev gdev)
   (plinit)
   (plenv 0 34 0 44 0 0)
-  (pl-set-feval-fn #'(lambda (x y p)
-		       (declare (ignore p))
-		       (coerce (example-func-1 (1- (/ x 17)) (1- (/ y 22))) 'double-float)))
-  (plfcont (pl-null-pointer) 35 45 1 35 1 45 (make-levels 20 -1.0 1.0))
-  (pl-reset-feval-fn)
+  (plfcont 'fn-contour-plot-callback nil 
+	   35 45 1 35 1 45 
+	   (make-levels 20 -1.0 1.0)
+	   'pltr0-callback nil)
   (plcol0 1)
   (plbox "bcnst" 0 0 "bcnstv" 0 0)
   (plcol0 2)
@@ -110,7 +117,13 @@
   (plinit)
 ;  (plenv -1 1 -1 1 0 0)
   (plenv 0.0 35.0 0.0 45.0 0 0)
-  (plshades (example-matrix 35 45 #'example-func-1) -1 1 -1 1 (make-levels 20 -1.0 1.0) 2 1 1 nil)
+  (plshades (example-matrix 35 45 #'example-func-1) nil
+	    -1 1 -1 1 
+	    (make-levels 20 -1.0 1.0) 
+	    2 1 1
+	    'plfill-callback
+	    nil
+	    'pltr0-callback nil)
   (plcol0 1)
   (plbox "bcnst" 0 0 "bcnstv" 0 0)
   (plcol0 2)
@@ -126,7 +139,9 @@
   (plvpor 0 1 0 0.9)
   (plwind -1 1 -0.9 1.1)
   (plscmap1n 256)
+  (format t "1~%")
   (plscmap1l 1 (vector 0.0 1.0) (vector 0.2 1) (vector 0.2 1) (vector 0.2 1) (vector nil nil))
+  (format t "2~%")
   (plw3d 1 1 1 -1.5 1.5 -0.5 1.5 -5 6.5 60 30)
   (plmtex "t" 1 0.5 0.5 "3D plot example")
   (plbox3 "bnstu" "x axis" 0 0 "bnstu" "y axis" 0 0 "bcdmnst" "" 0 0)

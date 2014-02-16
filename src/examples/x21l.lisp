@@ -129,11 +129,15 @@
 			    (plenv0 xmin xmax ymin ymax 2 0)
 			    (plcol0 15)
 			    (pllab "X" "Y" (aref title alg))
-			    (plshades zg xmin xmax ymin ymax clev 1 0 1 t)
+			    (plshades zg nil
+				      xmin xmax ymin ymax 
+				      clev 1 0 1
+				      'plfill-callback
+				      t nil nil)
 			    (plcol0 2))
 			  (progn
 			    (plscmap1n 256)
-			    (plscmap1l nil (vector 0.0 1.0) (vector 240 0) (vector 0.6 0.6) (vector 0.8 0.8) 'null)
+			    (plscmap1l nil (vector 0.0 1.0) (vector 240 0) (vector 0.6 0.6) (vector 0.8 0.8) nil)
 			    (plvpor 0.0 1.0 0.0 0.9)
 			    (plwind -1.1 0.75 -0.65 1.20)
 			    (plw3d 1 1 1 xmin xmax ymin ymax zmin zmax 30 -40)

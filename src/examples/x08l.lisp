@@ -34,7 +34,7 @@
 			   (aref s 0) 0.8
 			   (aref s 1) 0.8))
 		 (plscmap1n 256)
-		 (plscmap1l nil i h l s 'null))))
+		 (plscmap1l nil i h l s nil))))
       (let* ((xpts 35)
 	     (ypts 46)
 	     (clevel (make-float-array 10))
@@ -86,35 +86,35 @@
 				(plf2ops-c)
 				foreign-z
 				0
-				'null))))
+				nil))))
 		((= ifshade 1)
 		 (progn
 		   (cmap1-init nil)
-		   (with-foreign-grid (grid z xpts ypts)
+		   (with-foreign-grid (z foreign-z xpts ypts)
 		     (plfsurf3d x
 				y
 				(plf2ops-grid-c)
-				grid
+				foreign-z
 				(ash 1 2)
-				'null))))
+				nil))))
 		((= ifshade 2)
 		 (progn
 		   (cmap1-init nil)
-		   (with-foreign-grid (grid z-row-major xpts ypts)
+		   (with-foreign-grid (z-row-major foreign-z-row-major xpts ypts)
 		     (plfsurf3d x
 				y
 				(plf2ops-grid-row-major)
-				grid
+				foreign-z-row-major
 				(+ (ash 1 2) (ash 1 7))
-				'null))))
+				nil))))
 		(t
 		 (progn
 		   (cmap1-init nil)
-		   (with-foreign-grid (grid z-col-major xpts ypts)
+		   (with-foreign-grid (z-col-major foreign-z-col-major xpts ypts)
 		     (plfsurf3d x
 				y
 				(plf2ops-grid-col-major)
-				grid
+				foreign-z-col-major
 				(+ (ash 1 2) (ash 1 3) (ash 1 5))
 				clevel)))))))))))
   (plend1))

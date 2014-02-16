@@ -1,29 +1,7 @@
 ;;;;
-;;;; Copyright (c) 2010 Hazen P. Babcock
-;;;;
-;;;; Permission is hereby granted, free of charge, to any person obtaining a copy 
-;;;; of this software and associated documentation files (the "Software"), to 
-;;;; deal in the Software without restriction, including without limitation the 
-;;;; rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
-;;;; sell copies of the Software, and to permit persons to whom the Software is 
-;;;; furnished to do so, subject to the following conditions:
-;;;;
-;;;; The above copyright notice and this permission notice shall be included in 
-;;;; all copies or substantial portions of the Software.
-;;;;
-;;;; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
-;;;; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-;;;; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
-;;;; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-;;;; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
-;;;; FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
-;;;; IN THE SOFTWARE.
-;;;;
-;;;;
-;;;;
 ;;;; cl-plplot system declaration
 ;;;;
-;;;; hazen 6/10
+;;;; hazen 2/14
 ;;;;
 
 (in-package #:cl-user)
@@ -44,8 +22,9 @@
   ((:module
     :src/system
     :components ((:file "loadlib")
-                 (:file "defcfun" :depends-on ("loadlib"))
-                 (:file "misc" :depends-on ("defcfun"))
+		 (:file "types" :depends-on ("loadlib"))
+                 (:file "pl-defcfun" :depends-on ("types"))
+                 (:file "misc" :depends-on ("pl-defcfun"))
                  (:file "api" :depends-on ("misc"))))
    (:module
     :src/window 
@@ -99,7 +78,7 @@
                  (:file "x17l" :depends-on ("plplot-examples"))
                  (:file "x18l" :depends-on ("plplot-examples"))
                  (:file "x19l" :depends-on ("plplot-examples"))
-;                 (:file "x20l" :depends-on ("plplot-examples")) ; Requires cl-png
+                 (:file "x20l" :depends-on ("plplot-examples")) ; Requires cl-png
                  (:file "x21l" :depends-on ("plplot-examples")) ; SBCL specific NAN handling?
                  (:file "x22l" :depends-on ("plplot-examples"))
                  (:file "x23l" :depends-on ("plplot-examples"))
@@ -112,5 +91,26 @@
                  (:file "x30l" :depends-on ("plplot-examples"))
                  (:file "x31l" :depends-on ("plplot-examples"))
                  (:file "x32l" :depends-on ("plplot-examples")))))
-  :depends-on (:cl-plplot))
+  :depends-on (:cl-plplot :png))
 
+;;;;
+;;;; Copyright (c) 2014 Hazen P. Babcock
+;;;;
+;;;; Permission is hereby granted, free of charge, to any person obtaining a copy 
+;;;; of this software and associated documentation files (the "Software"), to 
+;;;; deal in the Software without restriction, including without limitation the 
+;;;; rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
+;;;; sell copies of the Software, and to permit persons to whom the Software is 
+;;;; furnished to do so, subject to the following conditions:
+;;;;
+;;;; The above copyright notice and this permission notice shall be included in 
+;;;; all copies or substantial portions of the Software.
+;;;;
+;;;; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+;;;; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+;;;; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+;;;; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+;;;; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+;;;; FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
+;;;; IN THE SOFTWARE.
+;;;;

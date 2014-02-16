@@ -1,7 +1,7 @@
 ;;;;
 ;;;; Functions that are most closely related to the contour-plot class.
 ;;;;
-;;;; hazen 10/06
+;;;; hazen 02/14
 ;;;;
 
 (in-package #:cl-plplot)
@@ -142,7 +142,7 @@
        minimum and maximum values in data.
     line-color is a symbol specifying which color to use in the current color table
        for the contour lines.
-    line-width is an integer specifying what size line to use for the contours (or
+    line-width is a float specifying what size line to use for the contours (or
        zero for no line).
     fill-type is one of :none (contours only), :block (a single color between each contour)
        or :smooth (color varies continously between contours).
@@ -172,7 +172,7 @@
 (def-edit-method contour-plot (line-color line-width fill-type fill-colors)
   "edit-contour-plot, Edits the visual properties of a contour plot
     Set the line color with :line-color (this should be a color symbol in the current color table).
-    Set the line width with :line-width (integer, 0 means no line).
+    Set the line width with :line-width (float, 0 means no line).
     Set the fill-type with :fill-type (:none :block :smooth).
     Set the fill-colors with :fill-colors (should be a vector of color symbols)")
 
@@ -217,53 +217,60 @@
 (defmethod render-plot ((a-plot contour-plot) &optional ignored)
   "Renders a contour plot in the current window."
   (declare (ignore ignored))
-  ; Set the coordinate mapping callback function appropriately. The value
-  ; is saved and reset for the benefit of other functions that might
-  ; expect it to be something else.
-  (let ((callback-fn (pl-get-pltr-fn)))
-    (cond
-      ((= 1 (array-rank (x-mapping a-plot)))
-       (unless (equal (pl-get-pltr-fn) #'pltr1)
-	 (pl-set-pltr-fn #'pltr1)))
-      ((= 2 (array-rank (x-mapping a-plot)))
-       (unless (equal (pl-get-pltr-fn) #'pltr2)
-	 (pl-set-pltr-fn #'pltr2))))
 
-    ;; draw the plot
-    ; deal with shaded plots first
-    (cond
-      ((equal (fill-type a-plot) :none))
-      ((equal (fill-type a-plot) :smooth)
-       (plshades (data a-plot) 1 (array-dimension (data a-plot) 0) 1 (array-dimension (data a-plot) 1)
+  ;; draw the plot
+  ; deal with shaded plots first
+  (cond
+    ((equal (fill-type a-plot) :none))
+    ((equal (fill-type a-plot) :smooth)
+     (with-pltr-data (pltr-data (x-mapping a-plot) (y-mapping a-plot) :z-vals (data a-plot))
+       (plshades (data a-plot) nil
+		 1 (array-dimension (data a-plot) 0) 1 (array-dimension (data a-plot) 1)
 		 (make-smooth-contour-levels (contour-levels a-plot)) 
-		 2 1 0 nil (x-mapping a-plot) (y-mapping a-plot)))
-      ((equal (fill-type a-plot) :block)
-	 (dotimes (i (1- (length (contour-levels a-plot))))
-	   (let ((current-color-index (if (fill-colors a-plot)
-					  (find-a-color *current-color-table* 
-							(aref (fill-colors a-plot) 
-							      (mod i (length (fill-colors a-plot)))))
-					  (mod i (length (color-map *current-color-table*))))))
-	     (plshade (data a-plot) 1 (array-dimension (data a-plot) 0) 1 (array-dimension (data a-plot) 1)
-		      (aref (contour-levels a-plot) i) (aref (contour-levels a-plot) (1+ i))
-		      0 current-color-index 2 current-color-index 0 current-color-index 0 nil
-		      (x-mapping a-plot) (y-mapping a-plot)))))
-      (t
-       (format t "Sorry I don't know how to draw contour plots of type ~A~%" (fill-type a-plot))))
+		 2 1 0
+		 'plfill-callback
+		 nil
+		 (if (= (length (array-dimensions (x-mapping a-plot))) 1)
+		     'pltr1-callback
+		     'pltr2-callback)
+		 pltr-data)))
 
-    ; draw the contours next
-    (set-foreground-color (line-color a-plot))
-    (when (> (line-width a-plot) 0)
-      (plwidth (line-width a-plot))
+    ((equal (fill-type a-plot) :block)
+     (dotimes (i (1- (length (contour-levels a-plot))))
+       (let ((current-color-index (if (fill-colors a-plot)
+				      (find-a-color *current-color-table* 
+						    (aref (fill-colors a-plot) 
+							  (mod i (length (fill-colors a-plot)))))
+				      (mod i (length (color-map *current-color-table*))))))
+	 (with-pltr-data (pltr-data (x-mapping a-plot) (y-mapping a-plot) :z-vals (data a-plot))
+	   (plshade (data a-plot) nil 
+		    1 (array-dimension (data a-plot) 0) 1 (array-dimension (data a-plot) 1)
+		    (aref (contour-levels a-plot) i) (aref (contour-levels a-plot) (1+ i))
+		    0 current-color-index 2 current-color-index 0 current-color-index 0 
+		    'plfill-callback
+		    nil
+		    (if (= (length (array-dimensions (x-mapping a-plot))) 1)
+			'pltr1-callback
+			'pltr2-callback)
+		    pltr-data)))))
+    (t
+     (format t "Sorry I don't know how to draw contour plots of type ~A~%" (fill-type a-plot))))
+
+  ;draw the contours next
+  (set-foreground-color (line-color a-plot))
+  (when (> (line-width a-plot) 0)
+    (plwidth (line-width a-plot))
+    (with-pltr-data (pltr-data (x-mapping a-plot) (y-mapping a-plot) :z-vals (data a-plot))
       (plcont (data a-plot) 1 (array-dimension (data a-plot) 0) 1 (array-dimension (data a-plot) 1)
-	      (contour-levels a-plot) (x-mapping a-plot) (y-mapping a-plot)))
-
-    ; reset the point mapping callback function
-    (pl-set-pltr-fn callback-fn)))
-
+	      (contour-levels a-plot)
+	      (if (= (length (array-dimensions (x-mapping a-plot))) 1)
+		  'pltr1-callback
+		  'pltr2-callback)
+	      pltr-data))))
+  
 
 ;;;;
-;;;; Copyright (c) 2006 Hazen P. Babcock
+;;;; Copyright (c) 2014 Hazen P. Babcock
 ;;;;
 ;;;; Permission is hereby granted, free of charge, to any person obtaining a copy 
 ;;;; of this software and associated documentation files (the "Software"), to 

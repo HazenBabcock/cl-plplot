@@ -1,28 +1,37 @@
 ;;;;
 ;;;; PLplot example 9
 ;;;;
-;;;; hazen 06/10
+;;;; hazen 02/14
 ;;;;
 
 (in-package :plplot-examples)
 
-;(defun my-pltr-fn (x y tx ty)
-;  (multiple-value-bind (mx my) (my-pltr x y)
-;    (setf (mem-aref tx :double) (coerce mx 'double-float)
-;	  (mem-aref ty :double) (coerce my 'double-float))))
+(let ((xspa)
+      (yspa))
+  (defun x9-pltr (x y)
+    (values (+ (* x xspa) (* y 0.0) -1.0)
+	    (+ (* x 0.0) (* y yspa) -1.0)))
+  (defun x9-set-xspa (new-xspa)
+    (setf xspa new-xspa))
+  (defun x9-set-yspa (new-yspa)
+    (setf yspa new-yspa)))
+
+(cffi:defcallback x9-pltr-callback :void ((x plflt) (y plflt) (tx *plflt) (ty *plflt) (pltr-data :pointer))
+  (declare (ignore pltr-data))
+  (multiple-value-bind (mx my) (x9-pltr x y)
+    (setf (cffi:mem-aref tx 'plflt) (cffi:convert-to-foreign mx 'plflt)
+	  (cffi:mem-aref ty 'plflt) (cffi:convert-to-foreign my 'plflt))))
+
 
 (defun example9 (&optional (dev default-dev))
   (plsdev dev)
   (plinit)
-  (let* ((xpts 35)
-	 (ypts 46)
-	 (xspa (/ 2.0 (- xpts 1.0)))
-	 (yspa (/ 2.0 (- ypts 1.0)))
-	 (clevel (vector -1.0 -0.8 -0.6 -0.4 -0.2 0.0 0.2 0.4 0.6 0.8 1.0)))
-    (labels ((my-pltr (x y)
-	       (values (+ (* x xspa) (* y 0.0) -1.0)
-		       (+ (* x 0.0) (* y yspa) -1.0)))
-
+  (let ((xpts 35)
+	(ypts 46)
+	(clevel (vector -1.0 -0.8 -0.6 -0.4 -0.2 0.0 0.2 0.4 0.6 0.8 1.0)))
+    (x9-set-xspa (/ 2.0 (- xpts 1.0)))
+    (x9-set-yspa (/ 2.0 (- ypts 1.0)))
+    (labels (
 	     ; polar plot
 	     (polar ()
 	       (plenv -1.0 1.0 -1.0 1.0 0 -2)
@@ -51,9 +60,8 @@
 		 (dotimes (i 10)
 		   (setf (aref lev i) (+ 0.05 (* 0.10 i))))
 		 (plcol0 2)
-		 (pl-set-pltr-fn #'pltr2)
-		 (plcont z 1 rpts 1 thetapts lev gridx gridy)
-		 (pl-reset-pltr-fn)
+		 (with-pltr-data (pltr-data gridx gridy :pltr-fn 'pltr2-callback :z-vals z)
+		   (plcont z 1 rpts 1 thetapts lev 'pltr2-callback pltr-data))
 		 (plcol0 1)
 		 (pllab "" "" "Polar Contour Plot")))
 
@@ -132,13 +140,14 @@
 			   (plwind xpmin xpmax ypmin ypmax)
 			   (plbox "" 0.0 0 "" 0.0 0)
 			   (plcol0 11)
-			   (pl-set-pltr-fn #'pltr2)
 			   (when (> nlevelneg 0)
 			     (pllsty 2)
-			     (plcont z 1 rpts 1 thetapts clevelneg gridx gridy))
+			     (with-pltr-data (pltr-data gridx gridy :pltr-fn 'pltr2-callback :z-vals z)
+			       (plcont z 1 rpts 1 thetapts clevelneg 'pltr2-callback pltr-data)))
 			   (when (> nlevelpos 0)
 			     (pllsty 1)
-			     (plcont z 1 rpts 1 thetapts clevelpos gridx gridy))))
+			     (with-pltr-data (pltr-data gridx gridy :pltr-fn 'pltr2-callback)
+			       (plcont z 1 rpts 1 thetapts clevelpos 'pltr2-callback pltr-data)))))
 		       (let ((px (make-float-array perimeterpts))
 			     (py (make-float-array perimeterpts)))
 			 (dotimes (i perimeterpts)
@@ -167,7 +176,7 @@
 		      (aref w i j) (* 2 xx yy))))))
 	(dotimes (i xpts)
 	  (dotimes (j ypts)
-	    (multiple-value-bind (xx yy) (my-pltr i j)
+	    (multiple-value-bind (xx yy) (x9-pltr i j)
 	      (let ((argx (/ (* xx 3.14159) 2.0))
 		    (argy (/ (* yy 3.14159) 2.0))
 		    (distort 0.4))
@@ -181,15 +190,10 @@
 	(pl-setcontlabelparam 0.006 0.3 0.1 1)
 	(plenv -1.0 1.0 -1.0 1.0 0 0)
 	(plcol0 2)
-	(pl-set-pltr-fn #'(lambda (x y tx ty p)
-			    (declare (ignore p))
-			    (multiple-value-bind (mx my) (my-pltr x y)
-			      (setf (cffi:mem-aref tx :double) (coerce mx 'double-float)
-				    (cffi:mem-aref ty :double) (coerce my 'double-float)))))
-	(plcont z 1 xpts 1 ypts clevel)
+	(plcont z 1 xpts 1 ypts clevel 'x9-pltr-callback nil)
 	(plstyl 1 mark space)
 	(plcol0 3)
-	(plcont w 1 xpts 1 ypts clevel)
+	(plcont w 1 xpts 1 ypts clevel 'x9-pltr-callback nil)
 	(plstyl 0 mark space)
 	(plcol0 1)
 	(pllab "X Coordinate" "Y Coordinate" "Streamlines of flow")
@@ -198,11 +202,12 @@
 	(pl-setcontlabelparam 0.006 0.3 0.1 0)
 	(plenv -1.0 1.0 -1.0 1.0 0 0)
 	(plcol0 2)
-	(pl-set-pltr-fn #'pltr1)
-	(plcont z 1 xpts 1 ypts clevel xg1 yg1)
+	(with-pltr-data (pltr-data xg1 yg1 :z-vals z)
+	  (plcont z 1 xpts 1 ypts clevel 'pltr1-callback pltr-data))
 	(plstyl 1 mark space)
 	(plcol0 3)
-	(plcont w 1 xpts 1 ypts clevel xg1 yg1)
+	(with-pltr-data (pltr-data xg1 yg1 :z-vals w)
+	  (plcont w 1 xpts 1 ypts clevel 'pltr1-callback pltr-data))
 	(plstyl 0 mark space)
 	(plcol0 1)
 	(pllab "X Coordinate" "Y Coordinate" "Streamlines of flow")	
@@ -210,11 +215,12 @@
 	;; plot3
 	(plenv -1.0 1.0 -1.0 1.0 0 0)
 	(plcol0 2)
-	(pl-set-pltr-fn #'pltr2)
-	(plcont z 1 xpts 1 ypts clevel gridx gridy)
+	(with-pltr-data (pltr-data gridx gridy :z-vals z)
+	  (plcont z 1 xpts 1 ypts clevel 'pltr2-callback pltr-data))
 	(plstyl 1 mark space)
 	(plcol0 3)
-	(plcont w 1 xpts 1 ypts clevel gridx gridy)
+	(with-pltr-data (pltr-data gridx gridy :z-vals w)
+	  (plcont w 1 xpts 1 ypts clevel 'pltr2-callback pltr-data))
 	(plstyl 0 mark space)
 	(plcol0 1)
 	(pllab "X Coordinate" "Y Coordinate" "Streamlines of flow")
@@ -225,13 +231,12 @@
 
 	;; plot5
 	(pl-setcontlabelparam 0.006 0.3 0.1 0)
-	(potential)
+	(potential))))
 
-	(pl-reset-pltr-fn))))
   (plend1))
 
 ;;;;
-;;;; Copyright (c) 2010 Hazen P. Babcock
+;;;; Copyright (c) 2014 Hazen P. Babcock
 ;;;;
 ;;;; Permission is hereby granted, free of charge, to any person obtaining a copy 
 ;;;; of this software and associated documentation files (the "Software"), to 
