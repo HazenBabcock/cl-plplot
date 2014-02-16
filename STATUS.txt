@@ -1,0 +1,39 @@
+
+Plans:
+1. Update examples to match PLplot 5.10.0.
+
+
+Current:
+02/16/14: Bindings and examples now compatible with PLplot 5.10.0.
+
+01/24/14: Switched VCS to git.
+
+08/10/10: Released version 0.6.0.
+    
+08/10/10: Added Lisp versions of PLplot examples 1 to 32. Added the additional functions in the PLplot 5.9.6 API that are used in these examples.
+
+06/20/10: Added the (documented) functions in the PLplot 5.9.6 API.
+
+01/13/09: Added the clg-plot package to cl-plplot. This package combines cl-plplot and clg. It demonstrates how to combine GTK and PLplot to make a simple plotting window that handles resizing and redrawing itself. It requires PLplot version 5.9.1 with the extcairo driver.
+
+02/23/08: Released version 0.5.0.
+
+01/21/08: Added support for 3D text rendering. PLplot version 5.8.0 is now required.
+
+02/25/07: Released version 0.4.0.
+
+12/08/06: Added 3D plots to cvs :cl-plplot.
+
+10/28/06: Released version 0.3.0.
+
+10/15/06: Added documentation of cl-plplot.
+
+10/8/06: Added contour plots to cvs :cl-plplot, along with a number of other improvements including trapping PLplot when it tries to call exit() & generic plot objects.
+
+8/19/06: Released version 0.2.0.
+
+7/4/06: Checked in a new CLOS based approach for making 2D graphs. Hopefully this will be both easier to use and more powerful than my previous attempt at a Lisp front end for PLplot.
+
+5/13/06: Released version 0.1.0.
+
+4/1/06: The source code for this project is now available for cvs checkout. Currently it includes bindings for all the graphing functions in the PLplot API as well as a simple layer to facilitate making 2D graphs from lisp arrays.
