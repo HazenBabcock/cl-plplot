@@ -178,7 +178,7 @@
 		 (color-handler fill-colors color-index)
 		 (plfill x y)
 		 (color-handler line-colors color-index)
-		 (plwid (line-width a-bar-graph))
+		 (plwidth (line-width a-bar-graph))
 		 (plline x y))))
       (if (= (array-rank (data-array a-bar-graph)) 1)
 	  (dotimes (i (length data-x))
