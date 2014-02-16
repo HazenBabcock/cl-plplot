@@ -3,7 +3,11 @@
 ;;;;
 ;;;; Doc-strings are from the api.xml file in PLplot.
 ;;;;
-;;;; hazen 01/14
+;;;; This only contains functions that were used in the PLplot examples, or in
+;;;; the additional examples that are part of cl-plplot.
+;;;;
+;;;;
+;;;; hazen 02/14
 ;;;;
 
 (in-package #:cl-plplot-system)
