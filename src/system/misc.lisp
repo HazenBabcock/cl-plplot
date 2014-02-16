@@ -185,6 +185,42 @@
 
 
 ;;;;
+;;;; These are related to getting mouse events.
+;;;;
+
+(defmacro init-plgraphicsin ()
+    `(defcstruct plgraphicsin
+       (type plint) 
+       (state plint)
+       (keysym plint)
+       (button plint)
+       (subwindow plint)
+       (string :pointer)
+       (pX plint :offset ,(+ 16 (* 5 (foreign-type-size 'plint))))
+       (pY plint)
+       (dX plflt)
+       (dY plflt)
+       (wX plflt)
+       (wY plflt)))
+
+(init-plgraphicsin)
+
+(defun init-plgraphicsin (ptr)
+  (with-foreign-slots ((type state keysym button subwindow pX pY dX dY wX wY) ptr (:struct plgraphicsin))
+    (setf type 0)
+    (setf start 0)
+    (setf keysym 0)
+    (setf button 0)
+    (setf subwindow -1)
+    (setf pX -1)
+    (setf pY -1)
+    (setf dX 0.0d0)
+    (setf dY 0.0d0)
+    (setf wX 0.0d0)
+    (setf wY 0.0d0)))
+
+
+;;;;
 ;;;; Copyright (c) 2014 Hazen P. Babcock
 ;;;;
 ;;;; Permission is hereby granted, free of charge, to any person obtaining a copy 
