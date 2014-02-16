@@ -164,7 +164,7 @@
     :reader lisp-type)))
 
 (defun make-*plbool (array-or-integer)
-  (pl-to-foreign array-or-integer (make-instance 'pl-pointer-float)))
+  (pl-to-foreign array-or-integer (make-instance 'pl-pointer-bool)))
 
 
 ;; floating point array type

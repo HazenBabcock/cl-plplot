@@ -91,6 +91,15 @@
   (ctime plflt))
 
 
+(pl-defcfun ("c_plcalc_world" plcalc-world) :void
+    "Calculate world coordinates and corresponding window index from relative device coordinates."
+  (rx plflt)
+  (ry plflt)
+  (wx *plflt 1)
+  (wy *plflt 1)
+  (window *plint 1))
+
+
 (pl-defcfun ("c_plcol0" plcol0) :void
     "Set color, map0."
   (icol0 plint))
@@ -205,6 +214,22 @@
 (export 'plf2ops-grid-col-major)
 
 
+(pl-defcfun ("plfcont" plfcont) :void
+    "Undocumented."
+  (feval plfunc)
+  (f2eval-data pldata)
+  (nx plint)
+  (ny plint)
+  (kx plint)
+  (lx plint)
+  (ky plint)
+  (ly plint)
+  (clevel *plflt)
+  (nlevel plint (length clevel) nil)
+  (pltr plfunc)
+  (pltr-data pldata))
+
+
 (pl-defcfun ("c_plfill" plfill) :void
     "Draw filled polygon.
      Also available as a callback (plfill-callback)."
@@ -277,6 +302,43 @@
   (b *plint 1))
 
 
+(pl-defcfun ("c_plgcol0a" plgcol0a) :void 
+    "Returns 8-bit RGB values and double alpha transparency value for given color index from cmap0."
+  (icol0 plint)
+  (r *plint 1)
+  (g *plint 1)
+  (b *plint 1)
+  (a *plflt 1))
+
+
+(pl-defcfun ("c_plgcolbg" plgcolbg) :void
+    "Returns the background color (cmap0[0]) by 8-bit RGB value."
+  (r *plint 1)
+  (g *plint 1)
+  (b *plint 1))
+
+
+(pl-defcfun ("c_plgcolbga" plgcolbga) :void
+    "Returns the background color (cmap0[0]) by 8-bit RGB value and double alpha transparency value."
+  (r *plint 1)
+  (g *plint 1)
+  (b *plint 1)
+  (a *plflt 1))
+
+
+(pl-defcfun ("c_plgcompression" plgcompression) :void
+    "Get the current device-compression setting."
+  (compression *plint 1))
+
+
+(pl-defcfun ("c_plgdidev" plgdidev) :void
+    "Get parameters that define current device-space window."
+  (p_mar *plflt 1)
+  (p_aspect *plflt 1)
+  (p_jx *plflt 1)
+  (p_jy *plflt 1))
+
+
 (pl-defcfun ("c_plgfam" plgfam) :void 
     "Get family file parameters."
   (p_fam *plint 1)
@@ -289,11 +351,51 @@
   (pfci *plunicode 1))
 
 
+(pl-defcfun ("c_plgdiori" plgdiori) :void
+    "Get plot orientation."
+  (p_rot *plflt 1))
+
+
+(pl-defcfun ("c_plgdiplt" plgdiplt) :void
+    "Get parameters that define current plot-space window."
+  (p_xmin *plflt 1)
+  (p_ymin *plflt 1)
+  (p_xmax *plflt 1)
+  (p_ymax *plflt 1))
+
+
+(defcfun ("c_plgfnam" c-plgfnam) :void  
+  (fnam :pointer))
+
+(defun plgfnam ()
+  "Get output file name."
+  (with-foreign-string (version-string (make-array 80 :element-type 'character))
+    (c-plgfnam version-string)
+    (foreign-string-to-lisp version-string)))
+
+(export 'plgfnam)
+
+
 (pl-defcfun ("c_plgfont" plgfont) :void
     "Get family, style and weight of the current font."
   (p_family *plint 1)
   (p_style *plint 1)
   (p_weight *plint 1))
+
+
+(pl-defcfun ("c_plglevel" plglevel) :void
+    "Get the (current) run level."
+  (p_level *plint 1))
+
+
+(pl-defcfun ("c_plgpage" plgpage) :void
+    "Get page parameters."
+  (p_xp *plflt 1)
+  (p_yp *plflt 1)
+  (p_xleng *plint 1)
+  (p_yleng *plint 1)
+  (p_xoff *plint 1)
+  (p_yoff *plint 1))
 
 
 (pl-defcfun ("c_plgradient" plgradient) :void
@@ -358,6 +460,40 @@
     (foreign-string-to-lisp version-string)))
 
 (export 'plgver)
+
+
+(pl-defcfun ("c_plgvpd" plgvpd) :void
+    "Get viewport limits in normalized device coordinates."
+  (p_xmin *plflt 1)
+  (p_xmax *plflt 1)
+  (p_ymin *plflt 1)
+  (p_ymax *plflt 1))
+
+
+(pl-defcfun ("c_plgvpw" plgvpw) :void
+    "Get viewport limits in world coordinates."
+  (p_xmin *plflt 1)
+  (p_xmax *plflt 1)
+  (p_ymin *plflt 1)
+  (p_ymax *plflt 1))
+
+
+(pl-defcfun ("c_plgxax" plgxax) :void
+    "Get x axis parameters."
+  (p_digmax *plint 1)
+  (p_digits *plint 1))
+
+
+(pl-defcfun ("c_plgyax" plgyax) :void
+    "Get y axis parameters."
+  (p_digmax *plint 1)
+  (p_digits *plint 1))
+
+
+(pl-defcfun ("c_plgzax" plgzax) :void 
+    "Get z axis parameters."
+  (p_digmax *plint 1)
+  (p_digits *plint 1))
 
 
 (pl-defcfun ("c_plhist" plhist) :void
@@ -633,12 +769,71 @@
   (scale plflt))
 
 
+(pl-defcfun ("c_plscol0" plscol0) :void
+    "Set 8-bit RGB values for given cmap0 color index."
+  (icol0 plint)
+  (r plint)
+  (g plint)
+  (b plint))
+
+
+(pl-defcfun ("c_plscolbg" plscolbg) :void
+    "Set the background color by 8-bit RGB value."
+  (r plint)
+  (g plint)
+  (b plint))
+
+
+(pl-defcfun ("c_plscolbga" plscolbga) :void
+    "Set the background color by 8-bit RGB value and double alpha transparency value."
+  (r plint)
+  (g plint)
+  (b plint)
+  (a plflt))
+
+
+(pl-defcfun ("c_plscolor" plscolor) :void
+    "Used to globally turn color output on/off."
+  (color plint))
+
+
 (pl-defcfun ("c_plscmap0" plscmap0) :void 
     "Set color map0 colors by 8-bit RGB values."
   (r *plint)
   (g *plint)
   (b *plint)
   (ncol0 plint (length r) (= (length r) (length g) (length b))))
+
+
+(pl-defcfun ("c_plscmap0n" plscmap0n) :void
+    "Set number of colors in color map0."
+  (ncol0 plint))
+
+
+(pl-defcfun ("c_plscmap0a" plscmap0a) :void
+    "Set cmap0 colors by 8-bit RGB values and double alpha transparency value."
+  (r *plint)
+  (g *plint)
+  (b *plint)
+  (a *plflt)
+  (ncol0 plint (length r) (= (length r) (length g) (length b) (length a))))
+
+
+(pl-defcfun ("c_plscmap1" plscmap1) :void
+    "Set cmap1 colors using 8-bit RGB values."
+  (r *plint)
+  (g *plint)
+  (b *plint)
+  (ncol1 plint (length r) (= (length r) (length g) (length b))))
+
+
+(pl-defcfun ("c_plscmap1a" plscmap1a) :void
+    "Set cmap1 colors using 8-bit RGB values and double alpha transparency values."
+  (r *plint)
+  (g *plint)
+  (b *plint)
+  (a *plflt)
+  (ncol1 plint (length r) (= (length r) (length g) (length b) (length a))))
 
 
 (pl-defcfun ("c_plscmap1l" plscmap1l) :void
@@ -652,9 +847,16 @@
   (rev *plbool))
 
 
-(pl-defcfun ("c_plscmap0n" plscmap0n) :void
-    "Set number of colors in color map0."
-  (ncol0 plint))
+(pl-defcfun ("c_plscmap1la" plscmap1la) :void
+    "Set cmap1 colors and alpha transparency using a piece-wise linear relationship."
+  (itype plbool)
+  (npts plint (length intensity) (= (length intensity) (length coord1) (length coord2) (length coord3) (length coord4)))
+  (intensity *plflt)
+  (coord1 *plflt)
+  (coord2 *plflt)
+  (coord3 *plflt)
+  (coord4 *plflt)
+  (rev *plbool))
 
 
 (pl-defcfun ("c_plscmap1n" plscmap1n) :void 
@@ -662,9 +864,52 @@
   (ncol1 plint))
 
 
+(pl-defcfun ("c_plscol0a" plscol0a) :void
+    "Set 8-bit RGB values and double alpha transparency value for given cmap0 color index."
+  (icol0 plint)
+  (r plint)
+  (g plint)
+  (b plint)
+  (a plflt))
+
+
+(pl-defcfun ("c_plscompression" plscompression) :void
+    "Set device-compression level."
+  (compression plint))
+
+
 (pl-defcfun ("c_plsdev" plsdev) :void 
     "Set the device (keyword) name."
   (dev plstr))
+
+
+(pl-defcfun ("c_plsdidev" plsdidev) :void
+    "Set parameters that define current device-space window."
+  (mar plflt)
+  (aspect plflt)
+  (jx plflt)
+  (jy plflt))
+
+
+(pl-defcfun ("c_plsdiori" plsdiori) :void
+    "Set plot orientation."
+  (rot plflt))
+
+
+(pl-defcfun ("c_plsdiplt" plsdiplt) :void
+    "Set parameters that define current plot-space window."
+  (xmin plflt)
+  (ymin plflt)
+  (xmax plflt)
+  (ymax plflt))
+
+
+(pl-defcfun ("c_plsdiplz" plsdiplz) :void
+    "Set parameters incrementally (zoom mode) that define current plot-space window."
+  (xmin plflt)
+  (ymin plflt)
+  (xmax plflt)
+  (ymax plflt))
 
 
 (pl-defcfun ("c_plsesc" plsesc) :void
@@ -810,6 +1055,16 @@
   (interpolate plbool))
 
 
+(pl-defcfun ("c_plspage" plspage) :void
+    "Set page parameters."
+  (xp plflt)
+  (yp plflt)
+  (xleng plint)
+  (yleng plint)
+  (xoff plint)
+  (yoff plint))
+
+
 (pl-defcfun ("c_plspause" plspause) :void
     "Set the pause (on end-of-page) status."
   (pause plbool))
@@ -940,6 +1195,12 @@
   (ymax plflt))
 
 
+(pl-defcfun ("c_plsxax" plsxax) :void
+    "Set x axis parameters."
+  (digmax plint)
+  (digits plint))
+
+
 (pl-defcfun ("c_plsyax" plsyax) :void
     "Set y axis parameters."
   (digmax plint)
@@ -952,6 +1213,12 @@
   (x *plflt)
   (y *plflt)
   (code plint))
+
+
+(pl-defcfun ("c_plszax" plszax) :void
+    "Set z axis parameters."
+  (digmax plint)
+  (digits plint))
 
 
 (pl-defcfun ("c_pltimefmt" pltimefmt) :void
@@ -1102,6 +1369,8 @@
   (progn
     (format t "plwid() is deprecated, use plwidth() instead.")
     (plwidth width)))
+
+(export 'plwid)
 
 ;;;;
 ;;;; Copyright (c) 2014 Hazen P. Babcock
