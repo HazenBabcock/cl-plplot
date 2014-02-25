@@ -59,6 +59,7 @@
   ((:module
     :src/examples
     :components ((:file "plplot-examples")
+		 (:file "x00l" :depends-on ("plplot-examples"))
                  (:file "x01l" :depends-on ("plplot-examples"))
                  (:file "x02l" :depends-on ("plplot-examples"))
                  (:file "x03l" :depends-on ("plplot-examples"))
