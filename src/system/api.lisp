@@ -51,6 +51,7 @@
   (b plflt)
   (angle1 plflt)
   (angle2 plflt)
+  (rotate plflt)
   (fill plbool))
 
 
