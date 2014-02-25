@@ -1,11 +1,74 @@
 ;;;;
-;;;; Miscellaneous functions & macros that are used in the cl-plot API
+;;;; Miscellaneous constants, functions & macros that are used in the cl-plot API.
 ;;;;
 ;;;; hazen 02/14
 ;;;;
 
 (in-package #:cl-plplot-system)
 
+
+;;;
+;;; Some pl-plot constants
+;;;
+(defmacro pl-constant (name value)
+  `(progn
+     (defparameter ,name ,value)
+     (export (quote ,name))))
+
+(pl-constant draw-linex #x1)
+(pl-constant draw-liney #x2)
+(pl-constant draw-linexy #x3)
+(pl-constant mag-color #x4)
+(pl-constant base-cont #x8)
+(pl-constant top-cont #x10)
+(pl-constant surf-cont #x20)
+(pl-constant draw-sides #x40)
+(pl-constant faceted #x80)
+(pl-constant mesh #x100)
+
+(pl-constant pl-position-left #x1)
+(pl-constant pl-position-right #x2)
+(pl-constant pl-position-top #x4)
+(pl-constant pl-position-bottom #x8)
+(pl-constant pl-position-inside #x10)
+(pl-constant pl-position-outside #x20)
+(pl-constant pl-position-viewport #x40)
+(pl-constant pl-position-subpage #x80)
+
+(pl-constant pl-legend-none #x1)
+(pl-constant pl-legend-color-box #x2)
+(pl-constant pl-legend-line #x4)
+(pl-constant pl-legend-symbol #x8)
+(pl-constant pl-legend-text-left #x10)
+(pl-constant pl-legend-background #x20)
+(pl-constant pl-legend-bounding-box #x40)
+(pl-constant pl-legend-row-major #x80)
+
+(pl-constant pl-colorbar-label-left #x1)
+(pl-constant pl-colorbar-label-right #x2)
+(pl-constant pl-colorbar-label-top #x4)
+(pl-constant pl-colorbar-label-bottom #x8)
+(pl-constant pl-colorbar-image #x10)
+(pl-constant pl-colorbar-shade #x20)
+(pl-constant pl-colorbar-gradient #x40)
+(pl-constant pl-colorbar-cap-none #x80)
+(pl-constant pl-colorbar-cap-low #x100)
+(pl-constant pl-colorbar-cap-high #x200)
+(pl-constant pl-colorbar-shade-label #x400)
+(pl-constant pl-colorbar-orient-right #x800)
+(pl-constant pl-colorbar-orient-top #x1000)
+(pl-constant pl-colorbar-orient-left #x2000)
+(pl-constant pl-colorbar-orient-bottom #x4000)
+(pl-constant pl-colorbar-background #x8000)
+(pl-constant pl-colorbar-bounding-box #x10000)
+
+(pl-constant pl-drawmode-unknown #x1)
+(pl-constant pl-drawmode-default #x2)
+(pl-constant pl-drawmode-replace #x4)
+(pl-constant pl-drawmode-xor #x8)
+
+
+;;;
 
 (defun pl-length (array-or-null)
   "Deals with legacy code where the user might have used 'null instead of nil."
