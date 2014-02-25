@@ -95,7 +95,7 @@
 				y
 				(plf2ops-grid-c)
 				foreign-z
-				(ash 1 2)
+				mag-color
 				nil))))
 		((= ifshade 2)
 		 (progn
@@ -105,7 +105,7 @@
 				y
 				(plf2ops-grid-row-major)
 				foreign-z-row-major
-				(+ (ash 1 2) (ash 1 7))
+				(+ mag-color faceted)
 				nil))))
 		(t
 		 (progn
@@ -115,7 +115,7 @@
 				y
 				(plf2ops-grid-col-major)
 				foreign-z-col-major
-				(+ (ash 1 2) (ash 1 3) (ash 1 5))
+				(+ mag-color surf-cont base-cont)
 				clevel)))))))))))
   (plend1))
 
