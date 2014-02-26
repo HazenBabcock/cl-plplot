@@ -44,7 +44,17 @@
 		 (plcol0 3)
 		 (plline freql phase)
 		 (plcol0 3)
-		 (plmtex "r" 5.0 0.5 0.5 "Phase shift (degrees)")))))
+		 (plmtex "r" 5.0 0.5 0.5 "Phase shift (degrees)"))
+	       (plscol0a 15 32 32 32 0.70)
+	       (pllegend (+ pl-legend-background pl-legend-bounding-box) 0
+			 0.0 0.0 0.1 15
+			 1 1 0 0
+			 (if type (vector pl-legend-line) (vector pl-legend-line (+ pl-legend-line pl-legend-symbol)))
+			 1.0 1.0 2.0
+			 1 (vector 2 3) (vector "Amplitude" "Phase shift")
+			 nil nil nil nil
+			 (vector 2 3) (vector 1 1) (vector 1.0 1.0)
+			 (vector 0 3) (vector 0.0 1.0) (vector 0 4) (vector "" "*")))))
     (plot nil)
     (plot t))
     
