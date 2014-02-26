@@ -115,6 +115,34 @@
   (col1 plflt))
 
 
+(pl-defcfun ("c_plcolorbar" plcolorbar) :void
+    "Plot color bar for image, shade or gradient plots."
+  (p_colorbar_width *plflt 1)
+  (p_colorbar_height *plflt 1)
+  (opt plint)
+  (position plint)
+  (x plflt)
+  (y plflt)
+  (x_length plflt)
+  (y_length plflt)
+  (bg_color plint)
+  (bb_color plint)
+  (bb_style plint)
+  (low_cap_color plflt)
+  (high_cap_color plflt)
+  (cont_color plint)
+  (cont_width plflt)
+  (n_labels plint (length label_opts) (= (length label_opts) (length labels_text)))
+  (label_opts *plint)
+  (labels_text *plstr)
+  (n_axes plint (length axis_opts) (= (length axis_opts) (length ticks) (length sub_ticks) (length n_values)))
+  (axis_opts *plstr)
+  (ticks *plflt)
+  (sub_ticks *plint)
+  (n_values *plint)
+  (values_arr **plflt))
+
+
 (pl-defcfun ("c_plconfigtime" plconfigtime) :void
     "Configure the transformation between continuous and broken-down time for the current stream."
   (scale plflt)
