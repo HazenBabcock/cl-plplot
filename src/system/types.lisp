@@ -7,7 +7,9 @@
 (in-package #:cl-plplot-system)
 
 
+;;;
 ;;; helper functions and macros.
+;;;
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defun pl-defctype-fn-name (pl-type name)
     (read-from-string (concatenate 'string (string pl-type) "-" name))))
@@ -27,7 +29,9 @@
        (export (quote ,pl-type)))))
 
 
+;;;
 ;;; types
+;;;
 
 ;; boolean type
 (pl-defctype plbool :int
@@ -69,10 +73,15 @@
 	     :to-c (round x))
 
 
+;;;
 ;;; Array types
+;;;
+
 (defparameter array-types ())
 
+;;
 ;; base one-dimensional array type
+;;
 (defclass pl-pointer ()
   ((c-pointer
     :initform nil
@@ -218,7 +227,46 @@
   (pl-to-foreign array-or-integer (make-instance 'pl-pointer-unicode)))
 
 
+;;
+;; Array of strings type. 
+;;
+;; This is somewhere between a 1D and a 2D array type and has its own
+;; special methods. Also it can only be used to take strings from Lisp to C.
+;;
+(defctype *plstr :pointer)
+(export '*plstr)
+(pushnew '*plstr array-types)
+
+(defclass pl-pointer-string (pl-pointer)
+  ())
+
+(defmethod pl-foreign-free ((instance pl-pointer-string))
+  "Free the c-pointer of a pl-pointer-string instance."
+  (when (> (size instance) 0)
+    (dotimes (i (size instance))
+      (foreign-string-free (mem-aref (c-pointer instance) :pointer i)))
+    (foreign-free (c-pointer instance))))
+
+(defmethod pl-to-foreign (list-of-strings (instance pl-pointer-string))
+  (if list-of-strings
+      (let ((list-len (length list-of-strings)))
+	(setf (c-pointer instance) (foreign-alloc :pointer :count list-len))
+	(dotimes (i list-len)
+	  (setf (mem-aref (c-pointer instance) :pointer i)
+		(foreign-string-alloc (elt list-of-strings i))))
+	(setf (size instance) list-len))
+      (progn 
+	(setf (size instance) 0)
+	(setf (c-pointer instance) (null-pointer))))
+  instance)
+
+(defun make-*plstr (list-of-strings)
+  (pl-to-foreign list-of-strings (make-instance 'pl-pointer-string)))
+
+
+;;
 ;; base two-dimensional array type
+;;
 (defclass pl-ptr-ptr ()
   ((c-pointer
     :initform nil
@@ -229,6 +277,7 @@
    (size-y
     :initform 0
     :accessor size-y)))
+
 
 
 (defmethod pl-foreign-free ((instance pl-ptr-ptr))
@@ -312,6 +361,7 @@
 
 (defun make-**plflt (array-or-list)
   (pl-to-foreign array-or-list (make-instance 'pl-ptr-ptr-float)))
+
 
 
 ;;;;

@@ -591,6 +591,41 @@
   (tlabel plstr))
 
 
+(pl-defcfun ("c_pllegend" pllegend) :void
+    "Plot legend using discretely annotated filled boxes, lines, and/or lines of symbols."
+  (p_legend_width *plflt 1)
+  (p_legend_height *plflt 1)
+  (opt plint)
+  (position plint)
+  (x plflt)
+  (y plflt)
+  (plot_width plflt)
+  (bg_color plint)
+  (bb_color plint)
+  (bb_style plint)
+  (nrow plint)
+  (ncolumn plint)
+  (nlegend plint (length opt_array) (<= (length opt_array) (length text_colors) (length text)))
+  (opt_array *plint)
+  (text_offset plflt)
+  (text_scale plflt)
+  (text_spacing plflt)
+  (text_justification plflt)
+  (text_colors *plint)
+  (text *plstr)
+  (box_colors *plint)
+  (box_patterns *plint)
+  (box_scales *plflt)
+  (box_line_widths *plflt)
+  (line_colors *plint)
+  (line_stypes *plint)
+  (line_widths *plflt)
+  (symbol_colors *plint)
+  (symbol_scales *plflt)
+  (symbol_numbers *plint)
+  (symbols *plstr))
+
+
 (pl-defcfun ("c_pllightsource" pllightsource) :void 
     "Sets the 3D position of the light source."
   (x plflt)
