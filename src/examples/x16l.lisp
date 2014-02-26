@@ -12,6 +12,15 @@
   (let* ((ns 20)
 	 (nx 35)
 	 (ny 46)
+	 (cont-width 0.0)
+	 (cont-color 0)
+	 (axis-opts (vector "bcvtm"))
+	 (axis-ticks (vector 0.0))
+	 (axis-subticks (vector 0.0))
+	 (label-opts (vector pl-colorbar-label-bottom))
+	 (labels-text (vector "Magnitude"))
+	 (n-values (vector (1+ ns)))
+	 (values-arr (make-float-array (list 1 (1+ ns))))
 	 (tr (make-float-array 6))
 	 (cgrid0-x (make-float-array nx))
 	 (cgrid0-y (make-float-array ny))
@@ -25,9 +34,22 @@
 	 (shedge (make-float-array (1+ ns))))
     (labels ((my-pltr (x y)
 	       (values (+ (* (aref tr 0) x) (* (aref tr 1) y) (aref tr 2))
-		       (+ (* (aref tr 3) x) (* (aref tr 4) y) (aref tr 5)))))
+		       (+ (* (aref tr 3) x) (* (aref tr 4) y) (aref tr 5))))
 ;		 (setf (cffi:mem-aref tx :double) (coerce tmpx 'double-float)
 ;		       (cffi:mem-aref ty :double) (coerce tmpy 'double-float)))))
+	     (colorbar ()
+	       (plschr 0.0 0.75)
+	       (plsmaj 0.0 0.5)
+	       (plsmaj 0.0 0.5)
+	       (plcolorbar (+ pl-colorbar-shade pl-colorbar-shade-label) 0
+			   0.005 0.0 0.0375 0.875 0 1 1 0.0 0.0
+			   cont-color cont-width
+			   label-opts labels-text
+			   axis-opts axis-ticks axis-subticks
+			   n-values values-arr)
+	       (plschr 0.0 1.0)
+	       (plschr 0.0 1.0)
+	       (plschr 0.0 1.0)))
       (setf (aref tr 0) (/ 2.0 (- nx 1.0))
 	    (aref tr 1) 0.0
 	    (aref tr 2) -1.0
@@ -44,7 +66,8 @@
 	(dotimes (i ns)
 	  (setf (aref clevel i) (+ zmin (/ (* (- zmax zmin) (+ i 0.5)) ns))))
 	(dotimes (i (1+ ns))
-	  (setf (aref shedge i) (+ zmin (/ (* (- zmax zmin) i) ns)))))
+	  (setf (aref shedge i) (+ zmin (/ (* (- zmax zmin) i) ns)))
+	  (setf (aref values-arr 0 i) (aref shedge i))))
       (dotimes (i nx)
 	(dotimes (j ny)
 	  (multiple-value-bind (x y) (my-pltr i j)
@@ -74,6 +97,7 @@
 		'plfill-callback
 		t 
 		nil nil)
+      (colorbar)
       (plcol0 1)
       (plbox "bcnst" 0.0 0 "bcnstv" 0.0 0)
       (plcol0 2)
@@ -96,6 +120,7 @@
 		  t
 		  'pltr1-callback 
 		  pltr-data))
+      (colorbar)
       ;cgrid1-x cgrid1-y)
       (plcol0 1)
       (plbox "bcnst" 0.0 0 "bcnstv" 0.0 0)
@@ -119,6 +144,7 @@
 		  t
 		  'pltr2-callback 
 		  pltr-data)
+	(colorbar)
 	(plcol0 1)
 	(plbox "bcnst" 0.0 0 "bcnstv" 0.0 0)
 	(plcol0 2)
@@ -142,6 +168,7 @@
 		  t
 		  'pltr2-callback
 		  pltr-data))
+      (colorbar)
       (plcol0 1)
       (plbox "bcnst" 0.0 0 "bcnstv" 0.0 0)
       (plcol0 2)
@@ -166,7 +193,8 @@
 				    (cos (* 5.0 th))))))))
       (multiple-value-bind (zmin zmax) (min-max z)
 	(dotimes (i (1+ ns))
-	  (setf (aref shedge i) (+ zmin (/ (* (- zmax zmin) i) ns)))))
+	  (setf (aref shedge i) (+ zmin (/ (* (- zmax zmin) i) ns)))
+	  (setf (aref values-arr 0 i) (aref shedge i))))
       (with-pltr-data (pltr-data cgrid2-x cgrid2-y :z-vals z)
 	(plshades z
 		  nil
@@ -176,6 +204,7 @@
 		  t
 		  'pltr2-callback
 		  pltr-data))
+      (colorbar)
       (let* ((ppts 100)
 	     (px (make-float-array ppts))
 	     (py (make-float-array ppts)))
