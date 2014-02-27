@@ -781,6 +781,15 @@
   (del *plint))
 
 
+(pl-defcfun ("c_plpath" plpath) :void
+    "Draw a line between two points, accounting for coordinate transforms."
+  (n plint)
+  (x1 plflt)
+  (y1 plflt)
+  (x2 plflt)
+  (y2 plflt))
+
+
 (pl-defcfun ("c_plpoin" plpoin) :void
     "Plot a glyph at the specified points."
   (n plint (length x) (= (length x) (length y)))
