@@ -646,7 +646,7 @@
   (box_scales *plflt)
   (box_line_widths *plflt)
   (line_colors *plint)
-  (line_stypes *plint)
+  (line_styles *plint)
   (line_widths *plflt)
   (symbol_colors *plint)
   (symbol_scales *plflt)
