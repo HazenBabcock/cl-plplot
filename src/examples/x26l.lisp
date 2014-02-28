@@ -16,6 +16,8 @@
 			 "Амплитуда (dB)"))
 	(alty-label (vector "Phase shift (degrees)"
 			    "Фазовый сдвиг (градусы)"))
+	(legend-text (vector (vector "Amplitude" "Phase shift")
+			     (vector "Амплитуда" "Фазовый сдвиг")))
 	(title-label (vector "Single Pole Low-Pass Filter"
 			     "Однополюсный Низко-Частотный Фильтр"))
 	(line-label (vector "-20 dB/decade"
@@ -57,7 +59,17 @@
 		   (plcol0 3)
 		   (plline freql phase)
 		   (plcol0 3)
-		   (plmtex "r" 5.0 0.5 0.5 (aref alty-label index))))))
+		   (plmtex "r" 5.0 0.5 0.5 (aref alty-label index)))
+		 (plscol0a 15 32 32 32 0.7)
+		 (pllegend (+ pl-legend-background pl-legend-bounding-box) 0
+			   0.0 0.0 0.1 15
+			   1 1 0 0
+			   (vector pl-legend-line (+ pl-legend-line pl-legend-symbol))
+			   1.0 1.0 2.0
+			   1.0 (vector 2 3) (elt legend-text index)
+			   nil nil nil nil
+			   (vector 2 3) (vector 1 1) (vector 1.0 1.0)
+			   (vector 0 3) (vector 0 1.0) (vector 0 4) (vector "" "*")))))
       (plinit)
       (plfont 2)
       (dotimes (i (length x-label))
