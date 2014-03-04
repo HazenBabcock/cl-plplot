@@ -26,3 +26,5 @@
      :sb-thruption and :sb-wtimer (I only tested with all of these together, I did not
      test the individually to see if any one of them would solve the cairo issues).
 
+     03/04/14 - Upgraded to Ubuntu 13.10 and the xcairo driver is broken again..
+
