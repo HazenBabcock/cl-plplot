@@ -1054,6 +1054,22 @@
   (weight plint))
 
 
+;; This is inside a closure so that the file name & its associated storage
+;; is preserved until the next time this function is called
+
+(let ((c-fname nil))
+  (defun plsfnam (fname)
+    (when c-fname
+      (foreign-string-free c-fname))
+    (setf c-fname (foreign-string-alloc fname))
+    (c-plsfnam c-fname)))
+
+(export 'plsfnam)
+
+(defcfun ("c_plsfnam" c-plsfnam) :void 
+  (fnam plstr))
+
+
 (pl-defcfun ("c_plshades" plshades) :void
     "Shade regions on the basis of value."
   (a **plflt)
