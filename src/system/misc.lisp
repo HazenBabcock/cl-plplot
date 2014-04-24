@@ -67,6 +67,28 @@
 (pl-constant pl-drawmode-replace #x4)
 (pl-constant pl-drawmode-xor #x8)
 
+(pl-constant pl-fci-mark #x80000000)
+(pl-constant pl-fci-impossible #x00000000)
+(pl-constant pl-fci-hexdigit-mask #xf)
+(pl-constant pl-fci-hexpower-mask #x7)
+(pl-constant pl-fci-hexpower-impossible #xf)
+
+(pl-constant pl-fci-family #x0)
+(pl-constant pl-fci-style #x1)
+(pl-constant pl-fci-weight #x2)
+
+(pl-constant pl-fci-sans #x0)
+(pl-constant pl-fci-serif #x1)
+(pl-constant pl-fci-mono #x2)
+(pl-constant pl-fci-script #x3)
+(pl-constant pl-fci-symbol #x4)
+
+(pl-constant pl-fci-upright #x0)
+(pl-constant pl-fci-italic #x1)
+(pl-constant pl-fci-oblique #x2)
+
+(pl-constant pl-fci-medium #x0)
+(pl-constant pl-fci-bold #x1)
 
 ;;;
 

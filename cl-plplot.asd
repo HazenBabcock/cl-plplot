@@ -91,7 +91,8 @@
                  (:file "x29l" :depends-on ("plplot-examples")) ; Can trigger floating point exceptions.
                  (:file "x30l" :depends-on ("plplot-examples"))
                  (:file "x31l" :depends-on ("plplot-examples"))
-                 (:file "x32l" :depends-on ("plplot-examples")))))
+                 (:file "x32l" :depends-on ("plplot-examples"))
+                 (:file "x33l" :depends-on ("plplot-examples")))))
   :depends-on (:cl-plplot :png))
 
 ;;;;

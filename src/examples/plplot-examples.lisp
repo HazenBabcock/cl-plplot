@@ -14,8 +14,8 @@
 
 (defparameter default-dev "xwin")
 
-(defun make-float-array (length)
-  (make-array length :element-type 'float :initial-element 0.0))
+(defun make-float-array (length &optional (initial-value 0.0))
+  (make-array length :element-type 'float :initial-element initial-value))
 
 (defun make-int-array (length &optional (initial-value 0))
   (make-array length :element-type 'integer :initial-element initial-value))
