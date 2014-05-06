@@ -8,6 +8,8 @@
 
 (defun example33 (&optional (dev default-dev))
   (plsdev dev)
+
+  ;; legend examples.
   (let ((position-options (vector (+ pl-position-left pl-position-top pl-position-outside)
 				  (+ pl-position-top pl-position-outside)
 				  (+ pl-position-right pl-position-top pl-position-outside)
@@ -422,6 +424,117 @@
 		    nil nil nil nil)
 	(setf max-height (if (> legend-height max-height) legend-height max-height))
 	(incf x legend-width)))
+
+    ;; color bar examples.
+    (let ((colorbar-option-kinds (vector pl-colorbar-shade
+					 (+ pl-colorbar-shade pl-colorbar-shade-label)
+					 pl-colorbar-image
+					 pl-colorbar-gradient))
+	  (colorbar-option-kind-labels (vector "Shade colorbars"
+					       "Shade colorbars with custom labels"
+					       "Image colorbars"
+					       "Gradient colorbars"))
+	  (colorbar-position-options (vector pl-position-left
+					     pl-position-right
+					     pl-position-top
+					     pl-position-bottom))
+	  (colorbar-position-option-labels (vector "Left"
+						   "Right"
+						   "Top"
+						   "Bottom"))
+	  (colorbar-label-options (vector pl-colorbar-label-left
+					  pl-colorbar-label-right
+					  pl-colorbar-label-top
+					  pl-colorbar-label-bottom))
+	  (colorbar-label-option-labels (vector "Label left"
+						"Label right"
+						"Label top"
+						"Label bottom"))
+	  (colorbar-cap-options (vector pl-colorbar-cap-none
+					pl-colorbar-cap-low
+					pl-colorbar-cap-high
+					(+ pl-colorbar-cap-low pl-colorbar-cap-high)))
+	  (colorbar-cap-option-labels (vector "No caps"
+					      "Low cap"
+					      "High cap"
+					      "Low and high caps"))
+	  (values-small (vector -1.0d-200 1.0d-200))
+	  (values-uneven (vector -1.0d-200 2.0d-200 2.6d-200 3.4d-200 6.0d-200 7.0d-200 8.0d-200 9.0d-200 10.0d-200))
+	  (values-even (vector -2.0d-200 -1.0d-200 0.0d-200 1.0d-200 2.0d-200 3.0d-200 4.0d-200 5.0d-200 6.0d-200)))
+      (labels ((plcolorbar-example-page (kind-i label-i cap-i cont-color cont-width n-values values)
+		 (pladv 0)
+		 (dotimes (position-i 4)
+		   (let* ((ticks (vector 0.0))
+			  (sub-ticks (vector 0.0))
+			  (low-cap-color 0.0)
+			  (high-cap-color 1.0)
+			  (label-opts (vector 0))
+			  (position (aref colorbar-position-options position-i))
+			  (opt (+ (aref colorbar-option-kinds kind-i)
+				  (aref colorbar-label-options label-i)
+				  (aref colorbar-cap-options cap-i)))
+			  (vertical (+ (logand position pl-position-left) (logand position pl-position-right)))
+			  (ifn (+ (logand position pl-position-left) (logand position pl-position-bottom)))
+			  (x (if (/= vertical 0) 0.0 0.0))
+			  (y (if (/= vertical 0) 0.0 0.0))
+			  (x-length (if (/= vertical 0) 0.05 0.5))
+			  (y-length (if (/= vertical 0) 0.5 0.05))
+			  (axis-opts (vector (if (/= ifn 0)
+						 (if (or (= cont-color 0) (= cont-width 0.0))
+						     "uwtivn"
+						     "uwxvn")
+						 (if (or (= cont-color 0) (= cont-width 0.0))
+						     "uwtivm"
+						     "uwxvm"))))
+			  (alabel (vector (format nil "~a, ~a" 
+						  (aref colorbar-position-option-labels position-i)
+						  (aref colorbar-label-option-labels label-i))))
+			  (values-arr (make-float-array (list 1 n-values))))
+		     (plschr 0.0 0.75)
+		     (plsmaj 0.0 0.5)
+		     (plsmin 0.0 0.5)
+		     
+		     (plvpor 0.20 0.80 0.20 0.80)
+		     (plwind 0.0 1.0 0.0 1.0)
+		     (plscol0a 15 0 0 0 0.2)
+		     (dotimes (i n-values)
+		       (setf (aref values-arr 0 i) (aref values i)))
+
+		     ; This will throw a floating point exception depending on which output device you use.
+		     (handler-case
+			 (plcolorbar (+ opt pl-colorbar-bounding-box pl-colorbar-background) position
+				     x y x-length y-length
+				     15 1 1
+				     low-cap-color high-cap-color
+				     cont-color cont-width
+				     label-opts alabel
+				     axis-opts
+				     ticks sub-ticks
+				     (vector n-values) values-arr)
+		       (error () (format t "plcolorbar problem~%")))
+
+		     (plschr 0.0 1.0)
+		     (plsmaj 0.0 1.0)
+		     (plsmin 0.0 1.0))
+		   (plvpor 0.0 1.0 0.0 1.0)
+		   (plwind 0.0 1.0 0.0 1.0)
+		   (plptex 0.5 0.5 0.0 0.0 0.5 (format nil "~a - ~a"
+						       (aref colorbar-option-kind-labels kind-i)
+						       (aref colorbar-cap-option-labels cap-i)))))
+	       (plcolorbar-example (palette kind-i cont-color cont-width n-values values)
+		 (plspal1 palette 1)
+		 (dotimes (label-i 4)
+		   (dotimes (cap-i 4)
+		     (plcolorbar-example-page kind-i label-i cap-i cont-color cont-width n-values values)))))
+	(plscolbg 70 185 70)
+	(plscmap1-range 0.01 0.99)
+
+	(dotimes (i 2)
+	  (plcolorbar-example "cmap1_blue_yellow.pal" (+ i 2) 0 0 2 values-small))
+	(dotimes (i 2)
+	  (plcolorbar-example "cmap1_blue_yellow.pal" i 4 2 9 values-even))
+	(dotimes (i 2)
+	  (plcolorbar-example "cmap1_blue_yellow.pal" i 0 0 8 values-uneven))))
 
     (plend1)))
 
