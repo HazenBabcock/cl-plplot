@@ -20,10 +20,23 @@
   (pushnew #P"/sw/lib/" *foreign-library-directories* :test #'equal)
   ; OS-X / darwinports
   (pushnew #P"/opt/local/lib/" *foreign-library-directories* :test #'equal)
-  (define-foreign-library libplplot
-    (t (:default "libplplotd")))
-  (use-foreign-library libplplot)
-  (format t "libplplotd library loaded~%"))
+
+  (let ((lib-loaded nil))
+    
+    ; Try and load version 5.11+ PLplot library first.
+    (handler-case
+	(progn
+	  (define-foreign-library libplplot
+	    (t (:default "libplplot")))
+	  (use-foreign-library libplplot)
+	  (setf lib-loaded t))
+      (error ()))
+
+    ; Try and load version 5.10- PLplot library.
+    (when (not lib-loaded)
+      (define-foreign-library libplplot
+	(t (:default "libplplotd")))
+      (use-foreign-library libplplot))))
 
 (load-libraries)
 
