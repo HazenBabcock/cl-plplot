@@ -46,7 +46,11 @@
                  (:file "surface-plot" :depends-on ("3D-mesh"))
 		 (:file "window" :depends-on ("plot" "axis" "color-table" "extended-color-table"))
 		 (:file "3D-window" :depends-on ("window")))
-    :depends-on (:src/system)))
+    :depends-on (:src/system))
+   (:module
+    :src/extras
+    :components ((:file "vmessage"))
+    :depends-on (:src/window)))
   :depends-on (:cffi))
 
 (defsystem #:plplot-examples
