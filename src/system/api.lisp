@@ -1489,7 +1489,7 @@
 
 
 ;;;
-;;; deprecated plplot API functions, also ordered alphabetically.
+;;; Deprecated plplot API functions, also ordered alphabetically.
 ;;;
 
 ;; Don't break legacy code, at least for the time being, but provide a warning.
