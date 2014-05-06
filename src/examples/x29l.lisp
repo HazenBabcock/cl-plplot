@@ -129,7 +129,7 @@
 			  ymin 0.0
 			  ymax 36.0
 			  time-format "%Y%"
-			  if-TAI-time-format 1
+			  if-TAI-time-format t
 			  title-suffix "from 1950 to 2020"
 			  xtitle "Year"
 			  xlabel-step 10))
@@ -142,7 +142,7 @@
 			  time-format "%S%2%"
 			  title-suffix "near 1961-08-01 (TAI)"
 			  xlabel-step (/ 0.05 (* scale 86400.0))
-			  if-TAI-time-format (if (= kind 1) 1 0)
+			  if-TAI-time-format (if (= kind 1) t nil)
 			  xtitle (if (= kind 1) "Seconds (TAI)" "Seconds (TAI) labelled with corresponding UTC")))
 		   ((or (= kind 3) (= kind 4))
 		    (setf xmin (plctime 1963 10 1 0 0 (- 2.6972788 0.2))
@@ -153,7 +153,7 @@
 			  time-format "%S%2%"
 			  title-suffix "near 1963-11-01 (TAI)"
 			  xlabel-step (/ 0.05 (* scale 86400.0))
-			  if-TAI-time-format (if (= kind 3) 1 0)
+			  if-TAI-time-format (if (= kind 3) t nil)
 			  xtitle (if (= kind 3) "Seconds (TAI)" "Seconds (TAI) labelled with corresponding UTC")))
 		   ((or (= kind 5) (= kind 6))
 		    (setf xmin (plctime 2009 0 1 0 0 (- 34.0 5.0))
@@ -164,7 +164,7 @@
 			  time-format "%S%2%"
 			  title-suffix "near 2009-01-01 (TAI)"
 			  xlabel-step (/ 1.0 (* scale 86400.0))
-			  if-TAI-time-format (if (= kind 5) 1 0)
+			  if-TAI-time-format (if (= kind 5) t nil)
 			  xtitle (if (= kind 5) "Seconds (TAI)" "Seconds (TAI) labelled with corresponding UTC")))
 		   (t nil))
 		 (let ((x (make-float-array npts))
@@ -172,8 +172,8 @@
 		   (dotimes (i npts)
 		     (setf (aref x i) (+ xmin (* i (/ (- xmax xmin) (1- npts)))))
 		     (plconfigtime scale offset1 offset2 #x0 nil 0 0 0 0 0 0)
-;		     (multiple-value-bind (tai-year tai-month tai-day tai-hour tai-min tai-sec)
-;			 (plbtime (aref x i))
+		     (multiple-value-bind (tai-year tai-month tai-day tai-hour tai-min tai-sec)
+			 (plbtime (aref x i)))
 		     (plconfigtime scale offset1 offset2 #x2 nil 0 0 0 0 0 0)
 		     (multiple-value-bind (utc-year utc-month utc-day utc-hour utc-min utc-sec)
 			 (plbtime (aref x i))
@@ -184,16 +184,15 @@
 		   (plvsta)
 		   (plwind xmin xmax ymin ymax)
 		   (plcol0 1)
-		   (plconfigtime scale offset1 offset2 (if (= if-TAI-time-format 1) #x0 #x2) nil 0 0 0 0 0 0)
+		   (plconfigtime scale offset1 offset2 (if if-TAI-time-format #x0 #x2) nil 0 0 0 0 0 0)
 		   (pltimefmt time-format)
 
-		   ; For reasons unclear this sometimes throws a floating 
-		   ; point exception on every call after the first call.
-
+		   ; Older versions of PLplot will throw a floating point exception here.
 		   (handler-case
 		       (plbox "bcnstd" xlabel-step 0
 			      "bcnstv" 0.0 0)
 		     (error () (format t "plbox problem~%")))
+
 		   (plcol0 3)
 		   (pllab xtitle
 			  "TAI-UTC (sec)"
