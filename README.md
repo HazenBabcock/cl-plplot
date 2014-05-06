@@ -3,8 +3,8 @@ The Common Lisp / CFFI based interface to the [PLplot](http://plplot.sourceforge
 
 ##News##
 
-####02-16-14####
-This should now work properly with the latest version of PLplot (5.10.0). 
+####05-06-14####
+Finished updating the Lisp versions of the standard PLplot examples.
 
 ##Layout##
 
