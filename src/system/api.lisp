@@ -920,6 +920,10 @@
   (b *plint)
   (ncol1 plint (length r) (= (length r) (length g) (length b))))
 
+(pl-defcfun ("c_plscmap1_range" plscmap1-range) :void
+    "Set the cmap1 argument range for continuous color plots."
+  (min-color plflt)
+  (max-color plflt))
 
 (pl-defcfun ("c_plscmap1a" plscmap1a) :void
     "Set cmap1 colors using 8-bit RGB values and double alpha transparency values."
