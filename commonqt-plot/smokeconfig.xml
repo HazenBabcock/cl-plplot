@@ -27,7 +27,8 @@
         <!-- we don't want private stuff in smoke.. -->
         <signature>.*::d_ptr.*</signature>
         <signature>.*::q_ptr.*</signature>
-        <signature>.*iostream.*</signature>
+
+	<!-- don't include these classes. -->
         <signature>.*QMutex.*</signature>
     </exclude>
 
