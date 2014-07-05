@@ -20,6 +20,21 @@
         <typeName>QStringList</typeName>
         <typeName>QString</typeName>
     </voidpTypes>
+
+    <!-- regexps for signatures of methods and functions that we don't want
+         to be wrapped in the smoke module -->
+    <exclude>
+        <!-- we don't want private stuff in smoke.. -->
+        <signature>.*::d_ptr.*</signature>
+        <signature>.*::q_ptr.*</signature>
+        <signature>.*iostream.*</signature>
+        <signature>.*QMutex.*</signature>
+    </exclude>
+
+    <functions>
+        <name>plsetqtdev</name>
+        <name>plfreeqtdev</name>
+    </functions>
  
     <classList>
       <class>QtPLDriver</class>

@@ -5,12 +5,14 @@
 ;;;;
 
 (defpackage :qt-example
-  (:use :cl :qt))
+  (:use :common-lisp
+	:qt
+	:cl-plplot-system))
 
 (in-package :qt-example)
 (named-readtables:in-readtable :qt)
 
-(pushnew #P"/home/hbabcock/OpenSource/cl-plplot/cl-qt-plot/" cffi::*foreign-library-directories* :test #'equal)
+(pushnew #P"/home/hbabcock/OpenSource/cl-plplot/commonqt-plot/" cffi::*foreign-library-directories* :test #'equal)
 (ensure-smoke :plplotqt)
 
 (defclass qplot ()
@@ -22,9 +24,19 @@
   (if parent
       (new instance parent)
       (new instance))
-  (let ((plot (#_new QtExtWidget 600 400 instance)))
+  (let ((plot (#_new QtExtWidget 600 600 instance)))
     (#_setWindowTitle instance "Qt Example")
-    (#_setCentralWidget instance plot)))
+    (#_setCentralWidget instance plot)
+    (#_QGlobalSpace::plsetqtdev plot)
+    (plsdev "extqt")
+    (plinit)
+    (pladv 0)
+    (plvpor 0.05 0.95 0.05 0.95)
+    (plwind 0.0 1.0 0.0 1.0)
+    (plcol0 2)
+    (plbox "bcnst" 0 0 "bcnst" 0 0)
+    (pllab "x" "Y" "title")
+    ))
 
 (defun main ()
   (with-main-window (window (make-instance 'qplot))
