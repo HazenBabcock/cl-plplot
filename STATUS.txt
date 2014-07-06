@@ -1,13 +1,14 @@
 
 Plans:
 
-1. Add demo of how to use the Qt driver in a Qt application.
-
-2. Add demo of how to use the Cairo driver in a GTK application.
+1. Add demo of how to use the Cairo driver in a GTK application.
    The clg-plot example seems to dead as clg is no longer maintained?
 
 
 Current:
+
+07/05/15: Added demo of how to use the Qt driver in a Qt application. This
+          requires commonqt and is located in the commonqt-plot directory.
 
 05/06/14: Lisp examples updated to match all the C examples in PLplot 5.10.0.
 
