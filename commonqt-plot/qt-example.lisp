@@ -64,8 +64,8 @@
   (plinit)
   (#_resize instance 600 600))
 
-(defmethod interactive ((instance qplot) boolean)
-  (declare (ignore boolean))
+(defmethod interactive ((instance qplot) bool)
+  (declare (ignore bool))
   (multiple-value-bind (x y)
       (let ((c-x (cffi:foreign-alloc :double))
 	    (c-y (cffi:foreign-alloc :double)))
@@ -82,8 +82,8 @@
       (#_setText msg-box (format nil "Selection: (~,2f ~,2f)" x y))
       (#_exec msg-box))))
 
-(defmethod plot-curves ((instance qplot) boolean)
-  (declare (ignore boolean))
+(defmethod plot-curves ((instance qplot) bool)
+  (declare (ignore bool))
   (#_clearWidget (plot instance))
 
   ; 1st plot
@@ -143,8 +143,8 @@
 
   (#_update instance))
 
-(defmethod plot-histogram ((instance qplot) boolean)
-  (declare (ignore boolean))
+(defmethod plot-histogram ((instance qplot) bool)
+  (declare (ignore bool))
   (#_clearWidget (plot instance))
   (labels ((plfbox (x0 y0)
 	     (let ((x (vector x0 x0 (1+ x0) (1+ x0)))
@@ -179,8 +179,8 @@
 	(plmtex "b" 1.0 (- (* (1+ i) 0.1) 0.05) 0.5 (format nil "~d" (+ 1980 i))))))
   (#_update instance))
 
-(defmethod quit ((instance qplot) boolean)
-  (declare (ignore boolean))
+(defmethod quit ((instance qplot) bool)
+  (declare (ignore bool))
   (#_close instance))
 
 
