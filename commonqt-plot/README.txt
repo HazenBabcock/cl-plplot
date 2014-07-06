@@ -37,6 +37,7 @@ The process (all these steps need to be executed in the cl-plplot/commonqt-plot 
 Relevant files:
   Smoke related:
     plplotqt.h - The "all inclusive" header file that smokegen needs.
+    plplotqt_smoke.h - The header file for compiling the smoke generated .cpp files.
     plplotqt.pro - The lib template that qmake uses to create the make file.
     smokeconfig.xml - The smoke XML configuration file.
 
