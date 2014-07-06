@@ -1,10 +1,15 @@
 
 Plans:
 
-1. Update examples to match PLplot 5.10.0.
+1. Add demo of how to use the Qt driver in a Qt application.
+
+2. Add demo of how to use the Cairo driver in a GTK application.
+   The clg-plot example seems to dead as clg is no longer maintained?
 
 
 Current:
+
+05/06/14: Lisp examples updated to match all the C examples in PLplot 5.10.0.
 
 02/16/14: Bindings and examples now compatible with PLplot 5.10.0.
 
