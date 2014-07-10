@@ -7,6 +7,11 @@ a while. The only reference I could find for how to do this is here:
 https://techbase.kde.org/Development/Languages/Smoke
 
 
+On debian you will need these two packages (which you may already have for commonqt).
+smoke-dev-tools
+libsmokeqt4-dev
+
+
 The process (all these steps need to be executed in the cl-plplot/commonqt-plot directory).
 
 1. Create a symbolic link to the qt.h file that is part of PLplot. On linux systems this
