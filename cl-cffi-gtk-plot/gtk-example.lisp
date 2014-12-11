@@ -63,8 +63,6 @@
 	  nil)
     (let ((window (make-instance 'gtk-window
 				 :type :toplevel
-				 :default-width 600
-				 :default-height 600
 				 :title "GTK Example"))
 	  (box (make-instance 'gtk-box
 			      :orientation :vertical
