@@ -17,6 +17,11 @@
 ;;; more or less follows the order that they are documented in the PLplot manual.
 ;;;
 
+(pl-defcfun ("pl_cmd" pl-cmd) :void
+    "Front end to driver escape function."
+  (cmd plint)
+  (ptr :pointer))
+
 (pl-defcfun ("c_pl_setcontlabelformat" pl-setcontlabelformat) :void
     "Set format of numerical label for contours."
   (lexp plint)
