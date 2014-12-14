@@ -180,7 +180,7 @@
       ; Menus
       (let ((menu-bar (make-instance 'gtk-menu-bar))
 	    (plot-item (gtk-menu-item-new-with-label "Plot")))
-	(gtk-box-pack-start box menu-bar)
+	(gtk-box-pack-start box menu-bar :expand nil)
 	(gtk-menu-shell-append menu-bar plot-item)
 	(let ((plot-menu (gtk-menu-new)))
 	  (setf (gtk-menu-item-submenu plot-item) plot-menu)
