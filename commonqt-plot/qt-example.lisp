@@ -1,6 +1,8 @@
 ;;;;
 ;;;; An example of how to integrate cl-plplot with commonqt.
 ;;;;
+;;;; This uses the PLplot "extqt" driver.
+;;;;
 ;;;; hazen 07/14
 ;;;;
 
