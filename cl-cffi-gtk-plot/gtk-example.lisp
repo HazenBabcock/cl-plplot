@@ -1,5 +1,9 @@
 ;;;;
 ;;;; An example of how to integrate cl-plplot with cl-cffi-gtk.
+;;;; With the "extcairo" device used here we have to do all the
+;;;;   work for interactive selection ourselves. This is in
+;;;;   contrast with the "extqt" PLplot device (used in the
+;;;;   commonqt-plot example) which takes care of this for us.
 ;;;;
 ;;;; hazen 12/14
 ;;;;
@@ -23,10 +27,24 @@
 (defun make-float-array (length &optional (initial-value 0.0))
   (make-array length :element-type 'float :initial-element initial-value))
 
+(defun button-release (window event plot-func)
+  (labels ((scale (x o1 o2 f1 f2)
+	     (cond
+	       ((< x o1) f1)
+	       ((> x o2) f2)
+	       (t (+ (* (/ (- x o1) (- o2 o1)) (- f2 f1)) f1)))))
+    (let ((x (/ (gdk-event-button-x event) (gdk-window-get-width window)))
+	  (y (- 1 (/ (gdk-event-button-y event) (gdk-window-get-height window)))))
+      (if (eql plot-func #'plot-curves)
+	  (if (< y 0.5)
+	      (values (scale x 0.05 0.95 0.0 360.0)
+		      (scale y 0.05 0.45 -1.2 1.2))
+	      (values (scale x 0.05 0.95 -1.0 1.0)
+		      (scale y 0.55 0.95 -1.0 1.0)))
+	  (values (scale x 0.16 0.9 1980 1990)
+		  (scale y 0.1 0.9 0 35.0))))))
+
 (defun plot-curves (window cr)
-  ;; Clear surface
-  (cairo-set-source-rgb cr 0 0 0)
-  (cairo-paint cr)
 
   ; Initialize PLplot extcairo plotting device.
   (plsdev "extcairo")
@@ -89,15 +107,9 @@
     (plcol0 2)
     (plmtex "t" 1.0 0.5 0.5 "Square & Cubic"))
 
-  (plend)
-
-  ;; Destroy the Cario context
-  (cairo-destroy cr))
+  (plend))
 
 (defun plot-histogram (window cr)
-  ;; Clear surface
-  (cairo-set-source-rgb cr 0 0 0)
-  (cairo-paint cr)
 
   ; Initialize PLplot extcairo plotting device.
   (plsdev "extcairo")
@@ -137,11 +149,8 @@
 	(plptex (+ 1980 i 0.5) (1+ (aref y0 i)) 1.0 0.0 0.5 (format nil "~,0f" (aref y0 i)))
 	(plmtex "b" 1.0 (- (* (1+ i) 0.1) 0.05) 0.5 (format nil "~d" (+ 1980 i))))))
 
-  (plend)
-
-  ;; Destroy the Cario context
-  (cairo-destroy cr))
-  
+  (plend))
+    
 (defun main ()
   (within-main-loop
     (setf (gtk-settings-gtk-shell-shows-menubar (gtk-settings-get-default))
@@ -152,7 +161,14 @@
 	  (box (make-instance 'gtk-box
 			      :orientation :vertical
 			      :spacing 0))
-	  (plot-func #'plot-curves))
+	  (plot-box (make-instance 'gtk-drawing-area
+				   :expand t
+				   :width-request 600 
+				   :height-request 600))
+	  (plot-func #'plot-curves)
+	  (interactive nil)
+	  (mouse-x 10)
+	  (mouse-y 10))
 
       ; Main window
       (gtk-container-add window box)
@@ -188,23 +204,67 @@
 				(declare (ignore widget))
 				(setf plot-func #'plot-histogram)
 				(gtk-widget-queue-draw box)))
+	    (g-signal-connect interactive-item "activate"
+			      (lambda (widget)
+				(declare (ignore widget))
+				(setf interactive t)
+				(gdk-window-set-cursor (gtk-widget-window plot-box) (gdk-cursor-new :cross))))
 	    (g-signal-connect quit-item "activate"
 			      (lambda (widget)
 				(declare (ignore widget))
 				(gtk-widget-destroy window))))))
 
       ; Plotting
-      (let ((plot-box (make-instance 'gtk-drawing-area
-				     :expand t
-				     :width-request 600 
-				     :height-request 600)))
-	(gtk-box-pack-start box plot-box)
-	(g-signal-connect plot-box "draw"
-			  (lambda (widget cr)
-			    (let ((cr (pointer cr))
-				  (plot-window (gtk-widget-window widget)))
-			      (funcall plot-func plot-window cr)))))
+      (gtk-box-pack-start box plot-box)
+      (gtk-widget-add-events plot-box '(:button-press-mask :button-release-mask :pointer-motion-mask))
+      (g-signal-connect plot-box "draw"		     
+			(lambda (widget cr)
+			  (let ((cr (pointer cr))
+				(plot-window (gtk-widget-window widget)))
+			    ; Clear surface
+			    (cairo-set-source-rgb cr 0 0 0)
+			    (cairo-paint cr)
+			    
+			    ; Plot
+			    (funcall plot-func plot-window cr)
 
+			    ; Draw crossed lines
+			    (when interactive
+			      (let ((w-height (gdk-window-get-height plot-window))
+				    (w-width (gdk-window-get-width plot-window)))
+				(cairo-set-source-rgb cr 0.8 0.8 0.8)
+				(cairo-set-line-width cr 1.0)
+				(cairo-move-to cr mouse-x 2)
+				(cairo-line-to cr mouse-x (- w-height 2))
+				(cairo-move-to cr 2 (- w-height mouse-y))
+				(cairo-line-to cr (- w-width 2) (- w-height mouse-y))
+				(cairo-stroke cr)))
+
+			    ; Cleanup
+			    (cairo-destroy cr))))
+      (g-signal-connect plot-box "motion-notify-event"
+			(lambda (widget event)
+			  (declare (ignore widget))
+			  (when interactive
+			    (setf mouse-x (gdk-event-motion-x event))
+			    (setf mouse-y (gdk-event-motion-y event))
+			    (gtk-widget-queue-draw box))))
+      (g-signal-connect plot-box "button-release-event"
+			(lambda (widget event)
+			  (let ((plot-window (gtk-widget-window widget)))
+			    (setf interactive nil)
+			    (gdk-window-set-cursor (gtk-widget-window plot-box) nil)
+			    (multiple-value-bind (x y) (button-release plot-window event plot-func)
+			      (let ((m-dialog (gtk-message-dialog-new nil
+								    '(:modal)
+								    :info
+								    :close
+								    (format nil "Selection: (~,2f ~,2f)" x y))))
+				(gtk-dialog-run m-dialog)
+				(gtk-widget-destroy m-dialog))))
+
+			  (gtk-widget-queue-draw box)))
+    
       (gtk-widget-show-all window))))
 
 ;;;;
