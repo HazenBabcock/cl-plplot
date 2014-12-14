@@ -178,8 +178,7 @@
 			  (leave-gtk-main)))
  
       ; Menus
-      (let ((menu-bar (make-instance 'gtk-menu-bar :expand nil))
-					;l(gtk-menu-bar-new))
+      (let ((menu-bar (make-instance 'gtk-menu-bar))
 	    (plot-item (gtk-menu-item-new-with-label "Plot")))
 	(gtk-box-pack-start box menu-bar)
 	(gtk-menu-shell-append menu-bar plot-item)
@@ -252,18 +251,19 @@
       (g-signal-connect plot-box "button-release-event"
 			(lambda (widget event)
 			  (let ((plot-window (gtk-widget-window widget)))
-			    (setf interactive nil)
-			    (gdk-window-set-cursor (gtk-widget-window plot-box) nil)
-			    (multiple-value-bind (x y) (button-release plot-window event plot-func)
-			      (let ((m-dialog (gtk-message-dialog-new nil
-								    '(:modal)
-								    :info
-								    :close
-								    (format nil "Selection: (~,2f ~,2f)" x y))))
-				(gtk-dialog-run m-dialog)
-				(gtk-widget-destroy m-dialog))))
+			    (when interactive
+			      (setf interactive nil)
+			      (gdk-window-set-cursor (gtk-widget-window plot-box) nil)
+			      (multiple-value-bind (x y) (button-release plot-window event plot-func)
+				(let ((m-dialog (gtk-message-dialog-new nil
+									'(:modal)
+									:info
+									:close
+									(format nil "Selection: (~,2f ~,2f)" x y))))
+				  (gtk-dialog-run m-dialog)
+				  (gtk-widget-destroy m-dialog))))
 
-			  (gtk-widget-queue-draw box)))
+			    (gtk-widget-queue-draw box))))
     
       (gtk-widget-show-all window))))
 
