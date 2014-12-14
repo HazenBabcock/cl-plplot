@@ -1,5 +1,8 @@
 ;;;;
 ;;;; An example of how to integrate cl-plplot with cl-cffi-gtk.
+;;;;
+;;;; This uses the PLplot "extcairo" driver.
+;;;;
 ;;;; With the "extcairo" device used here we have to do all the
 ;;;;   work for interactive selection ourselves. This is in
 ;;;;   contrast with the "extqt" PLplot device (used in the
