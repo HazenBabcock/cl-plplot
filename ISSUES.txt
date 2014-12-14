@@ -1,7 +1,7 @@
 ;
-; Known issues based on testing with SBCL v1.1.14.49 (default features), PLplot 5.9.11.
+; Known issues based on testing with SBCL v1.2.5.68-ea26488 (default features), PLplot 5.10.0.
 ;
-; Hazen 01/14
+; Hazen 12/14
 ;
 
 
@@ -11,20 +11,4 @@
      programs.
 
    Workaround - Click on the window and hit the return key.
-
-
-2) "xcairo" driver - I believe that this was broken by r10329 of PLplot, but I've not been
-     able to identify why.
-
-   "pngcairo" driver - Gives a SB-SYS:MEMORY-FAULT-ERROR (like the "xcairo" driver).
-
-   The other file based drivers ("epscairo", "pdfcairo", "pscairo", "svgcairo") all seem to
-   work ok. I've not tested the "extcairo" or the "memcairo" devices recently.
-
-   Workaround - The "qtwidget" driver works well.. Or, it appears that building SBCL with
-     the following features eliminates the cairo issues, :sb-thread, :sb-safepoint, 
-     :sb-thruption and :sb-wtimer (I only tested with all of these together, I did not
-     test the individually to see if any one of them would solve the cairo issues).
-
-     03/04/14 - Upgraded to Ubuntu 13.10 and the xcairo driver is broken again..
 
