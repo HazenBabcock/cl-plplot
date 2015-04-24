@@ -1,4 +1,29 @@
 
+Instructions for PLplot 5.11.0
+------------------------------
+
+Version 5.11.0 of PLplot includes smoke binding, but they are not enabled by default. In
+order to build and use the smoke bindings you need to use the -DENABLE_smoke=ON switch
+when compiling PLplot.
+
+> cd build_dir
+> cmake /path/to/plplot -DENABLE_smoke=ON
+> make
+> sudo make install
+
+Once this is done CFFI should be able to find the smoke binding library and everything
+should just work. 
+
+Note: If you still have a hand generated version of the smoke binding library created 
+using the instructions below, then this should (I think) take precedence over the PLplot
+smoke binding library. However they are currently identical so this should not cause
+a problem.
+
+
+
+Instructions for older versions of PLplot
+-----------------------------------------
+
 Unfortunately, some fiddling is necessary to get this to work as we have to generate the
 PLplot smoke bindings ourselves. A future goal is to get the smoke bindings for PLplot 
 included in the PLplot project so that you can just use them, but this will probably take
