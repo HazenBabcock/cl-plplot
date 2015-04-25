@@ -22,7 +22,7 @@
 			 (aref phase i)
 			 (- (* (/ 180.0 pi) (atan freq))))))
 	       (pladv 0)
-	       (plvpor 0.15 0.85 0.1 0.9)
+	       (plvpor 0.15d0 0.85d0 0.1d0 0.9d0)
 	       (plwind -2.0 3.0 -80.0 0.0)
 	       (plcol0 1)
 	       (if type

@@ -16,7 +16,7 @@
 	(plfont (1+ font))
 	(pladv 0)
 	(plcol0 2)
-	(plvpor 0.1 1.0 0.1 0.9)
+	(plvpor 0.1d0 1.0d0 0.1d0 0.9d0)
 	(plwind 0.0 1.0 0.0 1.3)
 	(plbox "bcg" 0.1 0 "bcg" 0.1 0)
 	(plcol0 15)
@@ -24,7 +24,7 @@
 	  (plmtex "b" 1.5 (+ (* 0.1 i) 0.05) 0.5 (write-to-string i)))
 	(let ((k 0))
 	  (dotimes (i 13)
-	    (plmtex "lv" 1.0 (- 1.0 (/ (* 2.0 (+ i 1.0)) 26.0)) 1.0 (write-to-string (* 10 i)))
+	    (plmtex "lv" 1.0 (- 1.0 (/ (+ (* 2.0 i) 1.0) 26.0)) 1.0 (write-to-string (* 10 i)))
 	    (dotimes (j 10)
 	      (let ((x (make-float-array 1))
 		    (y (make-float-array 1)))
@@ -35,7 +35,7 @@
 		(incf k)))))
 	(if (= kind-font 0)
 	    (plmtex "t" 1.5 0.5 0.5 "PLplot Example 6 - plpoin symbols (compact)")
-	    (plmtex "t" 1.5 0.5 0.5 "PLplot Example 6 - plpoin symbols (extended)")))))	
+	    (plmtex "t" 1.5 0.5 0.5 "PLplot Example 6 - plpoin symbols (extended)")))))
   (plend1))
 
 ;;;;
