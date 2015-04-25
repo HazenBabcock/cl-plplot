@@ -60,7 +60,7 @@
 	(space1 (make-int-array 1 1500)))
     (dotimes (i 101)
       (setf (aref x i) (* 3.6 i))
-      (setf (aref y i) (sin (/ (* (aref x i) 3.14159) 180.0))))
+      (setf (aref y i) (sin (/ (* (aref x i) pi) 180.0))))
     (pladv 0)
     (plvsta)
     (plwind 0.0 360.0 -1.2 1.2)
