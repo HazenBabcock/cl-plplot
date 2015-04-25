@@ -1,10 +1,8 @@
 ;;;;
 ;;;; Checks that the lisp examples match the current PLplot examples.
 ;;;; This is designed to work on a unix like system. Temporary files 
-;;;; may be created in your home directory with names lisp.ps and
-;;;; plplot.ps.
-;;;; 
-;;;;
+;;;; may be created in your current working directory with the names 
+;;;; temp_lisp* and temp_plplot*
 ;;;;
 ;;;; hazen 04/15
 ;;;;
