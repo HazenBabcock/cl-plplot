@@ -1293,6 +1293,12 @@
     "Deletes and releases memory used by a strip chart."
   (id plint))
 
+(pl-defcfun ("c_plstring" plstring) :void
+    "Plot a glyph at the specified points."
+  (n plint (length x) (= (length x) (length y)))
+  (x *plflt)
+  (y *plflt)
+  (glyph plstr))
 
 (pl-defcfun ("c_plstyl" plstyl) :void
     "Set line style."
