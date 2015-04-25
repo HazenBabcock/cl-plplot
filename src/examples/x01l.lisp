@@ -63,7 +63,7 @@
       (setf (aref y i) (sin (/ (* (aref x i) 3.14159) 180.0))))
     (pladv 0)
     (plvsta)
-    (plwind 0.0 360.0 -1.2 1.0)
+    (plwind 0.0 360.0 -1.2 1.2)
     (plcol0 1)
     (plbox "bcnst" 60.0 2 "bcnstv" 0.2 2)
     (plstyl 1 mark1 space1)
@@ -71,7 +71,7 @@
     (plbox "g" 30.0 0 "g" 0.2 0)
     (plstyl 0 mark0 space0)
     (plcol0 3)
-    (pllab "Angle (degrees)" "sine" "#frPLplot Example 1 - Sine Function")
+    (pllab "Angle (degrees)" "sine" "#frPLplot Example 1 - Sine function")
     (plcol0 4)
     (plline x y))
 

@@ -42,7 +42,7 @@
 	  (b (make-int-array 116)))
       (dotimes (i 100)
 	(let ((h (* (/ 360.0 10.0) (mod i 10)))
-	      (l (+ 0.15 (/ (* (- 0.85 0.15) (/ i 10.0)) 9.0))))
+	      (l (+ 0.15 (/ (* (- 0.85 0.15) (floor (/ i 10))) 9.0))))
 	  (multiple-value-bind (r1 g1 b1)
 	      (plhlsrgb h l 1.0)
 	    (setf (aref r (+ i 16)) (floor (* r1 255.001))
