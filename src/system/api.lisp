@@ -1319,6 +1319,22 @@
   (nlevel plint (pl-length clevel) nil))
 
 
+(pl-defcfun ("c_plsurf3dl" plsurf3dl) :void 
+    "Plot shaded 3-d surface plot for z[x][y] with y index limits."
+  (x *plflt)
+  (y *plflt)
+  (z **plflt)
+  (nx plint (length x) nil)
+  (ny plint (length y) nil)
+  (opt plint)
+  (clevel *plflt)
+  (nlevel plint (pl-length clevel) nil)
+  (indexxmin plint)
+  (indexxmax plint)
+  (indexymin *plint)
+  (indexymax *plint))
+
+
 (pl-defcfun ("c_plsvect" plsvect) :void
     "Set arrow style for vector plots."
   (arrowx *plflt)
