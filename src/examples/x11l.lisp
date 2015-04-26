@@ -25,7 +25,7 @@
 	 (z (make-float-array (list xpts ypts)))
 	 (clevel (make-float-array levels)))
     (dotimes (i xpts)
-      (setf (aref x i) (* 3.0 (/ (- i (/ xpts 2.0)) (/ xpts 2.0)))))
+      (setf (aref x i) (* 3.0 (/ (- i (floor (/ xpts 2))) (floor (/ xpts 2.0))))))
     (dotimes (i ypts)
       (setf (aref y i) (* 3.0 (/ (- i (/ ypts 2.0)) (/ ypts 2.0)))))
     (dotimes (i xpts)
