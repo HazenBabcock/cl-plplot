@@ -22,7 +22,7 @@
 	 (y (make-float-array ypts))
 	 (z (make-float-array (list xpts ypts))))
     (dotimes (i xpts)
-      (let ((xx (/ (- i (/ xpts 2.0)) (/ xpts 2.0))))
+      (let ((xx (/ (- i (floor (/ xpts 2.0))) (floor (/ xpts 2.0)))))
 	(setf (aref x i) (* (+ xx (/ 1.0 xpts)) 
 			    (/ (+ xpts 1.0) xpts)))
 	(dotimes (j ypts)
