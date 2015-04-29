@@ -57,7 +57,7 @@
 	    (aref tr 4) (/ 2.0 (- ny 1.0))
 	    (aref tr 5) -1.0)
       (dotimes (i nx)
-	(let ((x (/ (- i (/ nx 2.0)) (/ nx 2.0))))
+	(let ((x (/ (- i (floor (/ nx 2))) (floor (/ nx 2)))))
 	  (dotimes (j ny)
 	    (let ((y (- (/ (- j (/ ny 2.0)) (/ ny 2.0)) 1.0)))
 	      (setf (aref z i j) (- (* x x) (* y y) (* (sin (* 7.0 x)) (cos (* 7.0 y))))
@@ -71,8 +71,8 @@
       (dotimes (i nx)
 	(dotimes (j ny)
 	  (multiple-value-bind (x y) (my-pltr i j)
-	    (let ((argx (/ (* x 3.14159) 2.0))
-		  (argy (/ (* y 3.14159) 2.0))
+	    (let ((argx (/ (* x pi) 2.0))
+		  (argy (/ (* y pi) 2.0))
 		  (distort 0.4))
 	      (setf (aref cgrid0-x i) x
 		    (aref cgrid0-y j) y
@@ -92,7 +92,7 @@
       (plpsty 0)
       (plshades z
 		nil
-		-1.0 1.0 -1.0 1.0 
+		-1.0 1.0 -1.0 1.0
 		shedge 2 0 0
 		'plfill-callback
 		t 
