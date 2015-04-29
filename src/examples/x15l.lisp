@@ -6,7 +6,7 @@
 
 (in-package :plplot-examples)
 
-; This doesn't actually do anything, you could all use nil in the call to plshade, 
+; This doesn't actually do anything, you could also use nil in the call to plshade, 
 ; but it is provided as an example of how you might use a callback in plshade.
 (cffi:defcallback x15-defined-fn-callback plint ((x plflt) (y plflt))
   (declare (ignore x y))
