@@ -696,6 +696,58 @@
   (maxlat plflt))
 
 
+(pl-defcfun ("c_plmapfill" plmapfill) :void
+    "Plot all or a subset of Shapefile data, filling the polygons."
+  (mapform plfunc)
+  (name plstr)
+  (minx plflt)
+  (maxx plflt)
+  (miny plflt)
+  (maxy plflt)
+  (plotentries *plint)
+  (n plint (length plotentries) nil))
+
+
+(pl-defcfun ("c_plmapline" plmapline) :void
+    "Plot all or a subset of Shapefile data using lines in world coordinates."
+  (mapform plfunc)
+  (name plstr)
+  (minx plflt)
+  (maxx plflt)
+  (miny plflt)
+  (maxy plflt)
+  (plotentries *plint)
+  (n plint (length plotentries) nil))
+
+
+(pl-defcfun ("c_plmapstring" plmapstring) :void
+    "Plot all or a subset of Shapefile data using strings or points in world coordinates."
+  (map-form plfunc)
+  (name plstr)
+  (string plstr)
+  (minx plflt)
+  (maxx plflt)
+  (miny plflt)
+  (maxy plflt)
+  (plotentries *plint)
+  (n plint (length plotentries) nil))
+
+
+(pl-defcfun ("c_plmaptex" plmaptex) :void
+    "Draw text at points defined by Shapefile data in world coordinates."
+  (map-form plfunc)
+  (name plstr)
+  (dx plflt)
+  (dy plflt)
+  (just plflt)
+  (text plstr)
+  (minx plflt)
+  (maxx plflt)
+  (miny plflt)
+  (maxy plflt)
+  (plotentry plint))
+
+
 (pl-defcfun ("c_plmeridians" plmeridians) :void
     "Plot latitude and longitude lines."
   (map-form plfunc)
