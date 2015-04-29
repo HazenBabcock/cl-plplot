@@ -26,7 +26,7 @@
       (let ((time (* n dt))
 	    (noise (- (plrandd) 0.5)))
 	(setf y1 (+ y1 noise)
-	      y2 (sin (/ (* time 3.14159) 18.0))
+	      y2 (sin (/ (* time pi) 18.0))
 	      y3 (* y2 noise)
 	      y4 (+ y2 (/ noise 3.0)))
 	(when (/= (mod n 2) 0)
