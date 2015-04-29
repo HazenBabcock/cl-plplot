@@ -170,16 +170,22 @@
     (plcol0 5)
     (plmapline nil "ss/ss64ne_Road_Centreline" minx maxx miny maxy majorroads)
 
-    ; draw buildings
+    ; Draw buildings
     (plwidth 1.0)
     (plcol0 1)
     (plmapfill nil "ss/ss64ne_Building_Area" minx maxx miny maxy nil)
 
-    ;labels
+    ; Labels
     (plsfci #x80000100)
     (plschr 0 0.8)
     (plmaptex nil "ss/ss64ne_General_Text" 1.0 0.0 0.5 "MARTINHOE CP" minx maxx miny maxy 202)
     (plschr 0 0.7)
+
+    ;
+    ; Note: The PLplot example includes "\n" characters in the text. These are not handled properly
+    ;  here in that somewhere between here and the output "\n" just becomes "n". Since the final
+    ;  results looks the same I just dropped them.
+    ;
     (plmaptex nil "ss/ss64ne_General_Text" 1.0 0.0 0.5 "Heale Down" minx maxx miny maxy 13)
     (plmaptex nil "ss/ss64ne_General_Text" 1.0 0.0 0.5 "South Down" minx maxx miny maxy 34)
     (plmaptex nil "ss/ss64ne_General_Text" 1.0 0.0 0.5 "Martinhoe Common" minx maxx miny maxy 42)
