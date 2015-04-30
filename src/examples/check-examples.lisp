@@ -4,60 +4,59 @@
 ;;;; may be created in your current working directory with the names 
 ;;;; temp_lisp* and temp_plplot*
 ;;;;
+;;;; This requires the cairo family of drivers and ImageMagick (to
+;;;; do the picture comparison).
+;;;;
 ;;;; hazen 04/15
 ;;;;
 
 (in-package :plplot-examples)
 
-;(defparameter cmp-command "cmp -s -i 190 ")
-(defparameter diff-command "diff -q ")
-(defparameter lisp-file "temp_lisp.ps")
+(defparameter diff-command "compare -metric AE -fuzz 1% ")
+(defparameter lisp-file "temp_lisp.png")
 (defparameter plplot-examples-dir (concatenate 'string "/usr/local/share/plplot" (plgver) "/examples/c/"))
-(defparameter plplot-file "temp_plplot.ps")
+(defparameter plplot-file "temp_plplot.png")
 (defparameter rm-command "rm ")
 (defparameter tail-command "tail -n +9 ")
 
 (defun check-example (lisp-example-fn plplot-example)
   (let ((differs nil))
 
+    ; Remove old files.
+    (trivial-shell:shell-command (concatenate 'string
+					      rm-command
+					      lisp-file "* "
+					      plplot-file "* "
+					      "temp_diff.png*"))
+					      
     ; Create lisp version of the example.
     (plsfnam lisp-file)
-    (funcall lisp-example-fn "psc")
+    (multiple-value-bind (fam num bmax) (plgfam)
+      (declare (ignore fam num))
+      (plsfam 1 1 bmax))
+    (funcall lisp-example-fn "pngcairo")
 
     ; Create plplot (C) version of the example.
     (trivial-shell:shell-command (concatenate 'string
 					      plplot-examples-dir
 					      plplot-example
-					      " -dev psc -o "
+					      " -dev pngcairo -fam -o "
 					      plplot-file))
 
-    ; Remove time stamps.
-    (trivial-shell:shell-command (concatenate 'string
-					      tail-command
-					      lisp-file " > "
-					      lisp-file "t"))
-
-    (trivial-shell:shell-command (concatenate 'string
-					      tail-command
-					      plplot-file " > "
-					      plplot-file "t"))
-
-    ; Compare the outputs using diff.
-    (when (> (length (trivial-shell:shell-command (concatenate 'string
-							       diff-command
-							       lisp-file "t "
-							       plplot-file "t")))
-	     0)
-      (setf differs t))
-
-    ; Remove temporary files if the files match.
-    (if differs
-      (format t "~%Lisp and plplot files differ~%")
-      (trivial-shell:shell-command (concatenate 'string
-						rm-command
-						lisp-file " " lisp-file "t "
-						plplot-file " " plplot-file "t")))
-
+    ; Compare the outputs using image diff.
+    (do ((i 1 (+ i 1)))
+	((not (probe-file (format nil "~a.~a" lisp-file i))))
+      (multiple-value-bind (ret output err-output exit-status)
+	  (trivial-shell:shell-command (concatenate 'string
+						    diff-command
+						    lisp-file "." (write-to-string i) " " 
+						    plplot-file "." (write-to-string i)
+						    " temp_diff.png." (write-to-string i)))
+	(declare (ignore ret err-output exit-status))
+	(when output
+	  (setf differs t)
+	  (format t "~a pixels differ in page ~a.~%" (string-trim '(#\space #\return #\newline) output) i))))
+      
     differs))
 
 
