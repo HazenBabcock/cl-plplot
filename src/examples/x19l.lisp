@@ -103,10 +103,10 @@
   (pllsty 1)
   (let ((beachareas (vector 23 24))
 	(nwoodlandareas 94)
-	(woodlandareas (make-float-array 94))
+	(woodlandareas (make-int-array 94))
 	(shingleareas (vector 0 1 24 25 26 27 28 29 30 31 32 33 34 35 217 2424 2425 2426 2427 2428 2491 2577))
 	(ncragareas 2024)
-	(cragareas (make-float-array 2024))
+	(cragareas (make-int-array 2024))
 	(majorroads (vector 33 48 71 83 89 90 101 102 111))
 	(minx 265000)
 	(maxx 270000)
@@ -181,23 +181,30 @@
     (plmaptex nil "ss/ss64ne_General_Text" 1.0 0.0 0.5 "MARTINHOE CP" minx maxx miny maxy 202)
     (plschr 0 0.7)
 
-    ;
-    ; Note: The PLplot example includes "\n" characters in the text. These are not handled properly
-    ;  here in that somewhere between here and the output "\n" just becomes "n". Since the final
-    ;  results looks the same I just dropped them.
-    ;
-    (plmaptex nil "ss/ss64ne_General_Text" 1.0 0.0 0.5 "Heale Down" minx maxx miny maxy 13)
-    (plmaptex nil "ss/ss64ne_General_Text" 1.0 0.0 0.5 "South Down" minx maxx miny maxy 34)
-    (plmaptex nil "ss/ss64ne_General_Text" 1.0 0.0 0.5 "Martinhoe Common" minx maxx miny maxy 42)
+    (plmaptex nil "ss/ss64ne_General_Text" 1.0 0.0 0.5
+	      (concatenate 'string "Heale" (string #\newline) "Down")
+	      minx maxx miny maxy 13)
+    (plmaptex nil "ss/ss64ne_General_Text" 1.0 0.0 0.5
+	      (concatenate 'string "South" (string #\newline) "Down")
+	      minx maxx miny maxy 34)
+    (plmaptex nil "ss/ss64ne_General_Text" 1.0 0.0 0.5
+	      (concatenate 'string "Martinhoe" (string #\newline) "Common")
+	      minx maxx miny maxy 42)
     (plmaptex nil "ss/ss64ne_General_Text" 1.0 0.0 0.5 "Woody Bay" minx maxx miny maxy 211)
     (plschr 0 0.6)
     (plmaptex nil "ss/ss64ne_General_Text" 1.0 0.0 0.5 "Mill Wood" minx maxx miny maxy 16)
     (plmaptex nil "ss/ss64ne_General_Text" 1.0 0.0 0.5 "Heale Wood" minx maxx miny maxy 17)
     (plmaptex nil "ss/ss64ne_General_Text" 1.0 0.0 1.0 "Bodley" minx maxx miny maxy 31)
     (plmaptex nil "ss/ss64ne_General_Text" 1.0 0.0 0.0 "Martinhoe" minx maxx miny maxy 37)
-    (plmaptex nil "ss/ss64ne_General_Text" 1.0 0.0 0.5 "Woolhanger Common" minx maxx miny maxy 60)
-    (plmaptex nil "ss/ss64ne_General_Text" 1.0 0.0 0.5 "West Ilkerton Common" minx maxx miny maxy 61)
-    (plmaptex nil "ss/ss64ne_General_Text" 1.0 0.0 0.5 "Caffyns Heanton Down" minx maxx miny maxy 62))
+    (plmaptex nil "ss/ss64ne_General_Text" 1.0 0.0 0.5
+	      (concatenate 'string "Woolhanger" (string #\newline) "Common")
+	      minx maxx miny maxy 60)
+    (plmaptex nil "ss/ss64ne_General_Text" 1.0 0.0 0.5
+	      (concatenate 'string "West Ilkerton" (string #\newline) "Common")
+	      minx maxx miny maxy 61)
+    (plmaptex nil "ss/ss64ne_General_Text" 1.0 0.0 0.5
+	      (concatenate 'string "Caffyns" (string #\newline) "Heanton" (string #\newline) "Down")
+	      minx maxx miny maxy 62))
 
   (plend1))
 
