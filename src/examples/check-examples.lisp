@@ -43,6 +43,14 @@
 					      " -dev pngcairo -fam -o "
 					      plplot-file))
 
+    ; Check that both examples have the same number of pages.
+    (let ((lisp-npages (1- (do ((i 1 (+ i 1)))
+			       ((not (probe-file (format nil "~a.~a" lisp-file i))) i))))
+	  (plplot-npages (1- (do ((i 1 (+ i 1)))
+				 ((not (probe-file (format nil "~a.~a" plplot-file i))) i)))))
+      (when (not (= lisp-npages plplot-npages))
+	(format t "Number of pages differ, ~a vs ~a.~%" lisp-npages plplot-npages)))
+
     ; Compare the outputs using image diff.
     (do ((i 1 (+ i 1)))
 	((not (probe-file (format nil "~a.~a" lisp-file i))))
@@ -53,9 +61,10 @@
 						    plplot-file "." (write-to-string i)
 						    " temp_diff.png." (write-to-string i)))
 	(declare (ignore ret err-output exit-status))
-	(when output
-	  (setf differs t)
-	  (format t "~a pixels differ in page ~a.~%" (string-trim '(#\space #\return #\newline) output) i))))
+	(let ((diffs (parse-integer (string-trim '(#\space #\return #\newline) output))))
+	  (when (not (= diffs 0))
+	    (setf differs t)
+	    (format t "~a pixels differ in page ~a.~%" (string-trim '(#\space #\return #\newline) output) i)))))
       
     differs))
 
