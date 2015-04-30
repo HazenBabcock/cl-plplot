@@ -26,7 +26,7 @@
 		   (dy (* 0.5 (- (stretch-ymax s) (stretch-ymin s)))))
 	       (values (+ x0 (* (- x0 x)
 				(- 1.0 (* (stretch-stretch s)
-					  (cos(/ (- y y0) (* dy 3.14159 0.5)))))))
+					  (cos (* (/ (- y y0) dy) pi 0.5))))))
 		       y)))
 	   (read-img ()
 	     (let* ((img-rgb (let ((file-name (format nil "~A/src/examples/lena.png"
