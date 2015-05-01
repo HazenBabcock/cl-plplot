@@ -182,9 +182,9 @@
 				 ((= page 0)
 				  (format nil "#~A" (aref greek slice)))
 				 ((and (>= page 1) (<= page 3))
-				  (format nil "##[0x~4,'0x]" (aref type1 (+ (aref offset page) slice))))
+				  (format nil "~(##[0x~4,'0x]~)" (aref type1 (+ (aref offset page) slice))))
 				 (t
-				  (format nil "##[0x~4,'0x]" (+ (aref lo page) slice))))))
+				  (format nil "~(##[0x~4,'0x]~)" (+ (aref lo page) slice))))))
 			  (plptex x (+ y yoffset) 1 0 0.5 (subseq cmdstring 1))
 			  (plptex x (- y yoffset) 1 0 0.5 cmdstring))))
 		    (incf slice))))))))
