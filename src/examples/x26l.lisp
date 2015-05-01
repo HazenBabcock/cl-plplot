@@ -34,8 +34,8 @@
 					    (log (/ 1.0
 						    (sqrt (+ 1.0 (expt freq 2.0))))
 						 10.0))
-			   (aref phase i) (* -1.0 (/ 180.0 3.14159) (atan freq)))))
-		 (plvpor 0.15 0.85 0.1 0.9)
+			   (aref phase i) (* -1.0 (/ 180.0 pi) (atan freq)))))
+		 (plvpor 0.15d0 0.85d0 0.1d0 0.9d0)
 		 (plwind -2.0 3.0 -80.0 0.0)
 		 (plcol0 1)
 		 (cond
@@ -45,7 +45,7 @@
 		    (plbox "bcfghlnst" 0.0 0 "bcghnstv" 0.0 0)))
 		 (plcol0 2)
 		 (plline freql ampl)
-		 (plcol0 1)
+		 (plcol0 2)
 		 (plptex 1.6 -30.0 1.0 -20.0 0.5 (aref line-label index))
 		 (plcol0 1)
 		 (plmtex "b" 3.2 0.5 0.5 (aref x-label index))
@@ -58,6 +58,7 @@
 		   (plbox "" 0.0 0 "cmstv" 30.0 3.0)
 		   (plcol0 3)
 		   (plline freql phase)
+		   (plstring freql phase "#(728)")
 		   (plcol0 3)
 		   (plmtex "r" 5.0 0.5 0.5 (aref alty-label index)))
 		 (plscol0a 15 32 32 32 0.7)
@@ -69,7 +70,7 @@
 			   1.0 (vector 2 3) (elt legend-text index)
 			   nil nil nil nil
 			   (vector 2 3) (vector 1 1) (vector 1.0 1.0)
-			   (vector 0 3) (vector 0 1.0) (vector 0 4) (vector "" "*")))))
+			   (vector 0 3) (vector 0 1.0) (vector 0 4) (vector "" "#(728)")))))
       (plinit)
       (plfont 2)
       (dotimes (i (length x-label))
