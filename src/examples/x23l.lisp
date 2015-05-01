@@ -155,7 +155,7 @@
     (plinit)
     (dotimes (page 11)
       (pladv 0)
-      (plvpor 0.02 0.98 0.02 0.90)
+      (plvpor 0.02d0 0.98d0 0.02d0 0.90d0)
       (plwind 0.0 1.0 0.0 1.0)
       (multiple-value-bind (xmin xmax ymin ymax) (plgspa)
 	(declare (ignore xmin xmax))
