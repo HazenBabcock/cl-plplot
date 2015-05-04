@@ -58,7 +58,7 @@
 	    "bcd" "" (- zmax zmin) 0)
     (plschr 0.0 1.0)
     (dotimes (i nrevolution)
-      (let* ((omega (* 2.0 3.14159 (/ i nrevolution)))
+      (let* ((omega (* 2.0 pi (/ i nrevolution)))
 	     (sin-omega (sin omega))
 	     (cos-omega (cos omega)))
 	(plptex3 xmid ymid zmin
@@ -98,7 +98,7 @@
 	    "bcd" "" (- zmax zmin) 0)
     (plschr 0.0 1.0)
     (dotimes (i nrotation)
-      (let* ((omega (* 2.0 3.14159 (/ i nrevolution)))
+      (let* ((omega (* 2.0 pi (/ i nrotation)))
 	     (sin-omega (sin omega))
 	     (cos-omega (cos omega)))
 	(plptex3 xmid ymax (- zsmax (* dzsrot i))
@@ -138,7 +138,7 @@
 	    "bcd" "" (- zmax zmin) 0)
     (plschr 0.0 1.0)
     (dotimes (i nshear)
-      (let* ((omega (+ 0.05 (* 2.0 3.14159 (/ i nshear))))
+      (let* ((omega (+ 0.05 (* 2.0 pi (/ i nshear))))
 	     (sin-omega (sin omega))
 	     (cos-omega (cos omega)))
 	(plptex3 xmid ymax (- zsmax (* dzsshear i))
@@ -154,7 +154,7 @@
 		 -1.0
 		 0.0
 		 0.0
-		 (* 0.5 yrange sin-omega)
+		 (* -0.5 yrange sin-omega)
 		 (* 0.5 zrange cos-omega)
 		 0.5 "shear for x = x#dmax#u")
 	(plptex3 xmid (- ysmax (* dysshear i)) zmin
@@ -177,11 +177,11 @@
 	    "b" "" (- ymax ymin) 0
 	    "bcd" "" (- zmax zmin) 0)
     (plschr 0.0 1.2)
-    (let* ((pstring "The future of our civilization depends on software freedom")
-	   (domega (/ (* 2.0 3.14159) (length pstring)))
+    (let* ((pstring "The future of our civilization depends on software freedom.")
+	   (domega (/ (* 2.0 pi) (length pstring)))
 	   (omega 0.0)
 	   (radius 0.5)
-	   (pitch (/ 1.0 (* 2.0 3.14159))))
+	   (pitch (/ 1.0 (* 2.0 pi))))
       (dotimes (i (length pstring))
 	(let ((sin-omega (sin omega))
 	      (cos-omega (cos omega)))
