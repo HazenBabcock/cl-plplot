@@ -128,8 +128,7 @@
 	       (setf (c-pointer instance) (foreign-alloc c-type :count len))
 	       (let ((temp-ptr (c-pointer instance)))
 		 (dotimes (i len)
-		   (setf (mem-aref temp-ptr c-type i) 
-			 (convert-to-foreign (aref array-or-integer i) c-type)))))
+		   (setf (mem-aref temp-ptr c-type i) (aref array-or-integer i)))))
 	     ; two-dimensional array
 	     (let* ((sx (array-dimension array-or-integer 0))
 		    (sy (array-dimension array-or-integer 1))
@@ -140,8 +139,7 @@
 	       (let ((temp-ptr (c-pointer instance)))
 		 (dotimes (i sx)
 		   (dotimes (j sy)
-		     (setf (mem-aref temp-ptr c-type (+ (* i sy) j))
-			   (convert-to-foreign (aref array-or-integer i j) c-type))))))))
+		     (setf (mem-aref temp-ptr c-type (+ (* i sy) j)) (aref array-or-integer i j))))))))
 	((integerp array-or-integer)
 	 (progn
 	   (setf (size instance) array-or-integer)
