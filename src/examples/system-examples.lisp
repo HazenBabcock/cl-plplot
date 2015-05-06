@@ -52,7 +52,7 @@
   (plsdev gdev)
   (plinit)
   (plcol0 1)
-  (plwid 2)
+  (plwidth 2)
   (plenv 0 6 0 36 0 0)
   (plcol0 2)
   (pllab "(x)" "(y)" "y = x#u2")
@@ -167,7 +167,7 @@
   (plvpor 0 1 0 1)
   (plwind 0 1 0 1)
   (plschr 0 4)
-  (plptex 0.5 0.5 1.0 0.0 0.5 "Has#[238]t#[238]")
+  (plptex 0.5 0.5 1.0 0.0 0.5 "Has#(238)t#(238)")
   (plend))
 
 
