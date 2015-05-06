@@ -44,10 +44,10 @@
 		1 1 0 0
 		(vector (+ pl-legend-line pl-legend-symbol)) 
 		1.0 1.0 2.0
-		1 (vector (1+ (mod k 8))) (vector (format nil "~,2f" k))
+		1 (vector (1+ (mod k 8))) (vector (format nil "~2,'0d" k))
 		nil nil nil nil
 		(vector (1+ (mod k 8))) (vector 1) (vector 1.0)
-		(vector (1+ (mod k 8))) (vector 1) (vector 4) (vector "*")))
+		(vector (1+ (mod k 8))) (vector 1) (vector 4) (vector "#(728)")))
 
     ; page 2
     (pladv 0)
@@ -55,7 +55,7 @@
     (plwind 0.0 1.0 0.0 1.0)
     (plbox "bc" 0.0 0 "bc" 0.0 0)
     (plsfont pl-fci-sans -1 -1)
-    (plmtex "t" 8.0 0.5 0.5 "The effect of nrow, ncolumn, PL_LEGEND_ROW_MAJOR")
+    (plmtex "t" 8.0 0.5 0.5 "The effect of nrow, ncolumn, PL_LEGEND_ROW_MAJOR,")
     (plmtex "t" 6.0 0.5 0.5 "and position for the same legend data")
     (let ((opt-base (+ pl-legend-background pl-legend-bounding-box))
 	  (opt-array (make-int-array 7 (+ pl-legend-line pl-legend-symbol)))
@@ -63,13 +63,13 @@
 	  (line-widths (make-float-array 7 1.0))
 	  (symbol-scales (make-float-array 7 1.0))
 	  (symbol-numbers (make-int-array 7 2))
-	  (symbols (vector "*" "*" "*" "*" "*" "*" "*"))
+	  (symbols (vector "#(728)" "#(728)" "#(728)" "#(728)" "#(728)" "#(728)" "#(728)"))
 	  (text (vector "" "" "" "" "" "" ""))
 	  (text-colors (make-int-array 7 0))
 	  (line-colors (make-int-array 7 0))
 	  (symbol-colors (make-int-array 7 0)))
       (dotimes (k 7)
-	(setf (aref text k) (format nil "~,2f" k)
+	(setf (aref text k) (format nil "~2,'0d" k)
 	      (aref text-colors k) (1+ (mod k 8))
 	      (aref line-colors k) (1+ (mod k 8))
 	      (aref symbol-colors k) (1+ (mod k 8))))
@@ -145,7 +145,7 @@
 	   (line-widths (make-float-array 7 1.0))
 	   (symbol-scales (make-float-array 7 1.0))
 	   (symbol-numbers (make-int-array 7 2))
-	   (symbols (vector "*" "*" "*" "*" "*" "*" "*"))
+	   (symbols (vector "#(728)" "#(728)" "#(728)" "#(728)" "#(728)" "#(728)" "#(728)"))
 	   (text (vector "" "" "" "" "" "" ""))
 	   (text-colors (make-int-array 7 0))
 	   (line-colors (make-int-array 7 0))
@@ -163,7 +163,7 @@
 	(setf nrow (if (< nlegend 3) nlegend 3))
 	(multiple-value-bind (legend-width legend-height)
 	    (pllegend opt position x y
-		      0.05 15 1 1 nrow ncolumn
+		      0.025 15 1 1 nrow ncolumn
 		      (make-int-array nlegend (+ pl-legend-line pl-legend-symbol))
 		      1.0 1.0 1.5
 		      1 text-colors text
@@ -534,7 +534,7 @@
 	(dotimes (i 2)
 	  (plcolorbar-example "cmap1_blue_yellow.pal" i 4 2 9 values-even))
 	(dotimes (i 2)
-	  (plcolorbar-example "cmap1_blue_yellow.pal" i 0 0 8 values-uneven))))
+	  (plcolorbar-example "cmap1_blue_yellow.pal" i 0 0 9 values-uneven))))
 
     (plend1)))
 
