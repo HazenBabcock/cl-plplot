@@ -1,9 +1,4 @@
 
-Plans:
-
-..
-
-
 Current:
 
 05/05/15: Lisp examples updated to match all the C examples in PLplot 5.11.0.
