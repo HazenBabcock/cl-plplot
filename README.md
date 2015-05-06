@@ -3,14 +3,15 @@ The Common Lisp / CFFI based interface to the [PLplot](http://plplot.sourceforge
 
 ##News##
 
+####2015-05-06####
+Finished updating the Lisp examples to match the PLplot examples for v5.11.
+
 ####2014-12-13####
 Added gtk-example.lisp demonstrating how to combine cl-plplot and [cl-cffi-gtk](http://www.crategus.com/index.php/projekte/).
 
 ####2014-07-05####
 Added commonqt-plot package demonstrating how to combine cl-plplot and [CommonQt](http://common-lisp.net/project/commonqt/).
 
-####2014-05-06####
-Finished updating the Lisp versions of the standard PLplot examples.
 
 ##Layout##
 
