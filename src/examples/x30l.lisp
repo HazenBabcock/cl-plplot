@@ -63,7 +63,7 @@
 	      (vector 0.0 0.0)
 	      (vector 0.0 0.0)
 	      (vector 0.0 1.0)
-	      (vector 0.0 0.0))
+	      (vector nil nil))
   (plgradient (vector 0.0 1.0 1.0 0.0)
 	      (vector 0.0 0.0 1.0 1.0)
 	      90.0)
