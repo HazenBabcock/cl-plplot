@@ -319,8 +319,7 @@
 	     (let ((temp-pointer (foreign-alloc c-type :count size-y)))
 	       (setf (mem-aref (c-pointer instance) :pointer i) temp-pointer)
 	       (dotimes (j size-y)
-		 (setf (mem-aref temp-pointer c-type j)
-		       (convert-to-foreign (aref array-or-list i j) c-type)))))))
+		 (setf (mem-aref temp-pointer c-type j) (aref array-or-list i j)))))))
 	((listp array-or-list)
 	 (progn
 	   (setf (size-x instance) (elt array-or-list 0))
