@@ -1,10 +1,14 @@
 
 Plans:
 
-1. Update examples after the upcoming PLplot release.
+..
 
 
 Current:
+
+05/05/15: Lisp examples updated to match all the C examples in PLplot 5.11.0.
+	  Added the additional functions in the PLplot API that are used in
+	  the examples.
 
 12/13/14: Added demo of how to use the Cairo driver in a GTK application.
 	  This requires cl-cffi-gtk and is located in the cl-cffi-gtk-plot
