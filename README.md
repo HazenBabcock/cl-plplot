@@ -1,21 +1,21 @@
-#[cl-plplot](http://common-lisp.net/project/cl-plplot/)#
+# [cl-plplot](http://common-lisp.net/project/cl-plplot/) #
 The Common Lisp / CFFI based interface to the [PLplot](http://plplot.sourceforge.net/) Scientific Plotting Library.
 
-##News##
+## News ##
 
-####2015-05-06####
+#### 2015-05-06 ####
 Finished updating the Lisp examples to match the PLplot examples for v5.11.
 
-####2014-12-13####
+#### 2014-12-13 ####
 Added gtk-example.lisp demonstrating how to combine cl-plplot and [cl-cffi-gtk](http://www.crategus.com/index.php/projekte/).
 
-####2014-07-05####
+#### 2014-07-05 ####
 Added commonqt-plot package demonstrating how to combine cl-plplot and [CommonQt](http://common-lisp.net/project/commonqt/).
 
 
-##Layout##
+## Layout ##
 
-####cl-plplot####
+#### cl-plplot ####
 This is currently 18 files (in src/window).
 * axis-label.lisp handles the axis-label and 3D-axis-label object.
 * axis.lisp handles the axis object.
@@ -40,7 +40,7 @@ The file src/examples/window-examples.lisp contains examples of how to use
 cl-plplot to generate different 2D plots.
 
 
-####cl-plplot-system####
+#### cl-plplot-system ####
 This is currently 5 files (src/system).
 * loadlib.lisp defines the package and loads the PLplot library.
 * types.lisp defines the C types that are used in the PLplot library.
