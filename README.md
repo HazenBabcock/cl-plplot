@@ -1,5 +1,5 @@
-# [cl-plplot](http://common-lisp.net/project/cl-plplot/) #
-The Common Lisp / CFFI based interface to the [PLplot](http://plplot.sourceforge.net/) Scientific Plotting Library.
+## [cl-plplot](http://common-lisp.net/project/cl-plplot/) ##
+A Common Lisp / CFFI based interface to the [PLplot](http://plplot.sourceforge.net/) Scientific Plotting Library.
 
 ## News ##
 
